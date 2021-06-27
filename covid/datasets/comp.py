@@ -77,6 +77,8 @@ def standardize_train(train):
     # Add stratify column and group column
     train['stratify'] = train['one_hot'].apply(str)
     train['group'] = train['study_id'].apply(str)
+    
+    return train
 
 def build_and_save_folds(train, output_path=Path('/kaggle/working')): 
     fold_dfs = kaggle.dataset_utils.get_fold_dfs(df=train, split_by=SPLIT_BY, num_folds=NUM_FOLDS)
