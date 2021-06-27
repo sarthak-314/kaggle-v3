@@ -26,8 +26,8 @@ def save_folds(fold_dfs, output_path):
     os.makedirs(output_path, exist_ok=True)
     for fold, fold_df in enumerate(fold_dfs):
         df_path = str(output_path / f'fold_{fold}')
-        pd.to_pickle(fold_df, df_path)
-        pd.to_csv(fold_df, df_path, index=False)
+        fold_df.to_pickle(df_path)
+        fold_df.to_csv(df_path, index=False)
         print(f'{fold} saved')
     print(f'{time() - start_time} to build {len(fold_dfs)} folds')    
 
