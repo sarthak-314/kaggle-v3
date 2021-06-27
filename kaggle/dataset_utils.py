@@ -23,6 +23,7 @@ def get_fold_dfs(df, split_by, num_folds):
 
 def save_folds(fold_dfs, output_path): 
     start_time = time()
+    os.makedirs(output_path, exist_ok=True)
     for fold, fold_df in enumerate(fold_dfs):
         df_path = str(output_path / f'fold_{fold}')
         pd.to_pickle(fold_df, df_path)
