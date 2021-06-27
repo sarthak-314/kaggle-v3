@@ -27,18 +27,13 @@ def save_folds(fold_dfs, output_path):
     for fold, fold_df in enumerate(fold_dfs):
         df_path = str(output_path / f'fold_{fold}')
         fold_df.to_pickle(df_path+'.pkl')
-        fold_df.to_csv(df_path, index=False)
         print(f'{fold} saved')
     print(f'{time() - start_time} to build {len(fold_dfs)} folds')    
 
 def read_fold(fold, input_dataframes_path, num_folds):  
     fold_dfs = []
     for fold_ in range(num_folds): 
-        try: 
-            fold_df = pd.read_pickle(input_dataframes_path / f'fold_{fold_}.pkl')
-        except: 
-            print('reading from csv')
-            fold_df = pd.read_csv(input_dataframes_path / f'fold_{fold_}.csv')
+        fold_df = pd.read_pickle(input_dataframes_path / f'fold_{fold_}.pkl')
         fold_dfs.append(fold_df)
 
     train = pd.concat(fold_dfs[:fold]+fold_dfs[fold+1:])
@@ -67,14 +62,12 @@ def apply_feature_engineering_func(func, input_dataframes_path, output_path):
         print('reading from and writing to the same folder')    
     
     # Read all the dataframe related files
-    all_csv_files = glob.glob(str(output_path/'**/*.csv'), recursive=True)
     all_pkl_files = glob.glob(str(output_path/'**/*.pkl'), recursive=True)
-    all_files = all_csv_files + all_pkl_files
     print('all files read')
     
-    for df_file in tqdm(all_files): 
-        df = pd.read_csv(df_file) if df_file.endswith('.csv') else pd.read_pickle(df_file)
+    for df_file in tqdm(all_pkl_files): 
+        df = pd.read_pickle(df_file)
         df_type = 'test' if 'test' in df_file else 'train'
         df = func(df, df_type=df_type)
-        df.to_csv(df_file) if df_file.endswith('.csv') else df.to_pickle(df_file)
+        df.to_pickle(df_file)
     print(f'{time()-start_time} seconds to build the features') #23 secs
