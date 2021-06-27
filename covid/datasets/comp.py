@@ -100,7 +100,7 @@ def preprocess_dataframes(raw_dataset_path, output_path):
     train = standardize_train(train)
     build_and_save_folds(train, output_path=output_path)
     print('saving test')
-    pd.to_pickle(output_path/'test.pkl')
+    test.to_pickle(output_path/'test.pkl')
 
 
 def read_fold(fold, input_dataframes_path=INPUT_DATAFRAMES_PATH, num_folds=NUM_FOLDS): 
