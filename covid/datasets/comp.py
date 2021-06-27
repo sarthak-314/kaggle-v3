@@ -18,7 +18,7 @@ LABEL_COLS = ['Negative for Pneumonia', 'Typical Appearance', 'Indeterminate App
 
 # Paths for Reading / Writing Dataframes
 RAW_DATASET_PATH = Path(f'/kaggle/input/{DATASET_NAME}')
-INPUT_DATAFRAMES_PATH = Path(f'/kaggle/input/{DATASET_NAME}-dataframes')
+INPUT_DATAFRAMES_PATH = Path(f'/kaggle/input/siim-covid19-detection-datasets/{DATASET_NAME}-dataframes')
 
 
 # IN HOUSE FUNCTIONS

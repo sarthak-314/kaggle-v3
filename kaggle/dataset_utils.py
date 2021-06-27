@@ -68,6 +68,9 @@ def apply_feature_engineering_func(func, input_dataframes_path, output_path):
     for df_file in tqdm(all_pkl_files): 
         df = pd.read_pickle(df_file)
         df_type = 'test' if 'test' in df_file else 'train'
-        df = func(df, df_type=df_type)
-        df.to_pickle(df_file)
+        try: 
+            df = func(df, df_type=df_type)
+            df.to_pickle(df_file)
+        except: 
+            print(f'{func.__name__} did not work on {df_file}. Skipping applying it')
     print(f'{time()-start_time} seconds to build the features') #23 secs
