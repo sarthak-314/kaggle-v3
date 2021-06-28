@@ -91,6 +91,33 @@ def build_and_save_folds(train, output_path=Path('/kaggle/working')):
 FEATURE ENGINEERING FUNCTIONS
 -----------------------------
 """
+# FastAI for .dicom files
+from fastai.basics import *
+from fastai.medical.imaging import *
+DICOM_META_COLUMNS = [
+    # Definatley Useful Columns
+    'SOPInstanceUID', 'fname', 'Rows', 'Columns', 
+    # Probably Useful 
+    'BodyPartExamined', 'PatientSex', 'StudyDate',
+    # Might Be Useful
+    'ImageType', 'StudyTime', 'Modality', 'ImagerPixelSpacing', 'BitsAllocated', 'BitsStored', 'HighBit', 'PixelRepresentation', 'MultiImageType',
+]
+COMP_INPUT_PATH = Path('/kaggle/input/siim-covid19-detection')
+PX_SUMM = False
+def add_dicom_metadata(df, df_type):
+    dicom_files = get_dicom_files(COMP_INPUT_PATH / df_type)
+    dicom_meta_df = pd.DataFrame.from_dicoms(dicom_files, px_summ=PX_SUMM) # 4 minutes for train without px_summ
+    dicom_meta_df = dicom_meta_df[DICOM_META_COLUMNS]
+    dicom_meta_df = dicom_meta_df.rename(columns={
+        'SOPInstanceUID': 'img_id', 
+        'fname': 'dicom_img_path', 
+        'Rows': 'img_width', 
+        'Columns': 'img_height', 
+    })
+    df = df.merge(dicom_meta_df)
+    return df
+
+
 
 
 # API FUNCTIONS
