@@ -40,3 +40,4 @@ except:
     print('could not load ipython magic extensions')
 
 
+!pip install wandb
