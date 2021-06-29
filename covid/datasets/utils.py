@@ -1,8 +1,10 @@
 """
 Resize the input images for quick iteration 
 """
-import pydicom
 from PIL import Image
+import numpy as np
+import pydicom
+
 def read_xray(path, voi_lut = False, fix_monochrome = True):
     dicom = pydicom.read_file(path)
     data = dicom.pixel_array
