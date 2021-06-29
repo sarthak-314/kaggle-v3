@@ -124,10 +124,10 @@ def preprocess_dataframes(raw_data_path, output_path):
     print('saving test')
     test.to_pickle(output_path/'test.pkl')
 
-
-def read_fold(fold=0, input_dataframes_path=Path(''), num_folds=NUM_FOLDS): 
-    train, valid = utils.dataframes.read_fold(fold, input_dataframes_path, num_folds=num_folds)
+def read_dataframes(dataframes_path, fold=0):
+    train, valid = utils.dataframes.read_fold(fold, dataframes_path, num_folds=NUM_FOLDS)
     return train, valid
+
 
 def apply_feature_engineering_func(func, input_dataframes_path=Path(''), output_path=Path('/kaggle/working')):
     utils.dataframes.apply_feature_engineering_func(func, input_dataframes_path, output_path)
