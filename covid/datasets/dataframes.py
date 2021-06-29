@@ -4,7 +4,7 @@ import numpy as np
 import glob 
 import os
 
-import utils.dataset
+import utils.dataframes
 
 DATASET_NAME = 'siim-covid19-detection'
 # Config for Building the Dataframe
@@ -81,8 +81,8 @@ def standardize_train(train):
     return train
 
 def build_and_save_folds(train, output_path=Path('/kaggle/working')): 
-    fold_dfs = utils.dataset.get_fold_dfs(df=train, split_by=SPLIT_BY, num_folds=NUM_FOLDS)
-    utils.dataset.save_folds(fold_dfs, output_path)
+    fold_dfs = utils.dataframes.get_fold_dfs(df=train, split_by=SPLIT_BY, num_folds=NUM_FOLDS)
+    utils.dataframes.save_folds(fold_dfs, output_path)
     print('Commit the notebook and then start feature engineering in next version')
 
 
@@ -131,11 +131,11 @@ def preprocess_dataframes(raw_dataset_path, output_path):
 
 
 def read_fold(fold=0, input_dataframes_path=INPUT_DATAFRAMES_PATH, num_folds=NUM_FOLDS): 
-    train, valid = utils.dataset.read_fold(fold, input_dataframes_path, num_folds=num_folds)
+    train, valid = utils.dataframes.read_fold(fold, input_dataframes_path, num_folds=num_folds)
     return train, valid
 
 def apply_feature_engineering_func(func, input_dataframes_path=INPUT_DATAFRAMES_PATH, output_path=Path('/kaggle/working')):
-    utils.dataset.apply_feature_engineering_func(func, input_dataframes_path, output_path)
+    utils.dataframes.apply_feature_engineering_func(func, input_dataframes_path, output_path)
     
 def build_test(raw_dataset_path): 
     test = read_raw_test(raw_dataset_path)
