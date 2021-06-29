@@ -41,4 +41,4 @@ except:
     print('could not load ipython magic extensions')
 
 
-subprocess.run('!pip install awscli')
+subprocess.run('pip install awscli')
