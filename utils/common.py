@@ -2,6 +2,8 @@
 Common functions / classes to be imported on startup
 """
 from IPython import get_ipython
+
+
 def skip(line, cell=None):
     '''Skips execution of the current line/cell if line evaluates to True.'''
     if eval(line):
