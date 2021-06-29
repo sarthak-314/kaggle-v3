@@ -1,13 +1,9 @@
 """
 SYNC NOTEBOOK WITH VS CODE 
 --------------------------
-# Sync Notebook code with Local Scripts
-REPO = 'https://github.com/sarthak-314/kaggle-v3'
-!git clone {REPO}
+!git clone 'https://github.com/sarthak-314/kaggle-v3'
 %cd '/kaggle/working/kaggle-v3'
 !git pull 
-
-# Run the Startup Script for the Competition
 %run /kaggle/working/kaggle-v3/covid/startup.py
 """
 

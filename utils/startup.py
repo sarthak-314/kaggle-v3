@@ -17,7 +17,6 @@ import random
 import shutil
 import pickle
 import torch
-import wandb
 import json
 import math
 import glob
@@ -40,5 +39,14 @@ try:
 except: 
     print('could not load ipython magic extensions')
 
+# Install Libraries
+subprocess.run(['pip', 'install' ,'awscli'])
+subprocess.run(['pip', 'install' ,'wandb'])
+import wandb
 
-subprocess.run('pip install awscli')
+# Login to AWS & WandB
+# TODO: Make a bash script and add sensitive information in .env file
+subprocess.run(['aws', 'configure', 'set', 'aws_access_key_id', 'AKIAUD2OWH3DRHZEXSQE'])
+subprocess.run(['aws', 'configure', 'set', 'aws_secret_access_key', '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'])
+subprocess.run(['aws', 'configure', 'set', 'default.region', 'us-east-1'])
+subprocess.run(['wandb', 'login', '00dfbb85e215726cccc6f6f9ed40e618a7cf6539'])

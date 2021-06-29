@@ -1,4 +1,4 @@
-from kaggle.startup import * 
+from utils.startup import * 
 
 COMP_NAME = 'siim-covid19-detection'
 COMP_INPUT_PATH = Path('/kaggle/input/siim-covid19-detection')
