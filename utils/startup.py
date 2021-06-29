@@ -50,3 +50,7 @@ subprocess.run(['aws', 'configure', 'set', 'aws_access_key_id', 'AKIAUD2OWH3DRHZ
 subprocess.run(['aws', 'configure', 'set', 'aws_secret_access_key', 'CUr8HPKVga0frS5DdGpbzndmqgvDS8L+7y7ykc7A'])
 subprocess.run(['aws', 'configure', 'set', 'default.region', 'us-east-1'])
 subprocess.run(['wandb', 'login', '00dfbb85e215726cccc6f6f9ed40e618a7cf6539'])
+
+
+# Import all common functions / classes 
+from utils.common import * 

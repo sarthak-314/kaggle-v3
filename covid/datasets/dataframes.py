@@ -7,7 +7,9 @@ import os
 import utils.dataframes
 
 DATASET_NAME = 'siim-covid19-detection'
-# Config for Building the Dataframe
+RAW_DATA_PATH = Path('/kaggle/input/siim-covid19-detection')
+
+# Config for Building the Dataframes
 NUM_FOLDS = 4
 SPLIT_BY = 'group'
 RANDOM_STATE = 42
@@ -16,18 +18,6 @@ HOLDOUT_PERCENTAGE = 1
 # Additional Dataset-Specific Config
 LABEL_COLS = ['Negative for Pneumonia', 'Typical Appearance', 'Indeterminate Appearance', 'Atypical Appearance']
 
-# Paths for Reading / Writing Dataframes
-RAW_DATASET_PATH = Path(f'/kaggle/input/{DATASET_NAME}')
-INPUT_DATAFRAMES_PATH = Path(f'/kaggle/input/siim-covid19-detection-datasets/{DATASET_NAME}-dataframes')
-
-
-# IN HOUSE FUNCTIONS
-
-"""
-PROCESSING RAW DATAFRAMES
---------------------------
-Read Raw Dataset -> Standardize -> Split
-"""
 
 def _merge_input_dataframes(train_img, train_study):
     image_level_rename_map = { 'StudyInstanceUID': 'study_id', 'id': 'img_id' }
