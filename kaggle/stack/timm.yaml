@@ -28,7 +28,7 @@ reprob: 0.75
 recount: 2
 resplit: True
 
-cutmix_minmax: [0.5, 1.5]
+cutmix_minmax: [0.25, 1]
 drop: 0.5
 
 # Constant
