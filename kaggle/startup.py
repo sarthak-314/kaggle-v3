@@ -38,3 +38,5 @@ try:
     ipython.magic('autoreload 2')
 except: 
     print('could not load ipython magic extensions')
+
+
