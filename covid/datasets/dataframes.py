@@ -1,3 +1,8 @@
+"""
+1. Build initial dataframes and upload to S3 
+2. Read the dataframes and apply feature engineering
+"""
+
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -120,11 +125,11 @@ def preprocess_dataframes(raw_dataset_path, output_path):
     test.to_pickle(output_path/'test.pkl')
 
 
-def read_fold(fold=0, input_dataframes_path=INPUT_DATAFRAMES_PATH, num_folds=NUM_FOLDS): 
+def read_fold(fold=0, input_dataframes_path=Path(''), num_folds=NUM_FOLDS): 
     train, valid = utils.dataframes.read_fold(fold, input_dataframes_path, num_folds=num_folds)
     return train, valid
 
-def apply_feature_engineering_func(func, input_dataframes_path=INPUT_DATAFRAMES_PATH, output_path=Path('/kaggle/working')):
+def apply_feature_engineering_func(func, input_dataframes_path=Path(''), output_path=Path('/kaggle/working')):
     utils.dataframes.apply_feature_engineering_func(func, input_dataframes_path, output_path)
     
 def build_test(raw_dataset_path): 
