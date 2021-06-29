@@ -39,24 +39,24 @@ def _get_path_components(path):
     path_components = normalized_path.split(os.sep)
     return path_components
 
-def read_raw_test(raw_dataset_path):
-    filepaths = glob.glob(str(raw_dataset_path / 'test/**/*dcm'), recursive=True)
+def read_raw_test(raw_data_path):
+    filepaths = glob.glob(str(raw_data_path / 'test/**/*dcm'), recursive=True)
     test = pd.DataFrame({ 'img_path': filepaths })
     test['img_id'] = test.img_path.map(lambda x: _get_path_components(x)[-1].replace('.dcm', ''))
     test['study_id'] = test.img_path.map(lambda x: _get_path_components(x)[-3].replace('.dcm', ''))
     return test 
 
-def read_raw_dataframes(raw_dataset_path):
+def read_raw_dataframes(raw_data_path):
     # Read Raw Train
-    train_study = pd.read_csv(raw_dataset_path / 'train_study_level.csv')
-    train_img = pd.read_csv(raw_dataset_path / 'train_image_level.csv')
+    train_study = pd.read_csv(raw_data_path / 'train_study_level.csv')
+    train_img = pd.read_csv(raw_data_path / 'train_image_level.csv')
     train = _merge_input_dataframes(train_img, train_study)
     
     # Read Raw Test
-    test = read_raw_test(raw_dataset_path)
+    test = read_raw_test(raw_data_path)
     
     # Read Sample Submission
-    sample_sub = pd.read_csv(raw_dataset_path / 'sample_submission.csv')
+    sample_sub = pd.read_csv(raw_data_path / 'sample_submission.csv')
     
     return {
         'train': train, 
@@ -116,8 +116,8 @@ def add_dicom_metadata(df, df_type):
 
 
 # API FUNCTIONS
-def preprocess_dataframes(raw_dataset_path, output_path): 
-    raw_dataframes = read_raw_dataframes(raw_dataset_path)
+def preprocess_dataframes(raw_data_path, output_path): 
+    raw_dataframes = read_raw_dataframes(raw_data_path)
     train, test = raw_dataframes['train'], raw_dataframes['test']
     train = standardize_train(train)
     build_and_save_folds(train, output_path=output_path)
@@ -132,7 +132,7 @@ def read_fold(fold=0, input_dataframes_path=Path(''), num_folds=NUM_FOLDS):
 def apply_feature_engineering_func(func, input_dataframes_path=Path(''), output_path=Path('/kaggle/working')):
     utils.dataframes.apply_feature_engineering_func(func, input_dataframes_path, output_path)
     
-def build_test(raw_dataset_path): 
-    test = read_raw_test(raw_dataset_path)
+def build_test(raw_data_path): 
+    test = read_raw_test(raw_data_path)
     # TODO: Apply all the feature engineering functions here
     return test
