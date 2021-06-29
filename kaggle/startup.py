@@ -41,3 +41,4 @@ except:
 
 #%%
 !pip install wandb
+!pip install awscli
