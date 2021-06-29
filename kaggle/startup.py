@@ -11,6 +11,7 @@ from tqdm import tqdm
 from time import time
 import pandas as pd
 import numpy as np
+import subprocess
 import warnings
 import random
 import shutil
@@ -39,6 +40,5 @@ try:
 except: 
     print('could not load ipython magic extensions')
 
-#%%
-!pip install wandb
-!pip install awscli
+
+subprocess.run('!pip install awscli')
