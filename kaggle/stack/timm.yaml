@@ -1,0 +1,40 @@
+# To Fill
+model: ''
+num_classes: ''
+img_size: ''
+batch_size: ''
+epochs: ''
+channels_last: True
+output: ''
+
+# Good Enough
+opt: lookahead_radam
+weight_decay: 1e-3
+model_ema: True
+checkpoint_hist: 5
+workers: 8 
+native_amp: True
+
+# Learning Rate Scheduler
+lr: 1e-4
+warmup_lr: 1e-6
+min_lr: 1e-10
+patience_epochs: 3
+decay_rate: 0.2 
+
+# Augmentations
+vflip: 0.25
+reprob: 0.75
+recount: 2
+resplit: True
+
+cutmix_minmax: [0.5, 1.5]
+drop: 0.5
+
+# Constant
+train_split: train # Traininig Folder 
+val_split: validation # Validation Folder
+pretrained: True 
+#TODO: Look at resume checkpoints
+log_wandb: True
+

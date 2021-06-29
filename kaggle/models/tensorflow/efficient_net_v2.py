@@ -1,3 +1,0 @@
-"""
-GROUND THRUTH: 
-"""
