@@ -21,5 +21,10 @@ DATASETS = [
     'object_detection', # Object detection data from competition in coco format
 ]
 
-# import covid.datasets.dataframes
-# Read train, valid dataframes for fold 0 for quick iteration
+import covid.datasets.dataframes
+def read_dataframes(fold=0, tmp_folder=Path('./dataframes')): 
+    download_from_s3('dataframes', tmp_folder)
+    train, valid = covid.datasets.dataframes.read_dataframes(
+        tmp_folder, fold=fold
+    )
+    return train, valid
