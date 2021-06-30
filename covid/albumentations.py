@@ -52,7 +52,7 @@ def get_test_augmentations(img_size):
 
 
 def get_train_transforms(img_size, aug_hard=False, to_tensor=False):
-    augmentations = get_hard_augmentations(img_size) if aughard else get_soft_augmentations(img_size)
+    augmentations = get_hard_augmentations(img_size) if aug_hard else get_soft_augmentations(img_size)
     if to_tensor: 
         augmentations.append(ToTensorV2(p=1.0))
     train_transforms = Compose(augmentations)
