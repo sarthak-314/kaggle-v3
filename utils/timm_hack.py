@@ -786,7 +786,7 @@ def validate(model, loader, loss_fn, args, amp_autocast=suppress, log_suffix='')
                     'Time: {batch_time.val:.3f} ({batch_time.avg:.3f})  '
                     'Loss: {loss.val:>7.4f} ({loss.avg:>6.4f})  '
                     'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})  '
-                    'Acc@5: {top1.val:>7.4f} ({top1.avg:>7.4f})'.format(
+                    'Acc@1: {top1.val:>7.4f} ({top1.avg:>7.4f})'.format(
                         log_name, batch_idx, last_idx, batch_time=batch_time_m,
                         loss=losses_m, top1=top1_m, top5=top5_m))
 

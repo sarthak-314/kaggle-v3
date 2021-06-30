@@ -17,8 +17,8 @@ def auto_select_accelerator():
     print(f"Running on {strategy.num_replicas_in_sync} replicas")
     return strategy
 
-def get_gcs_path(comp_name): 
-    return KaggleDatasets().get_gcs_path(comp_name)
+def get_gcs_path(dataset_name): 
+    return KaggleDatasets().get_gcs_path(dataset_name)
 
 def get_ranger(lr, min_lr=0): 
     radam = tfa.optimizers.RectifiedAdam( 
@@ -31,4 +31,3 @@ def get_ranger(lr, min_lr=0):
     )
     ranger = tfa.optimizers.Lookahead(radam, sync_period=6, slow_step_size=0.5)
     return ranger
-
