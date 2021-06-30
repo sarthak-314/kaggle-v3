@@ -56,7 +56,7 @@ def tensorboard(log_dir):
         log_dir=str(log_dir)
     )
 
-def wandb():
+def wandb_callback():
     return WandbCallback()
 
 def make_callbacks_list(model, callbacks): 
