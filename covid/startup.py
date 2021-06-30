@@ -21,6 +21,5 @@ DATASETS = [
     'object_detection', # Object detection data from competition in coco format
 ]
 
-import covid.datasets.dataframes
-
+# import covid.datasets.dataframes
 # Read train, valid dataframes for fold 0 for quick iteration
