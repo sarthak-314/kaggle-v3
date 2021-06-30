@@ -29,5 +29,9 @@ def get_ranger(lr, min_lr=0):
         name = 'Ranger',
         #clipnorm = 10, # Not present by befault
     )
-    ranger = tfa.optimizers.Lookahead(radam, sync_period=6, slow_step_size=0.5)
-    return ranger
+
+def get_save_locally(): 
+    return tf.saved_model.SaveOptions(experimental_io_device='/job:localhost')
+
+def get_load_locally(): 
+    return tf.saved_model.LoadOptions(experimental_io_device='/job:localhost')

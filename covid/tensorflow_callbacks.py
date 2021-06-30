@@ -1,6 +1,9 @@
+from utils.tensorflow import get_load_locally
 from wandb.keras import WandbCallback
 import tensorflow_addons as tfa
 import tensorflow as tf 
+
+from utils.tensorflow import get_save_locally
 
 # Config for the Competition
 MONITOR = 'val_acc'
@@ -17,6 +20,7 @@ def get_model_checkpoint(checkpoint_path):
     return tf.keras.callbacks.ModelCheckpoint(
         checkpoint_path, 
         save_best_only=True, 
+        options=get_save_locally(), 
         **common_kwargs, 
     )
     
