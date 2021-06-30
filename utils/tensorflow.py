@@ -29,6 +29,7 @@ def get_ranger(lr, min_lr=0):
         name = 'Ranger',
         #clipnorm = 10, # Not present by befault
     )
+    return radam
 
 def get_save_locally(): 
     return tf.saved_model.SaveOptions(experimental_io_device='/job:localhost')
