@@ -45,7 +45,7 @@ def tqdm_bar():
     return tfa.callbacks.TQDMProgressBar()
 
 def terminate_on_nan(): 
-    return tfa.callbacks.TerminateOnNaN()
+    return tf.keras.callbacks.TerminateOnNaN()
 
 def tensorboard(log_dir):
     return tf.keras.callbacks.TensorBoard(
