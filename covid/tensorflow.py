@@ -11,7 +11,7 @@ def decode_fn(path, img_size):
     elif EXT in ['jpg', 'jpeg']:
         img = tf.image.decode_jpeg(file_bytes, channels=3)
     elif EXT == 'dicom': 
-        tfio.image.decode_dicom_image(
+        img = tfio.image.decode_dicom_image(
             file_bytes, 
             color_dim=True,
             on_error='skip', 
