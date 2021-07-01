@@ -24,12 +24,18 @@ DATASETS = [
 
 import covid.datasets.dataframes
 def read_dataframes(fold=0, tmp_folder=Path('./dataframes')): 
-    download_from_s3('dataframes', tmp_folder)
+    tmp_folder = Path(tmp_folder)
+    if not tmp_folder.exists(): 
+        download_from_s3('dataframes', tmp_folder)
     train, valid = covid.datasets.dataframes.read_dataframes(
         tmp_folder, fold=fold
     )
-    for df in train, valid: 
-        if df.boxes.dtype == str: 
-            df.boxes = df.boxes.fillna('[]')
-            df.boxes = df.boxes.apply(ast.literal_eval)
+    # Some Clearning
+    if train.boxes.dtype == str: 
+        train.boxes = train.boxes.fillna('[]')
+        train.boxes = train.boxes.apply(ast.literal_eval)
+    if valid.boxes.dtype == str: 
+        valid.boxes = valid.boxes.fillna('[]')
+        valid.boxes = valid.boxes.apply(ast.literal_eval)
+    
     return train, valid
