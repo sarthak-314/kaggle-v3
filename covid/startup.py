@@ -31,6 +31,7 @@ def read_dataframes(fold=0, tmp_folder=Path('./dataframes')):
         tmp_folder, fold=fold
     )
     # Some Clearning
+    print('cleaning')
     if train.boxes.dtype == str: 
         train.boxes = train.boxes.fillna('[]')
         train.boxes = train.boxes.apply(ast.literal_eval)
