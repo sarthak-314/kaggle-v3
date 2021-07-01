@@ -19,11 +19,11 @@ def train_augment_fn(img):
     img = tf.image.random_flip_up_down(img)
     return img
 
-def build_dataset(paths, labels, augment_fn=None, batch_size=32): 
+def build_dataset(paths, labels, img_size=256, augment_fn=None, batch_size=32): 
     AUTO = tf.data.experimental.AUTOTUNE
     path_ds = tf.data.Dataset.from_tensor_slices(paths)
     label_ds = tf.data.Dataset.from_tensor_slices(labels)
-    img_ds = path_ds.map(decode_fn, num_parallel_calls=AUTO)
+    img_ds = path_ds.map(lambda path: decode_fn(path, img_size), num_parallel_calls=AUTO)
     if augment_fn is not None: 
         img_ds = img_ds.map(augment_fn, num_parallel_calls=AUTO)
     ds = tf.data.Dataset.zip((img_ds, label_ds))

@@ -2,6 +2,7 @@ from utils.tensorflow import get_load_locally
 from wandb.keras import WandbCallback
 import tensorflow_addons as tfa
 import tensorflow as tf 
+import os
 
 from utils.tensorflow import get_save_locally
 
@@ -17,6 +18,7 @@ common_kwargs = {
 }
 
 def get_model_checkpoint(checkpoint_path): 
+    os.makedirs(checkpoint_path, exist_ok=True)
     return tf.keras.callbacks.ModelCheckpoint(
         checkpoint_path, 
         save_best_only=True, 
@@ -52,6 +54,7 @@ def terminate_on_nan():
     return tf.keras.callbacks.TerminateOnNaN()
 
 def tensorboard(log_dir):
+    os.makedirs(log_dir, exist_ok=True)
     return tf.keras.callbacks.TensorBoard(
         log_dir=str(log_dir)
     )
