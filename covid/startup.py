@@ -30,5 +30,6 @@ def read_dataframes(fold=0, tmp_folder=Path('./dataframes')):
     )
     for df in train, valid: 
         if df.boxes.dtype == str: 
+            df.boxes = df.boxes.fillna('[]')
             df.boxes = df.boxes.apply(ast.literal_eval)
     return train, valid
