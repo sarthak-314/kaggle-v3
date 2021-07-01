@@ -87,8 +87,12 @@ FEATURE ENGINEERING FUNCTIONS
 -----------------------------
 """
 # FastAI for .dicom files
-from fastai.basics import *
-from fastai.medical.imaging import *
+try: 
+    from fastai.basics import *
+    from fastai.medical.imaging import *
+except: 
+    print('fastai import skipped')
+    
 DICOM_META_COLUMNS = [
     # Definatley Useful Columns
     'SOPInstanceUID', 'fname', 'Rows', 'Columns', 
