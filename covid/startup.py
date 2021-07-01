@@ -1,4 +1,5 @@
 from utils.startup import * 
+import ast
 
 # Competition Specific
 COMP_NAME = 'siim-covid19-detection'
@@ -27,4 +28,7 @@ def read_dataframes(fold=0, tmp_folder=Path('./dataframes')):
     train, valid = covid.datasets.dataframes.read_dataframes(
         tmp_folder, fold=fold
     )
+    for df in train, valid: 
+        if df.boxes.dtype == str: 
+            df.boxes = df.boxes.apply(ast.literal_eval)
     return train, valid

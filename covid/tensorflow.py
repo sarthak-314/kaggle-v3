@@ -1,14 +1,23 @@
+import tensorflow_io as tfio
 import tensorflow as tf
 
 
-# TENSORFLOW DATA FOR MAIN DATASET 
+# TENSORFLOW DATA FOR MAIN DATASET
+EXT = 'dicom' 
 def decode_fn(path, img_size): 
-    ext = 'png'
     file_bytes = tf.io.read_file(path)
-    if ext == 'png':
+    if EXT == 'png':
         img = tf.image.decode_png(file_bytes, channels=3)
-    elif ext in ['jpg', 'jpeg']:
+    elif EXT in ['jpg', 'jpeg']:
         img = tf.image.decode_jpeg(file_bytes, channels=3)
+    elif EXT == 'dicom': 
+        tfio.image.decode_dicom_image(
+            file_bytes, 
+            color_dim=True,
+            on_error='skip', 
+            scale='auto', 
+            dtype=tf.uint8
+        )
     img = tf.cast(img, tf.float32) / 255.0
     img = tf.image.resize(img, (img_size, img_size))
     return img
