@@ -1,4 +1,4 @@
-from kaggle_datasets import KaggleDatasets
+
 import tensorflow_addons as tfa
 import tensorflow as tf
 
@@ -18,6 +18,10 @@ def auto_select_accelerator():
     return strategy
 
 def get_gcs_path(dataset_name): 
+    # Shortcuts for Colab 
+    if dataset_name == 'siim-covid19-resized-to-512px-png': 
+        return 'gs://kds-fc6e4bdfafd683d582f2b53acb615fd16bc223df72c67bae2ce949d4'
+    from kaggle_datasets import KaggleDatasets
     return KaggleDatasets().get_gcs_path(dataset_name)
 
 def get_ranger(lr, min_lr=0): 
