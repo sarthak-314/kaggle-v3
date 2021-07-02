@@ -9,6 +9,9 @@ from covid.datasets.dataframes import (
 COMP_NAME = 'siim-covid19-detection'
 COMP_DIR = Path('/kaggle/input/siim-covid19-detection')
 S3_PATH = 's3://siim-covid19-detection/'
+COMP_DRIVE_DIR = Path('/content/drive/MyDrive/Covid')
+
+
 
 try: 
     dataframes_dir = Path('./dataframes')
