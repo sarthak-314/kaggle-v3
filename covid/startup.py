@@ -11,6 +11,11 @@ COMP_DIR = Path('/kaggle/input/siim-covid19-detection')
 S3_PATH = 's3://siim-covid19-detection/'
 DRIVE_COMP_DIR = Path('/content/drive/MyDrive/Covid')
 
+# Dataset Directories
+ORIGINAL_COMP_DATA_DIR = DRIVE_COMP_DIR / 'Data' / 'Original'
+RESIZED_640_DATASET_DIR = DRIVE_COMP_DIR / 'Data' / 'Resized 640'
+DATAFRAMES_DIR = DRIVE_COMP_DIR / 'Data' / 'dataframes'
+
 
 
 try: 
