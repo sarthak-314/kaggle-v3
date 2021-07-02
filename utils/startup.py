@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from termcolor import colored
 from pathlib import Path 
 from tqdm import tqdm
+from PIL import Image
 from time import time
 import pandas as pd
 import numpy as np
