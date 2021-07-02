@@ -86,8 +86,7 @@ FEATURE ENGINEERING FUNCTIONS
 -----------------------------
 """
 def add_dicom_metadata(df, input_dir):
-    from fastai.basics import * 
-    from fastai.medical.imaging import * 
+    from fastai.medical.imaging import get_dicom_files
     
     GET_PIXEL_SUMMARY = False
     dicom_files = get_dicom_files(input_dir)
