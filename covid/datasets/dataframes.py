@@ -1,8 +1,3 @@
-"""
-1. Build initial dataframes and upload to S3 
-2. Read the dataframes and apply feature engineering
-"""
-
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -12,16 +7,29 @@ import os
 import utils.dataframes
 
 DATASET_NAME = 'siim-covid19-detection'
-RAW_DATA_PATH = Path('/kaggle/input/siim-covid19-detection')
+RAW_DATA_DIR = Path('/kaggle/input/siim-covid19-detection')
+OUTPUT_DIR = Path('/kaggle/working/dataframes')
 
-# Config for Building the Dataframes
+# CONFIG FOR BUILDING
 NUM_FOLDS = 4
 SPLIT_BY = 'group'
 RANDOM_STATE = 42
-HOLDOUT_PERCENTAGE = 1
 
-# Additional Dataset-Specific Config
+# DATA FRAMES META DATA
 LABEL_COLS = ['Negative for Pneumonia', 'Typical Appearance', 'Indeterminate Appearance', 'Atypical Appearance']
+CAPTIAL_TO_SMALL_STUDY_LABEL = {
+    'Negative for Pneumonia': 'negative', 
+    'Typical Appearance': 'typical', 
+    'Indeterminate Appearance': 'intermediate', 
+    'Atypical Appearance': 'atypical', 
+}
+SMALL_TO_CAPITAL_STUDY_LABEL = {v:k for k, v in CAPTIAL_TO_SMALL_STUDY_LABEL.items()}
+DICOM_META_COLS = [
+    'SOPInstanceUID', 'fname', 'Rows', 'Columns',  # Definately Useful Columns
+    'BodyPartExamined', 'PatientSex', 'StudyDate', # Probably Useful 
+    'ImageType', 'StudyTime', 'Modality', 'ImagerPixelSpacing', 'BitsAllocated', 'BitsStored', 
+    'HighBit', 'PixelRepresentation', 'MultiImageType', # Might Be Useful
+]
 
 
 def _merge_input_dataframes(train_img, train_study):
@@ -39,25 +47,23 @@ def _get_path_components(path):
     path_components = normalized_path.split(os.sep)
     return path_components
 
-def read_raw_test(raw_data_path):
-    filepaths = glob.glob(str(raw_data_path / 'test/**/*dcm'), recursive=True)
+def read_raw_test():
+    filepaths = glob.glob(str(RAW_DATA_DIR / 'test/**/*dcm'), recursive=True)
     test = pd.DataFrame({ 'img_path': filepaths })
     test['img_id'] = test.img_path.map(lambda x: _get_path_components(x)[-1].replace('.dcm', ''))
     test['study_id'] = test.img_path.map(lambda x: _get_path_components(x)[-3].replace('.dcm', ''))
     return test 
 
-def read_raw_dataframes(raw_data_path):
+def read_raw_dataframes():
     # Read Raw Train
-    train_study = pd.read_csv(raw_data_path / 'train_study_level.csv')
-    train_img = pd.read_csv(raw_data_path / 'train_image_level.csv')
+    train_study = pd.read_csv(RAW_DATA_DIR / 'train_study_level.csv')
+    train_img = pd.read_csv(RAW_DATA_DIR / 'train_image_level.csv')
     train = _merge_input_dataframes(train_img, train_study)
     
     # Read Raw Test
-    test = read_raw_test(raw_data_path)
-    
+    test = read_raw_test(RAW_DATA_DIR)
     # Read Sample Submission
-    sample_sub = pd.read_csv(raw_data_path / 'sample_submission.csv')
-    
+    sample_sub = pd.read_csv(RAW_DATA_DIR / 'sample_submission.csv')
     return {
         'train': train, 
         'sample_sub': sample_sub, 
@@ -75,68 +81,41 @@ def standardize_train(train):
     
     return train
 
-def build_and_save_folds(train, output_path=Path('/kaggle/working')): 
-    fold_dfs = utils.dataframes.get_fold_dfs(df=train, split_by=SPLIT_BY, num_folds=NUM_FOLDS)
-    utils.dataframes.save_folds(fold_dfs, output_path)
-    print('Commit the notebook and then start feature engineering in next version')
-
-
-
 """
 FEATURE ENGINEERING FUNCTIONS
 -----------------------------
 """
-# FastAI for .dicom files
-try: 
-    from fastai.basics import *
-    from fastai.medical.imaging import *
-except: 
-    print('fastai import skipped')
+def add_dicom_metadata(df, input_dir):
+    from fastai.basics import * 
+    from fastai.medical.imaging import * 
     
-DICOM_META_COLUMNS = [
-    # Definatley Useful Columns
-    'SOPInstanceUID', 'fname', 'Rows', 'Columns', 
-    # Probably Useful 
-    'BodyPartExamined', 'PatientSex', 'StudyDate',
-    # Might Be Useful
-    'ImageType', 'StudyTime', 'Modality', 'ImagerPixelSpacing', 'BitsAllocated', 'BitsStored', 'HighBit', 'PixelRepresentation', 'MultiImageType',
-]
-COMP_INPUT_PATH = Path('/kaggle/input/siim-covid19-detection')
-PX_SUMM = False
-def add_dicom_metadata(df, df_type):
-    dicom_files = get_dicom_files(COMP_INPUT_PATH / df_type)
-    dicom_meta_df = pd.DataFrame.from_dicoms(dicom_files, px_summ=PX_SUMM) # 4 minutes for train without px_summ
-    dicom_meta_df = dicom_meta_df[DICOM_META_COLUMNS]
+    GET_PIXEL_SUMMARY = False
+    dicom_files = get_dicom_files(input_dir)
+    dicom_meta_df = pd.DataFrame.from_dicoms(dicom_files, px_summ=GET_PIXEL_SUMMARY)
+    dicom_meta_df = dicom_meta_df[DICOM_META_COLS]
     dicom_meta_df = dicom_meta_df.rename(columns={
         'SOPInstanceUID': 'img_id', 
         'fname': 'dicom_img_path', 
-        'Rows': 'img_width', 
-        'Columns': 'img_height', 
+        'Rows': 'img_height', 
+        'Columns': 'img_width', 
     })
     df = df.merge(dicom_meta_df)
     return df
-
-
-
-
-# API FUNCTIONS
-def preprocess_dataframes(raw_data_path, output_path): 
-    raw_dataframes = read_raw_dataframes(raw_data_path)
-    train, test = raw_dataframes['train'], raw_dataframes['test']
-    train = standardize_train(train)
-    build_and_save_folds(train, output_path=output_path)
-    print('saving test')
-    test.to_pickle(output_path/'test.pkl')
-
-def read_dataframes(dataframes_path, fold=0):
-    train, valid = utils.dataframes.read_fold(fold, dataframes_path, num_folds=NUM_FOLDS)
-    return train, valid
-
-
-def apply_feature_engineering_func(func, input_dataframes_path=Path(''), output_path=Path('/kaggle/working')):
-    utils.dataframes.apply_feature_engineering_func(func, input_dataframes_path, output_path)
     
-def build_test(raw_data_path): 
-    test = read_raw_test(raw_data_path)
-    # TODO: Apply all the feature engineering functions here
+def build_folds(): 
+    train = read_raw_dataframes()['train']
+    train = standardize_train(train)
+    train = add_dicom_metadata(train, RAW_DATA_DIR/'train')
+    fold_dfs = utils.dataframes.get_fold_dfs(train, SPLIT_BY, NUM_FOLDS)
+    utils.dataframes.save_folds(fold_dfs, OUTPUT_DIR)
+    return fold_dfs
+    
+def build_test():
+    test = read_raw_dataframes()['test']
+    test = add_dicom_metadata(test, RAW_DATA_DIR/'test')
     return test
+
+def read_dataframes(fold=0, dataframes_dir=Path('./dataframes')):
+    train, valid = utils.dataframes.read_fold(fold, dataframes_dir, num_folds=NUM_FOLDS)
+    test = pd.read_pickle(dataframes_dir/'test.pkl')
+    return train, valid, test    

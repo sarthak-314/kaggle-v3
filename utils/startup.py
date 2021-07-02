@@ -1,6 +1,3 @@
-"""
-Common Startup Script for Notebooks
-"""
 from dataclasses import dataclass, asdict
 from distutils.dir_util import copy_tree
 from collections import defaultdict
@@ -45,14 +42,29 @@ subprocess.run(['pip', 'install' ,'wandb'])
 import wandb
 
 # Login to AWS & WandB
-# TODO: Make a bash script and add sensitive information in .env file
-subprocess.run(['aws', 'configure', 'set', 'aws_access_key_id', 'AKIAUD2OWH3DRHZEXSQE'])
-subprocess.run(['aws', 'configure', 'set', 'aws_secret_access_key', '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'])
-subprocess.run(['aws', 'configure', 'set', 'default.region', 'us-east-1'])
-subprocess.run(['wandb', 'login', '00dfbb85e215726cccc6f6f9ed40e618a7cf6539'])
+def login(aws_access_key, aws_secret_key, wandb_api): 
+    subprocess.run(['aws', 'configure', 'set', 'aws_access_key_id', aws_access_key])
+    subprocess.run(['aws', 'configure', 'set', 'aws_secret_access_key', aws_secret_key])
+    subprocess.run(['aws', 'configure', 'set', 'default.region', 'us-east-1'])
+    subprocess.run(['wandb', 'login', wandb_api])
 
 
 # Import all common functions / classes 
 from utils.common import * 
 
-# WandB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

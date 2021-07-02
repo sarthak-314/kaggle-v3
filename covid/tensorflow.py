@@ -3,7 +3,7 @@ import tensorflow as tf
 
 
 # TENSORFLOW DATA FOR MAIN DATASET
-EXT = 'dicom' 
+EXT = 'png' 
 def decode_fn(path, img_size): 
     file_bytes = tf.io.read_file(path)
     if EXT == 'png':
