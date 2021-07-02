@@ -31,16 +31,15 @@ def read_dataframes(fold=0, tmp_folder=Path('./dataframes')):
         tmp_folder, fold=fold
     )
     # Some Clearning
-    if train.boxes.dtype == str: 
-        train.boxes = train.boxes.fillna('[]')
-        train.boxes = train.boxes.apply(ast.literal_eval)
-    if valid.boxes.dtype == str: 
-        valid.boxes = valid.boxes.fillna('[]')
-        valid.boxes = valid.boxes.apply(ast.literal_eval)
+    for split in 'train', 'valid': 
+        df = {'train': train, 'valid': valid}[split]
+        df.boxes = df.boxes.fillna('[]')
+        df.boxes = df.boxes.apply(ast.literal_eval)
     
     return train, valid
 
 def get_all_filepaths(data_dir):
-    filepaths = glob.glob(data_dir / '*' / '**', recursive=True) 
+    filepaths = glob.glob(str(data_dir / '*' / '**'), recursive=True) 
     print(f'{len(filepaths)} files found in {data_dir}')    
     return filepaths
+
