@@ -2,7 +2,9 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import glob 
+import ast
 import os
+
 
 import utils.dataframes
 
@@ -100,18 +102,25 @@ def add_dicom_metadata(df, input_dir):
     })
     df = df.merge(dicom_meta_df)
     return df
-    
-def build_folds(): 
+
+def post_process(df): 
+    df.boxes = df.boxes.fillna('[]')
+    df.boxes = df.boxes.apply(ast.literal_eval)
+    return df
+
+def build_folds(output_dir=OUTPUT_DIR): 
     train = read_raw_dataframes()['train']
     train = standardize_train(train)
     train = add_dicom_metadata(train, RAW_DATA_DIR/'train')
+    train = post_process(train)
     fold_dfs = utils.dataframes.get_fold_dfs(train, SPLIT_BY, NUM_FOLDS)
-    utils.dataframes.save_folds(fold_dfs, OUTPUT_DIR)
+    utils.dataframes.save_folds(fold_dfs, output_dir)
     return fold_dfs
     
 def build_test():
     test = read_raw_dataframes()['test']
     test = add_dicom_metadata(test, RAW_DATA_DIR/'test')
+    test = post_process(test)
     return test
 
 def read_dataframes(fold=0, dataframes_dir=Path('./dataframes')):
