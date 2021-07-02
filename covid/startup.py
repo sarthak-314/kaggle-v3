@@ -35,7 +35,10 @@ def read_dataframes(fold=0, tmp_folder=Path('./dataframes')):
         df = {'train': train, 'valid': valid}[split]
         df.boxes = df.boxes.fillna('[]')
         df.boxes = df.boxes.apply(ast.literal_eval)
-    
+        df = df.rename(columns = {
+            'img_height': 'img_width', 
+            'img_width': 'img_height', 
+        })
     return train, valid
 
 def get_all_filepaths(data_dir):
