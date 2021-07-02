@@ -61,7 +61,7 @@ def read_raw_dataframes():
     train = _merge_input_dataframes(train_img, train_study)
     
     # Read Raw Test
-    test = read_raw_test(RAW_DATA_DIR)
+    test = read_raw_test()
     # Read Sample Submission
     sample_sub = pd.read_csv(RAW_DATA_DIR / 'sample_submission.csv')
     return {
