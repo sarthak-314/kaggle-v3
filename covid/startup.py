@@ -39,3 +39,8 @@ def read_dataframes(fold=0, tmp_folder=Path('./dataframes')):
         valid.boxes = valid.boxes.apply(ast.literal_eval)
     
     return train, valid
+
+def get_all_filepaths(data_dir):
+    filepaths = glob.glob(data_dir / '*' / '**', recursive=True) 
+    print(f'{len(filepaths)} files found in {data_dir}')    
+    return filepaths
