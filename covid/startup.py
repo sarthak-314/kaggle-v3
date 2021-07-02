@@ -16,8 +16,11 @@ from covid.datasets.dataframes import (
     LABEL_COLS, CAPTIAL_TO_SMALL_STUDY_LABEL, SMALL_TO_CAPITAL_STUDY_LABEL, DICOM_META_COLS, \
     read_dataframes, 
 )
-print(os.path.abspath(Path('.')))
-train, valid, test = read_dataframes(0, Path('./dataframes'))
+try: 
+    dataframes_dir = Path('./dataframes')
+    train, valid, test = read_dataframes(0, dataframes_dir)
+except Exception as e: 
+    print(f'Exception reading dataframes: {e}')
 
 def get_all_filepaths(data_dir):
     filepaths = glob.glob(str(data_dir / '*' / '**'), recursive=True) 
