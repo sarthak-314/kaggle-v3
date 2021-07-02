@@ -117,10 +117,11 @@ def build_folds(output_dir=OUTPUT_DIR):
     utils.dataframes.save_folds(fold_dfs, output_dir)
     return fold_dfs
     
-def build_test():
+def build_test(output_dir):
     test = read_raw_dataframes()['test']
     test = add_dicom_metadata(test, RAW_DATA_DIR/'test')
     test = post_process(test)
+    test.to_pickle(output_dir/'test.pkl')
     return test
 
 def read_dataframes(fold=0, dataframes_dir=Path('./dataframes')):
