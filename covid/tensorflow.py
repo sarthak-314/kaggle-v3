@@ -10,8 +10,8 @@ def get_extension(path):
     elif path.endswith('jpg'): 
         return 'jpg'
 
-def comp_augment_fn(**kwargs): 
-    return augment_fn(**kwargs)
+def comp_augment_fn(img): 
+    return augment_fn(img)
 
 def build_comp_dataset(paths, labels, img_size=256, augment_fn=None, batch_size=32):
     ext = get_extension(str(paths[0]))
