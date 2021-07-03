@@ -4,9 +4,9 @@ Utility functions for processing, and feature engineering on datasets
 # Library Imports
 from sklearn.model_selection import StratifiedKFold, KFold, GroupKFold, train_test_split
 from distutils.dir_util import copy_tree
+from tqdm.notebook import tqdm
 from pathlib import Path
 from time import time
-from tqdm import tqdm
 import pandas as pd
 import glob
 import math
