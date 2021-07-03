@@ -8,7 +8,7 @@ DATASET_NAME = 'google-smartphone-decimeter-challenge'
 # Environment Dependent Paths
 ENV = utils.utils.solve_environment()
 if ENV == 'COLAB': 
-    RAW_DATA_DIR = Path('/content/drive/MyDrive/Decimeter/Original')
+    RAW_DATA_DIR = Path('/content/drive/MyDrive/Decimeter/Data/Original')
 else: 
     RAW_DATA_DIR = Path(f'/kaggle/input/{DATASET_NAME}')
 
