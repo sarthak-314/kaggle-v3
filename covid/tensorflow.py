@@ -14,7 +14,7 @@ def comp_augment_fn():
     return augment_fn
 
 def build_comp_dataset(paths, labels, img_size=256, augment_fn=None, batch_size=32):
-    ext = get_extension(paths.iloc[0])
+    ext = get_extension(str(paths[0]))
     path_ds = tf.data.Dataset.from_tensor_slices(paths)
     label_ds = tf.data.Dataset.from_tensor_slices(labels)
     full_img_ds = path_ds.map(lambda path: decode_fn(path, ext), num_parallel_calls=AUTO)
