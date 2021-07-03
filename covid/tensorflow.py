@@ -1,6 +1,6 @@
 import tensorflow as tf
 from utils.tensorflow import (
-    decode_fn, augment_fn, resize_fn
+    decode_fn, augment_fn, resize_img, 
 )
 AUTO = tf.data.experimental.AUTOTUNE
 
@@ -20,7 +20,7 @@ def build_comp_dataset(paths, labels, img_size=256, augment_fn=None, batch_size=
     full_img_ds = path_ds.map(lambda path: decode_fn(path, ext), num_parallel_calls=AUTO)
     # Cache the full sized images (not sure the best  way)
     full_img_ds = full_img_ds.cache()
-    img_ds = full_img_ds.map(lambda img: resize_fn(img, img_size), num_parallel_calls=AUTO)
+    img_ds = full_img_ds.map(lambda img: resize_img(img, img_size), num_parallel_calls=AUTO)
     if augment_fn is not None: 
         img_ds = img_ds.map(augment_fn, num_parallel_calls=AUTO)
     ds = tf.data.Dataset.zip((img_ds, label_ds))
