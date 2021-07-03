@@ -5,6 +5,7 @@ from covid.datasets.dataframes import (
     LABEL_COLS, CAPTIAL_TO_SMALL_STUDY_LABEL, SMALL_TO_CAPITAL_STUDY_LABEL, DICOM_META_COLS, \
     read_dataframes, 
 )
+from covid.datasets.dataframes import read_dataframes
 
 # Competition Specific
 COMP_NAME = 'siim-covid19-detection'
