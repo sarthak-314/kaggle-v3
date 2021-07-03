@@ -1,4 +1,3 @@
-
 import tensorflow_addons as tfa
 import tensorflow as tf
 
@@ -40,3 +39,24 @@ def get_save_locally():
 
 def get_load_locally(): 
     return tf.saved_model.LoadOptions(experimental_io_device='/job:localhost')
+
+
+
+def decode_fn(path, ext): 
+    file_bytes = tf.io.read_file(path)
+    if ext == 'png':
+        img = tf.image.decode_png(file_bytes, channels=3)
+    elif ext in ['jpg', 'jpeg']:
+        img = tf.image.decode_jpeg(file_bytes, channels=3)
+    img = tf.cast(img, tf.float32) / 255.0
+    return img
+
+def resize_img(img, img_size): 
+    img = tf.image.resize(img, (img_size, img_size))
+    return img
+
+def augment_fn(img):
+    # TODO: Look More Into Augmentations 
+    img = tf.image.random_flip_left_right(img)
+    img = tf.image.random_flip_up_down(img)
+    return img

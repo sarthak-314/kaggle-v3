@@ -1,43 +1,28 @@
-import tensorflow_io as tfio
 import tensorflow as tf
+from utils.tensorflow import (
+    decode_fn, augment_fn, resize_fn
+)
+AUTO = tf.data.experimental.AUTOTUNE
 
+def get_extension(path): 
+    if path.endswith('png'): 
+        return 'png'
+    elif path.endswith('jpg'): 
+        return 'jpg'
 
-# TENSORFLOW DATA FOR MAIN DATASET
-EXT = 'png' 
-def decode_fn(path, img_size): 
-    file_bytes = tf.io.read_file(path)
-    if EXT == 'png':
-        img = tf.image.decode_png(file_bytes, channels=3)
-    elif EXT in ['jpg', 'jpeg']:
-        img = tf.image.decode_jpeg(file_bytes, channels=3)
-    elif EXT == 'dicom': 
-        img = tfio.image.decode_dicom_image(
-            file_bytes, 
-            color_dim=True,
-            on_error='skip', 
-            scale='auto', 
-            dtype=tf.uint8
-        )
-    img = tf.cast(img, tf.float32) / 255.0
-    img = tf.image.resize(img, (img_size, img_size))
-    return img
+def comp_augment_fn(): 
+    return augment_fn
 
-def train_augment_fn(img):
-    # TODO: Look More Into Augmentations 
-    img = tf.image.random_flip_left_right(img)
-    img = tf.image.random_flip_up_down(img)
-    return img
-
-def build_dataset(paths, labels, img_size=256, augment_fn=None, batch_size=32): 
-    AUTO = tf.data.experimental.AUTOTUNE
+def build_comp_dataset(paths, labels, img_size=256, augment_fn=None, batch_size=32):
+    ext = get_extension(paths.iloc[0])
     path_ds = tf.data.Dataset.from_tensor_slices(paths)
     label_ds = tf.data.Dataset.from_tensor_slices(labels)
-    img_ds = path_ds.map(lambda path: decode_fn(path, img_size), num_parallel_calls=AUTO)
+    full_img_ds = path_ds.map(lambda path: decode_fn(path, ext), num_parallel_calls=AUTO)
+    # Cache the full sized images (not sure the best  way)
+    full_img_ds = full_img_ds.cache()
+    img_ds = full_img_ds.map(lambda img: resize_fn(img, img_size), num_parallel_calls=AUTO)
     if augment_fn is not None: 
         img_ds = img_ds.map(augment_fn, num_parallel_calls=AUTO)
     ds = tf.data.Dataset.zip((img_ds, label_ds))
     ds = ds.repeat().shuffle(1024).batch(batch_size).prefetch(AUTO)
     return ds
-
-
-

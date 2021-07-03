@@ -37,21 +37,10 @@ try:
 except: 
     print('could not load ipython magic extensions')
 
-# Install Libraries
-subprocess.run(['pip', 'install' ,'awscli'])
+# WandB Setup
 subprocess.run(['pip', 'install' ,'wandb'])
-import wandb
+subprocess.run(['wandb', 'login', '00dfbb85e215726cccc6f6f9ed40e618a7cf6539'])
 
-# Login to AWS & WandB
-def login(aws_access_key, aws_secret_key, wandb_api): 
-    subprocess.run(['aws', 'configure', 'set', 'aws_access_key_id', aws_access_key])
-    subprocess.run(['aws', 'configure', 'set', 'aws_secret_access_key', aws_secret_key])
-    subprocess.run(['aws', 'configure', 'set', 'default.region', 'us-east-1'])
-    subprocess.run(['wandb', 'login', wandb_api])
-
-
-# Import all common functions / classes 
-from utils.common import * 
 
 
 
