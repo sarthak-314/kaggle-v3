@@ -118,7 +118,7 @@ def build_test(output_dir, raw_data_dir):
     test.to_pickle(output_dir/'test.pkl')
     return test
 
-DATAFRAMES_DIR = Path('covid/dataframes')
+DATAFRAMES_DIR = Path('covid/built_dataframes')
 def read_dataframes(fold=0, dataframes_dir=DATAFRAMES_DIR):
     train, valid = utils.dataframes.read_fold(fold, dataframes_dir, num_folds=NUM_FOLDS)
     test = pd.read_pickle(dataframes_dir/'test.pkl')
