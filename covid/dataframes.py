@@ -5,7 +5,6 @@ import glob
 import ast
 import os
 
-
 import utils.dataframes
 
 DATASET_NAME = 'siim-covid19-detection'
@@ -49,28 +48,23 @@ def _get_path_components(path):
     path_components = normalized_path.split(os.sep)
     return path_components
 
-def read_raw_test():
-    filepaths = glob.glob(str(RAW_DATA_DIR / 'test/**/*dcm'), recursive=True)
+def read_raw_test(raw_data_dir):
+    filepaths = glob.glob(str(raw_data_dir / 'test/**/*dcm'), recursive=True)
     test = pd.DataFrame({ 'img_path': filepaths })
     test['img_id'] = test.img_path.map(lambda x: _get_path_components(x)[-1].replace('.dcm', ''))
     test['study_id'] = test.img_path.map(lambda x: _get_path_components(x)[-3].replace('.dcm', ''))
     return test 
 
-def read_raw_dataframes():
+def read_raw_dataframes(raw_data_dir):
     # Read Raw Train
-    train_study = pd.read_csv(RAW_DATA_DIR / 'train_study_level.csv')
-    train_img = pd.read_csv(RAW_DATA_DIR / 'train_image_level.csv')
+    train_study = pd.read_csv(raw_data_dir / 'train_study_level.csv')
+    train_img = pd.read_csv(raw_data_dir / 'train_image_level.csv')
     train = _merge_input_dataframes(train_img, train_study)
     
     # Read Raw Test
-    test = read_raw_test()
-    # Read Sample Submission
-    sample_sub = pd.read_csv(RAW_DATA_DIR / 'sample_submission.csv')
-    return {
-        'train': train, 
-        'sample_sub': sample_sub, 
-        'test': test
-    }
+    test = read_raw_test(raw_data_dir)
+    
+    return train, test
 
 def standardize_train(train): 
     # One hot encode and add labels
@@ -89,7 +83,6 @@ FEATURE ENGINEERING FUNCTIONS
 """
 def add_dicom_metadata(df, input_dir):
     from fastai.medical.imaging import get_dicom_files
-    
     GET_PIXEL_SUMMARY = False
     dicom_files = get_dicom_files(input_dir)
     dicom_meta_df = pd.DataFrame.from_dicoms(dicom_files, px_summ=GET_PIXEL_SUMMARY)
@@ -108,18 +101,18 @@ def post_process(df):
     df.boxes = df.boxes.apply(ast.literal_eval)
     return df
 
-def build_folds(output_dir=OUTPUT_DIR): 
-    train = read_raw_dataframes()['train']
+def build_folds(raw_data_dir=RAW_DATA_DIR, output_dir=OUTPUT_DIR): 
+    train, _ = read_raw_dataframes(raw_data_dir)
     train = standardize_train(train)
-    train = add_dicom_metadata(train, RAW_DATA_DIR/'train')
+    train = add_dicom_metadata(train, raw_data_dir/'train')
     train = post_process(train)
     fold_dfs = utils.dataframes.get_fold_dfs(train, SPLIT_BY, NUM_FOLDS)
     utils.dataframes.save_folds(fold_dfs, output_dir)
     return fold_dfs
     
-def build_test(output_dir):
-    test = read_raw_dataframes()['test']
-    test = add_dicom_metadata(test, RAW_DATA_DIR/'test')
+def build_test(output_dir, raw_data_dir):
+    _, test = read_raw_dataframes(raw_data_dir)
+    test = add_dicom_metadata(test, raw_data_dir/'test')
     test = post_process(test)
     test.to_pickle(output_dir/'test.pkl')
     return test
