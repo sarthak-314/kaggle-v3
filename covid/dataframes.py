@@ -61,10 +61,8 @@ def read_raw_dataframes(raw_data_dir):
     train_study = pd.read_csv(raw_data_dir / 'train_study_level.csv')
     train_img = pd.read_csv(raw_data_dir / 'train_image_level.csv')
     train = _merge_input_dataframes(train_img, train_study)
-    
     # Read Raw Test
     test = read_raw_test(raw_data_dir)
-    
     return train, test
 
 def standardize_train(train): 
@@ -102,7 +100,7 @@ def post_process(df):
     df.boxes = df.boxes.apply(ast.literal_eval)
     return df
 
-def build_folds(raw_data_dir=RAW_DATA_DIR, output_dir=OUTPUT_DIR): 
+def build_folds(output_dir=OUTPUT_DIR, raw_data_dir=RAW_DATA_DIR): 
     train, _ = read_raw_dataframes(raw_data_dir)
     train = standardize_train(train)
     train = add_dicom_metadata(train, raw_data_dir/'train')
