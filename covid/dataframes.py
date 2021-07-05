@@ -98,6 +98,7 @@ def add_dicom_metadata(df, input_dir):
 def post_process(df): 
     df.boxes = df.boxes.fillna('[]')
     df.boxes = df.boxes.apply(ast.literal_eval)
+    df = df.reset_index(drop=True)
     return df
 
 def build_folds(output_dir=OUTPUT_DIR, raw_data_dir=RAW_DATA_DIR): 

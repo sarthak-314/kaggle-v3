@@ -53,7 +53,7 @@ def tqdm_bar():
 def terminate_on_nan(): 
     return tf.keras.callbacks.TerminateOnNaN()
 
-def tensorboard(log_dir):
+def tensorboard_callback(log_dir):
     os.makedirs(log_dir, exist_ok=True)
     return tf.keras.callbacks.TensorBoard(
         log_dir=str(log_dir)
