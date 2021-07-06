@@ -3,8 +3,7 @@ from utils.tf_aug_dump import *
 
 # TEMP CONFIG FOR THE RUN
 CHANNELS = 3
-IMG_SIZE = 512
-BATCH_SIZE = 64
+IMG_SIZE = 1024
 CLASSES = 4
 
 def train_img_augment(img):
