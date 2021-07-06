@@ -5,6 +5,8 @@ from utils.tf_aug_dump import *
 CHANNELS = 3
 IMG_SIZE = 512
 BATCH_SIZE = 64
+CLASSES = 4
+
 def train_img_augment(img, label):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -67,12 +69,9 @@ def train_img_augment(img, label):
     
     return img, label
 
-
 def cutmix(image, label, PROBABILITY = 1.0):
     # input image - is a batch of images of size [n,dim,dim,3] not a single image of [dim,dim,3]
     # output - a batch of images with cutmix applied
-    CLASSES = 104
-    
     imgs = []; labs = []
     for j in range(BATCH_SIZE):
         # DO CUTMIX WITH PROBABILITY DEFINED ABOVE
@@ -114,8 +113,6 @@ def cutmix(image, label, PROBABILITY = 1.0):
 def mixup(image, label, PROBABILITY = 1.0):
     # input image - is a batch of images of size [n,dim,dim,3] not a single image of [dim,dim,3]
     # output - a batch of images with mixup applied
-    CLASSES = 104
-    
     imgs = []; labs = []
     for j in range(BATCH_SIZE):
         # DO MIXUP WITH PROBABILITY DEFINED ABOVE
