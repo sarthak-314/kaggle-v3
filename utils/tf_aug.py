@@ -7,7 +7,7 @@ IMG_SIZE = 512
 BATCH_SIZE = 64
 CLASSES = 4
 
-def train_img_augment(img, label):
+def train_img_augment(img):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -15,8 +15,6 @@ def train_img_augment(img, label):
     p_shear = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_shift = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_crop = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    p_cutmix = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    p_mixup = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     
     # Flips
     if p_spatial >= .2:
@@ -63,21 +61,20 @@ def train_img_augment(img, label):
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
 
-    # Cutmix & Mixup
-    img, label = cutmix(img, label, p_cutmix)
-    img, label = mixup(img, label, p_mixup)
-    
-    return img, label
+    return img
 
-def cutmix(image, label, PROBABILITY = 1.0):
+def cutmix(image, label, batch_size, PROBABILITY = 1.0):
+    print(image)
+    print(label)
+    label = tf.cast(label, tf.float32)
     # input image - is a batch of images of size [n,dim,dim,3] not a single image of [dim,dim,3]
     # output - a batch of images with cutmix applied
     imgs = []; labs = []
-    for j in range(BATCH_SIZE):
+    for j in range(batch_size):
         # DO CUTMIX WITH PROBABILITY DEFINED ABOVE
         P = tf.cast( tf.random.uniform([],0,1)<=PROBABILITY, tf.int32)
         # CHOOSE RANDOM IMAGE TO CUTMIX WITH
-        k = tf.cast( tf.random.uniform([],0,BATCH_SIZE),tf.int32)
+        k = tf.cast( tf.random.uniform([],0,batch_size),tf.int32)
         # CHOOSE RANDOM LOCATION
         x = tf.cast( tf.random.uniform([],0,IMG_SIZE),tf.int32)
         y = tf.cast( tf.random.uniform([],0,IMG_SIZE),tf.int32)
@@ -105,20 +102,23 @@ def cutmix(image, label, PROBABILITY = 1.0):
         labs.append((1-a)*lab1 + a*lab2)
             
     # RESHAPE HACK SO TPU COMPILER KNOWS SHAPE OF OUTPUT TENSOR (maybe use Python typing instead?)
-    image2 = tf.reshape(tf.stack(imgs),(BATCH_SIZE,IMG_SIZE,IMG_SIZE,3))
-    label2 = tf.reshape(tf.stack(labs),(BATCH_SIZE,CLASSES))
+    image2 = tf.reshape(tf.stack(imgs),(batch_size,IMG_SIZE,IMG_SIZE,3))
+    label2 = tf.reshape(tf.stack(labs),(batch_size,CLASSES))
+    print('image2: ', image2)
+    print('label2: ', label2)
     return image2,label2
 
 
-def mixup(image, label, PROBABILITY = 1.0):
+def mixup(image, label, batch_size, PROBABILITY = 1.0):
+    label = tf.cast(label, tf.float32)
     # input image - is a batch of images of size [n,dim,dim,3] not a single image of [dim,dim,3]
     # output - a batch of images with mixup applied
     imgs = []; labs = []
-    for j in range(BATCH_SIZE):
+    for j in range(batch_size):
         # DO MIXUP WITH PROBABILITY DEFINED ABOVE
         P = tf.cast( tf.random.uniform([],0,1)<=PROBABILITY, tf.float32)
         # CHOOSE RANDOM
-        k = tf.cast( tf.random.uniform([],0,BATCH_SIZE),tf.int32)
+        k = tf.cast( tf.random.uniform([],0,batch_size),tf.int32)
         a = tf.random.uniform([],0,1)*P # this is beta dist with alpha=1.0
         # MAKE MIXUP IMAGE
         img1 = image[j,]
@@ -134,9 +134,8 @@ def mixup(image, label, PROBABILITY = 1.0):
         labs.append((1-a)*lab1 + a*lab2)
             
     # RESHAPE HACK SO TPU COMPILER KNOWS SHAPE OF OUTPUT TENSOR (maybe use Python typing instead?)
-    image2 = tf.reshape(tf.stack(imgs),(BATCH_SIZE,IMG_SIZE,IMG_SIZE,3))
-    label2 = tf.reshape(tf.stack(labs),(BATCH_SIZE,CLASSES))
+    image2 = tf.reshape(tf.stack(imgs),(batch_size,IMG_SIZE,IMG_SIZE,3))
+    label2 = tf.reshape(tf.stack(labs),(batch_size,CLASSES))
     return image2,label2
-
 
 

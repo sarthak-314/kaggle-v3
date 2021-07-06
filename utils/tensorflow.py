@@ -40,8 +40,6 @@ def get_save_locally():
 def get_load_locally(): 
     return tf.saved_model.LoadOptions(experimental_io_device='/job:localhost')
 
-
-
 def decode_fn(path, ext): 
     file_bytes = tf.io.read_file(path)
     if ext == 'png':
