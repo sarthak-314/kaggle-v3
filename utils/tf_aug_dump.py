@@ -1,6 +1,6 @@
+from tensorflow.keras import backend as K  
 import tensorflow as tf 
 import math 
-from tensorflow.keras import backend as K  
 
 # data augmentation @cdeotte kernel: https://www.kaggle.com/cdeotte/rotation-augmentation-gpu-tpu-0-96
 def transform_rotation(image, height, rotation):
