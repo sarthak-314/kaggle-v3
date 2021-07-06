@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tf_aug_dump import *
+from utils.tf_aug_dump import *
 
 # TEMP CONFIG FOR THE RUN
 CHANNELS = 3
