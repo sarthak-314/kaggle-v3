@@ -1,3 +1,6 @@
+import tensorflow as tf 
+import math 
+
 # data augmentation @cdeotte kernel: https://www.kaggle.com/cdeotte/rotation-augmentation-gpu-tpu-0-96
 def transform_rotation(image, height, rotation):
     # input image - is one image of size [dim,dim,3] not a batch of [b,dim,dim,3]
