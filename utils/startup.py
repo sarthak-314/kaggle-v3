@@ -43,7 +43,11 @@ subprocess.run(['wandb', 'login', '00dfbb85e215726cccc6f6f9ed40e618a7cf6539'])
 import wandb
 
 
-
+# Useful Functions 
+def get_all_filepaths(data_dir):
+    filepaths = glob.glob(str(data_dir / '*' / '**'), recursive=True) 
+    print(f'{len(filepaths)} files found in {data_dir}')    
+    return filepaths
 
 
 
