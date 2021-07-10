@@ -226,11 +226,20 @@ albu_train_transforms = [
     ),
     dict(type="RandomBBoxesSafeCrop", num_rate=(0.5, 1.0), erosion_rate=0.2),
 ]
-def get_train_pipeline(img_size): 
-    train_pipeline = [
+def get_train_pipeline(img_size, aug_level='aug'): 
+    common_front = [
         dict(type="LoadImageFromFile"),
         dict(type="LoadAnnotations", with_bbox=True),
         dict(type="Resize", img_scale=(img_size, img_size), keep_ratio=False),
+    ]
+    common_back = [
+        dict(type="Normalize", **img_norm_cfg),
+        dict(type="Pad", size_divisor=32),
+        dict(type="DefaultFormatBundle"),
+        dict(type="Collect", keys=["img", "gt_bboxes", "gt_labels"]),
+    ]
+    
+    aug_hard = common_front + [
         dict(type="Mosaic", p=0.25, min_buffer_size=4, pad_val=img_norm_cfg["mean"][::-1]),
         dict(
             type="Albumentations",
@@ -245,9 +254,26 @@ def get_train_pipeline(img_size):
         ),
         dict(type="Mixup", p=0.25, min_buffer_size=2, pad_val=img_norm_cfg["mean"][::-1]),
         dict(type="RandomFlip", flip_ratio=0.5),
-        dict(type="Normalize", **img_norm_cfg),
-        dict(type="Pad", size_divisor=32),
-        dict(type="DefaultFormatBundle"),
-        dict(type="Collect", keys=["img", "gt_bboxes", "gt_labels"]),
-    ]
-    return train_pipeline
+    ] + common_back 
+    
+    aug = common_front + [
+        dict(
+            type="Albumentations",
+            transforms=albu_train_transforms,
+            keymap=dict(img="image", gt_masks="masks", gt_bboxes="bboxes"),
+            update_pad_shape=False,
+            skip_img_without_anno=True,
+            bbox_params=dict(type="BboxParams", format="pascal_voc", label_fields=["labels"]),
+            min_visibility=0.3,
+            min_size=4,
+            max_aspect_ratio=15,
+        ),
+    ] + common_back
+    basic = common_front + common_back 
+    
+    if aug_level == 'aug_hard': 
+        return aug_hard 
+    elif aug_level == 'aug': 
+        return aug 
+    else: 
+        return basic
