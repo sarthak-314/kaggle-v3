@@ -250,7 +250,8 @@ albu_train_transforms = [
     dict(type="RandomBBoxesSafeCrop", num_rate=(0.5, 1.0), erosion_rate=0.2),
 ]
 
-albu_augmentations = dict(
+# Augmentation Zoo
+albu_aug = dict(
         type="Albumentations",
         transforms=albu_train_transforms,
         keymap=dict(img="image", gt_masks="masks", gt_bboxes="bboxes"),
@@ -261,6 +262,9 @@ albu_augmentations = dict(
         min_size=4,
         max_aspect_ratio=15,
     )
+mixup_aug = dict(type="Mixup", p=0.25, min_buffer_size=2, pad_val=img_norm_cfg["mean"][::-1])
+mosiac_aug = dict(type="Mosaic", p=0.25, min_buffer_size=4, pad_val=img_norm_cfg["mean"][::-1])
+
 
 def get_train_pipeline(img_size, aug_level='aug'): 
     common_front = [
