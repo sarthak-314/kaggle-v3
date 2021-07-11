@@ -128,7 +128,7 @@ def calc_pseudo_confidence(sample_scores, pseudo_score_threshold):
         return 0.0
 
 @DATASETS.register_module()
-class KaggleDataset(COCODataset): 
+class KaggleDataset(CocoDataset): 
     CLASSES = ('opacity',)
     def evaluate(self, results, logger=None, iou_thrs=(0.5, 0.6, 0.65, 0.7, 0.75), **kwargs):
         annotations = [self.get_ann_info(i) for i in range(len(self))]
