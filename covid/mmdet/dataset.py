@@ -99,6 +99,7 @@ def kaggle_map(
         for iou_thr in iou_thrs:
             tpfpfn = pool.starmap(calc_tpfpfn, zip(cls_dets, cls_gts, [iou_thr for _ in range(num_imgs)]))
             iou_thr_aps = np.array([tp / (tp + fp + fn) for tp, fp, fn in tpfpfn])
+            print_log(f'IOU THRESH: {iou_thr}: {iou_thr_aps}')
             if by_sample:
                 aps_by_sample += iou_thr_aps
             aps_by_thrs.append(np.mean(iou_thr_aps))
@@ -119,6 +120,7 @@ def kaggle_map(
     mean_ap = np.array(aps).mean().item() if aps else 0.0
 
     print_log(f"\nKaggle mAP: {mean_ap}", logger=logger)
+    print_log(f'mean_ap, eval_results: {mean_ap, eval_results}', logger=logger)
     return mean_ap, eval_results
 
 def calc_pseudo_confidence(sample_scores, pseudo_score_threshold):
@@ -130,7 +132,7 @@ def calc_pseudo_confidence(sample_scores, pseudo_score_threshold):
 @DATASETS.register_module()
 class KaggleDataset(CocoDataset): 
     CLASSES = ('opacity',)
-    def evaluate(self, results, logger=None, iou_thrs=(0.5, 0.6, 0.65, 0.7, 0.75), **kwargs):
+    def evaluate(self, results, logger=None, iou_thrs=(0.5), **kwargs):
         annotations = [self.get_ann_info(i) for i in range(len(self))]
         mean_ap, _ = kaggle_map(results, annotations, iou_thrs=iou_thrs, logger=logger)
         return dict(mAP=mean_ap)
