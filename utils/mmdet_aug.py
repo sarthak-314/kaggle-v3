@@ -207,15 +207,38 @@ albu_train_transforms = [
     ),
     dict(
         type="CoarseDropout",
-        max_holes=30,
+        max_holes=16,
         max_height=30,
-        max_width=30,
-        min_holes=5,
+        max_width=15,
+        min_holes=4,
         min_height=10,
         min_width=10,
         fill_value=img_norm_cfg["mean"][::-1],
         p=0.4,
     ),
+    dict(
+        type="CoarseDropout",
+        max_holes=16,
+        max_height=15,
+        max_width=30,
+        min_holes=4,
+        min_height=10,
+        min_width=10,
+        fill_value=img_norm_cfg["mean"][::-1],
+        p=0.4,
+    ),
+    dict(
+        type="CoarseDropout",
+        max_holes=16,
+        max_height=30,
+        max_width=30,
+        min_holes=4,
+        min_height=10,
+        min_width=10,
+        fill_value=img_norm_cfg["mean"][::-1],
+        p=0.4,
+    ),
+
     dict(
         type="ModifiedShiftScaleRotate",
         shift_limit=0.3,
@@ -226,6 +249,19 @@ albu_train_transforms = [
     ),
     dict(type="RandomBBoxesSafeCrop", num_rate=(0.5, 1.0), erosion_rate=0.2),
 ]
+
+albu_augmentations = dict(
+        type="Albumentations",
+        transforms=albu_train_transforms,
+        keymap=dict(img="image", gt_masks="masks", gt_bboxes="bboxes"),
+        update_pad_shape=False,
+        skip_img_without_anno=True,
+        bbox_params=dict(type="BboxParams", format="pascal_voc", label_fields=["labels"]),
+        min_visibility=0.3,
+        min_size=4,
+        max_aspect_ratio=15,
+    )
+
 def get_train_pipeline(img_size, aug_level='aug'): 
     common_front = [
         dict(type="LoadImageFromFile"),
