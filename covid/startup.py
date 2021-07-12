@@ -16,7 +16,7 @@ DRIVE_DATAFRAMES_DIR = COMP_DRIVE_DATA_DIR / 'Dataframes'
 ZIPPED_DIR = COMP_DRIVE_DATA_DIR / 'Zipped'
 
 def get_all_filepaths(data_dir):
-    filepaths = glob.glob(str(data_dir / '*' / '**'), recursive=True) 
+    filepaths = glob.glob(str(data_dir / '**' / '*'), recursive=True) 
     print(f'{len(filepaths)} files found in {data_dir}')    
     return filepaths
 
