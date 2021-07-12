@@ -13,6 +13,7 @@ COMP_DIR = Path('/kaggle/input/siim-covid19-detection')
 COMP_DRIVE_DIR = Path('/content/drive/MyDrive/Covid')
 COMP_DRIVE_DATA_DIR = Path('/content/drive/MyDrive/Covid/Data')
 DRIVE_DATAFRAMES_DIR = COMP_DRIVE_DATA_DIR / 'Dataframes'
+ZIPPED_DIR = COMP_DRIVE_DATA_DIR / 'Zipped'
 
 def get_all_filepaths(data_dir):
     filepaths = glob.glob(str(data_dir / '*' / '**'), recursive=True) 
