@@ -1,11 +1,11 @@
 from utils.startup import * 
+from tqdm.auto import tqdm # Lazy
 from utils.utils import solve_environment
 
 from covid.dataframes import (
     LABEL_COLS, CAPTIAL_TO_SMALL_STUDY_LABEL, SMALL_TO_CAPITAL_STUDY_LABEL, DICOM_META_COLS, \
     read_dataframes, 
 )
-
 # Competition Specific
 COMP_NAME = 'siim-covid19-detection'
 COMP_DIR = Path('/kaggle/input/siim-covid19-detection')

@@ -132,7 +132,9 @@ def calc_pseudo_confidence(sample_scores, pseudo_score_threshold):
 @DATASETS.register_module()
 class KaggleDataset(CocoDataset): 
     CLASSES = ('opacity',)
-    def evaluate(self, results, logger=None, iou_thrs=(0.5), **kwargs):
+    def evaluate(self, results, logger=None, iou_thrs=(0.5, 0.9), **kwargs):
+        print('iou_thrsh: ', iou_thrs)
+        print('kwargs: ', kwargs)
         annotations = [self.get_ann_info(i) for i in range(len(self))]
         mean_ap, _ = kaggle_map(results, annotations, iou_thrs=iou_thrs, logger=logger)
         return dict(mAP=mean_ap)
