@@ -36,5 +36,5 @@ def get_img_path_fn(filepaths):
         for fp in filepaths: 
             if img_id in fp: 
                 return fp
-            print(f'img id {img_id} not found in filepaths')
+        print(f'img id {img_id} not found in filepaths')
     return get_img_path
