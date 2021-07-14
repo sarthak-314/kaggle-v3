@@ -31,3 +31,10 @@ def read_xray(path, voi_lut = False, fix_monochrome = True):
     data = (data * 255).astype(np.uint8)
     return data
 
+def get_img_path_fn(filepaths): 
+    def get_img_path(img_id): 
+        for fp in filepaths: 
+            if img_id in fp: 
+                return fp
+            print(f'img id {img_id} not found in filepaths')
+    return get_img_path
