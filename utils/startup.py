@@ -50,9 +50,36 @@ def get_all_filepaths(data_dir):
     return filepaths
 
 
+# Logger
+from urllib.parse import urlencode
+import urllib.request as request
+import threading
+import sys
+class Logger(object):
+    CHANNEL_NAME = 'timm-pretraining-yash-v1'
+    def __init__(self):
+        self.terminal = sys.stdout
+    def write(self, message):
+        if message != '\n':
+            self.terminal.write(message + '\n')
+            payload = {'msg': message}
+            quoted = urlencode(payload)
+            thr = threading.Thread(target=self.send, args=(quoted,), kwargs={})
+            thr.start()
+    def flush(self):
+        pass
+    @staticmethod
+    def send(msg):
+        msg = 'https://dweet.io/dweet/for/' + Logger.CHANNEL_NAME + '?' + msg
+        try:
+            request.urlopen(msg).read()
+        except Exception as e:
+            sys.stdout.terminal.write(e)
 
-
-
+def setup_logger(channel_name):
+    Logger.CHANNEL_NAME = channel_name
+    sys.stdout = Logger()
+    print('Started')
 
 
 

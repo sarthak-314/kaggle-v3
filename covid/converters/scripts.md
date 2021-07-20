@@ -1,3 +1,28 @@
+# Basic Setup 
+``` python 
+# Working Dir + Tmp Dir
+from pathlib import Path
+WORKING_DIR = Path('/kaggle/working')
+TMP_DIR = Path('/kaggle/tmp')
+
+# Sync Notebook with VS Code
+!git clone 'https://github.com/sarthak-314/kaggle-v3' {WORKING_DIR/'temp'}
+%cd {WORKING_DIR/'temp'}
+!git pull 
+%run {WORKING_DIR/'temp/covid/startup.py'}
+
+# Imports for the Notebook
+import tensorflow_addons as tfa
+import tensorflow_hub as hub
+from utils.tensorflow import * 
+from covid.tensorflow import * 
+from covid.tensorflow_callbacks import *
+STRATEGY = auto_select_accelerator()
+
+# Import Competition Dataframes
+train, valid, test = read_dataframes(FOLD)
+```
+
 # Download and Extract Zipped File from Drive
 ``` python
 %%time 
