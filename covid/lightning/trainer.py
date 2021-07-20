@@ -2,6 +2,7 @@ from pytorch_lightning.loggers import WandbLogger
 
 def get_wandb_logger(save_dir='wandb/', wandb_run='dummy_run', project='dummy', version=0): 
     save_dir = str(save_dir)
+    os.makedirs(save_dir, exist_ok=True)
     wandb_logger = WandbLogger(
         save_dir = save_dir, 
         name = wandb_run, 
