@@ -11,6 +11,8 @@ def get_wandb_logger(save_dir='wandb/', wandb_run='dummy_run', project='dummy', 
     )
     return wandb_logger
 
+"""
+
 RUN_CHECKPOINT_DIR = './'
 COMP_NAME = 'dummy'    
 
@@ -69,3 +71,5 @@ trainer_kwargs = {
     'stochastic_weight_avg': True, 
     'benchmark': True, # Use this if input size is constant for the system(i'm assuming LitModel)
 }
+
+"""
