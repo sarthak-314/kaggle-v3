@@ -16,7 +16,7 @@ def get_fold_dfs(df, split_by, num_folds):
     fold_class = {'group': GroupKFold, 'stratify': StratifiedKFold}[split_by]
     fold_fn = fold_class(num_folds)
     fold_dfs = []
-    for fold_, (_, val_idx) in enumerate(fold_fn.split(df, df, df[split_by])): 
+    for fold_, (_, val_idx) in enumerate(fold_fn.split(df, df, df[split_by].values)): 
         fold_df = df.iloc[val_idx]
         fold_dfs.append(fold_df)
     return fold_dfs
