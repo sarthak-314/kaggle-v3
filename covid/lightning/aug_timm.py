@@ -3,6 +3,7 @@ from timm.data.loader import *
 from timm.data.transforms import *
 from timm.data.transforms_factory import *
 from timm.data.transforms import _pil_interp
+import matplotlib.pyplot as plt
 
 # Primary Train Transforms
 SCALE = (0.08, 1.0)
@@ -54,3 +55,9 @@ def final_transforms(re_prob=0.5, re_max_area=1/3, vis=False):
     final.append(RandomErasing(**RE_KWARGS))
     return final
     
+def visualize_timm_transforms(train_ds, idx, primary, secondary, final): 
+    final = [tr for tr in final if type(tr) != transforms.Normalize]
+    train_transforms_vis = transforms.Compose(primary+secondary+final)
+    train_ds.transform = train_transforms_vis
+    np_img = train_ds[idx]['img'].numpy()
+    plt.imshow(np_img.transpose(1, 2, 0))
