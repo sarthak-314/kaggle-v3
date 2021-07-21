@@ -28,7 +28,7 @@ def save_folds(fold_dfs, output_path):
         df_path = str(output_path / f'fold_{fold}')
         fold_df.to_pickle(df_path+'.pkl')
         print(f'{fold} saved')
-    print(f'{time() - start_time} to build {len(fold_dfs)} folds')    
+    print(f'{time() - start_time} seconds to build {len(fold_dfs)} folds')    
 
 def read_fold(fold, input_dataframes_path, num_folds):  
     fold_dfs = []
