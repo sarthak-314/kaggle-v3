@@ -6,6 +6,17 @@ def read_img(img_path):
     return img
 
 class KaggleDatasetTrain(torch.utils.data.Dataset): 
+    """
+    Build torch Dataset for the train/valid dataframe 
+    
+    Args:
+        df (DataFrame): train or valid dataframe
+        df should contain a 'label' column and an 'img_path' column
+        transform (function): function to apply to image to augment it
+
+    Returns:
+        output_dict (dict): output dictionary for each input containing features and target
+    """ 
     def __init__(self, df, transform): 
         self.df = df
         self.transform = transform
