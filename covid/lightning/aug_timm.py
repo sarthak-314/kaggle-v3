@@ -75,7 +75,7 @@ def visualize_timm_transforms(train_ds, idx, primary, secondary, final):
     final = [tr for tr in final if type(tr) != transforms.Normalize]
     train_transforms_vis = transforms.Compose(primary+secondary+final)
     train_ds.transform = train_transforms_vis
-    fig = plt.figure(figsize=(24, 8))
+    fig = plt.figure(figsize=(24, 24))
     for i in range(100): 
         np_img = train_ds[idx+i]['img'].numpy()
         _ = fig.add_subplot(10, 10, i+1)
