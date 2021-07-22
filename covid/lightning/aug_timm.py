@@ -38,12 +38,13 @@ def secondary_transforms(img_size, rand=None, augmix=None, color_jitter=COLOR_JI
 # Final Train Transforms
 RE_KWARGS = {
     'probability': 0.5, 'mode': 'const',
-    'min_area': 0.02, 'max_area': 1/3, 'min_count': 1, 'max_count': None, 
+    'min_area': 0.02, 'max_area': 1/3, 'min_count': 1, 'max_count': 4, 
     'device': 'cpu',
 }
-def final_transforms(re_prob=0.5, re_max_area=1/3, vis=False):
+def final_transforms(re_prob=0.5, max_count=4, max_area=1/3, vis=False):
     RE_KWARGS['probability'] = re_prob
-    RE_KWARGS['max_area'] = re_max_area
+    RE_KWARGS['max_area'] = max_area
+    RE_KWARGS['max_count'] = max_count
     final= [transforms.ToTensor()]
     if not vis: 
         final.append(
