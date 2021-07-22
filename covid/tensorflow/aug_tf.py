@@ -231,14 +231,20 @@ def mixup(image, label, batch_size, img_size, classes, prob = 1.0):
     return image2,label2
 
 
-def get_train_transforms_fn(img_size, channels): 
+def get_train_transforms(img_size, channels): 
     train_transforms_fn = lambda img: train_img_augment(img, img_size, channels)
     return train_transforms_fn
 
-def get_batch_transforms_fn(img_size, batch_size, classes, prob=0.5):
+def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
     def batch_transforms_fn(img, label): 
         img, label = cutmix(img, label, batch_size, img_size, classes, prob=prob)
         img, label = mixup(img, label, batch_size, img_size, classes, prob=prob)
         return img, label 
     return batch_transforms_fn    
-    
+
+
+def get_eval_transforms(img_size, channels): 
+    def resize_fn(img): 
+        img = tf.image.resize(img, size=[img_size, img_size])
+        return img
+    return resize_fn
