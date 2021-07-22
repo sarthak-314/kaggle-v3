@@ -55,6 +55,21 @@ def final_transforms(re_prob=0.5, re_max_area=1/3, vis=False):
     final.append(RandomErasing(**RE_KWARGS))
     return final
     
+
+def get_eval_transforms(img_size, crop_pct): 
+    scale_size = int(img_size // crop_pct)
+    eval_transforms = [
+        transforms.Resize(scale_size, _pil_interp('bilinear')),
+        transforms.CenterCrop(img_size),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=torch.tensor(IMAGENET_DEFAULT_MEAN),
+            std=torch.tensor(IMAGENET_DEFAULT_STD),
+        )
+    ]
+    eval_transforms = transforms.Compose(eval_transforms)
+    return eval_transforms    
+
 def visualize_timm_transforms(train_ds, idx, primary, secondary, final): 
     final = [tr for tr in final if type(tr) != transforms.Normalize]
     train_transforms_vis = transforms.Compose(primary+secondary+final)
