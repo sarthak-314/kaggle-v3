@@ -70,3 +70,14 @@ def make_callbacks_list(model, callbacks):
         add_history=True, 
     )
     
+
+def get_lr_callback(lr_min=1e-6, lr_warmup_epochs=10, lr_max=1e-3):
+    def lrfn(epoch): 
+        EXP_DECAY = 0.9
+        if epoch < lr_warmup_epochs: 
+            lr = (lr_max-lr_min) / lr_warmup_epochs * epoch + lr_min
+        else: 
+            lr = (lr_max-lr_min) * EXP_DECAY ** (epoch-lr_warmup_epochs) + lr_min
+        return lr
+    lr_callback = tf.keras.callbacks.LearningRateScheduler(lrfn, verbose = True)
+    return lr_callback
