@@ -101,9 +101,6 @@ def transform_shift(image, height, h_shift, w_shift):
         
     return tf.reshape(d,[DIM,DIM,3])
 
-def resize_fn(img): 
-    img = tf.image.resize(img, size=[img_size, img_size])
-    return img
 
 def train_img_augment(img, img_size, channels):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -248,4 +245,7 @@ def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
 
 
 def get_eval_transforms(img_size, channels): 
+    def resize_fn(img): 
+        img = tf.image.resize(img, size=[img_size, img_size])
+        return img
     return resize_fn
