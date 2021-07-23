@@ -8,9 +8,9 @@ def create_loader(dataset, batch_size=32, is_training=False):
         dataset, 
         batch_size=batch_size, 
         shuffle=is_training, 
-        pin_memory=torch.cuda.is_available(), 
         drop_last=is_training, 
         num_workers=num_workers, 
-        persistent_workers=True,
+        # pin_memory=torch.cuda.is_available(), 
+        # persistent_workers=True,
     )
     return data_loader
