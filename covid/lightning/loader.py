@@ -10,7 +10,7 @@ def create_loader(dataset, batch_size=32, is_training=False):
         shuffle=is_training, 
         drop_last=is_training, 
         num_workers=num_workers, 
-        # pin_memory=torch.cuda.is_available(), 
-        # persistent_workers=True,
+        pin_memory=torch.cuda.is_available(), 
+        persistent_workers=True,
     )
     return data_loader

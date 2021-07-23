@@ -1,3 +1,4 @@
+from tensorflow.keras.mixed_precision import experimental as mixed_precision
 import tensorflow_addons as tfa
 import tensorflow as tf
 
@@ -25,7 +26,7 @@ def get_ranger(lr, min_lr=0):
     radam = tfa.optimizers.RectifiedAdam( 
         learning_rate = lr,
         min_lr=min_lr,
-        weight_decay=0.001, # default is 0
+        weight_decay=1e-4, # default is 0
         amsgrad = True,
         name = 'Ranger',
         #clipnorm = 10, # Not present by befault
@@ -56,3 +57,12 @@ def augment_fn(img):
     img = tf.image.random_flip_left_right(img)
     img = tf.image.random_flip_up_down(img)
     return img
+
+def enable_mixed_precision(): 
+    policy = tf.keras.mixed_precision.experimental.Policy('mixed_bfloat16')
+    mixed_precision.set_policy(policy)
+    print('Mixed precision enabled')
+
+# Tensorflow Setup in Jupyter
+STRATEGY = auto_select_accelerator()
+enable_mixed_precision()
