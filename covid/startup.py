@@ -1,4 +1,4 @@
-# Some Setup
+# Some Setup to import utils
 import sys 
 sys.path.append('/kaggle/working/temp')
 sys.path.append('/content/temp')

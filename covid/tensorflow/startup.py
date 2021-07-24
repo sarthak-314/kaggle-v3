@@ -8,9 +8,6 @@ from covid.tensorflow.model import *
 from covid.tensorflow.data import * 
 
 def auto_select_accelerator():
-    """
-    Auto Select TPU / GPU / CPU
-    """
     try:
         tpu = tf.distribute.cluster_resolver.TPUClusterResolver()
         tf.config.experimental_connect_to_cluster(tpu)
@@ -69,5 +66,5 @@ def enable_mixed_precision():
     print('Mixed precision enabled')
 
 # Tensorflow Setup in Jupyter
-# STRATEGY = auto_select_accelerator()
-# enable_mixed_precision()
+STRATEGY = auto_select_accelerator()
+enable_mixed_precision()

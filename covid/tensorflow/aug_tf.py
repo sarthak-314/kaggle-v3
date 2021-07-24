@@ -101,6 +101,15 @@ def transform_shift(image, height, h_shift, w_shift):
         
     return tf.reshape(d,[DIM,DIM,3])
 
+def get_interpolation():
+    p_interpolation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
+    if p_interpolation <= 0.5: 
+        return 'bilinear'
+    if p_interpolation <= 0.75: 
+        return 'bicubic'
+    if p_interpolation <= 0.9: 
+        return 'lanczos3'
+    return 'nearest'
 
 def train_img_augment(img, img_size, channels):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -130,21 +139,22 @@ def train_img_augment(img, img_size, channels):
         img = transform_shift(img, height=img_size, h_shift=15., w_shift=15.)
     if p_shear >= .3: # Shear
         img = transform_shear(img, height=img_size, shear=20.)
-        
+    
+    img = tf.image.resize(img, size=[img_size*2, img_size*2], method=get_interpolation())
     # Crops
     if p_crop > .4:
-        crop_size = tf.random.uniform([], int(img_size*.7), img_size, dtype=tf.int32)
+        crop_size = tf.random.uniform([], int(img_size*.5), img_size, dtype=tf.int32)
         img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
     elif p_crop > .7:
         if p_crop > .9:
-            img = tf.image.central_crop(img, central_fraction=.7)
+            img = tf.image.central_crop(img, central_fraction=.6)
         elif p_crop > .8:
             img = tf.image.central_crop(img, central_fraction=.8)
         else:
             img = tf.image.central_crop(img, central_fraction=.9)
             
-    img = tf.image.resize(img, size=[img_size, img_size])
-        
+    
+    img = tf.image.resize(img, size=[img_size, img_size], method=get_interpolation())
     # Pixel-level transforms
     if p_pixel >= .2:
         if p_pixel >= .8:
@@ -156,8 +166,6 @@ def train_img_augment(img, img_size, channels):
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
             
-    img = tf.image.resize(img, size=[img_size, img_size])
-
     return img
 
 def cutmix(image, label, batch_size, img_size, classes=4, prob = 1.0):
