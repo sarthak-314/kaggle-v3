@@ -111,7 +111,7 @@ def get_interpolation():
         return 'lanczos3'
     return 'nearest'
 
-def train_img_augment(img, img_size, channels):
+def train_img_augment(img, label, img_size, channels):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -166,7 +166,7 @@ def train_img_augment(img, img_size, channels):
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
             
-    return img
+    return img, label
 
 def cutmix(image, label, batch_size, img_size, classes=4, prob = 1.0):
     label = tf.cast(label, tf.float32)
@@ -243,7 +243,7 @@ def mixup(image, label, batch_size, img_size, classes, prob = 1.0):
 
 
 def get_train_transforms(img_size, channels): 
-    train_transforms_fn = lambda img: train_img_augment(img, img_size, channels)
+    train_transforms_fn = lambda img, label: train_img_augment(img, label, img_size, channels)
     return train_transforms_fn
 
 def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
@@ -255,7 +255,7 @@ def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
 
 
 def get_eval_transforms(img_size, channels): 
-    def resize_fn(img): 
+    def resize_fn(img, label): 
         img = tf.image.resize(img, size=[img_size, img_size])
-        return img
+        return img, label
     return resize_fn
