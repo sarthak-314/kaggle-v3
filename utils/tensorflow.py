@@ -64,5 +64,5 @@ def enable_mixed_precision():
     print('Mixed precision enabled')
 
 # Tensorflow Setup in Jupyter
-STRATEGY = auto_select_accelerator()
-enable_mixed_precision()
+# STRATEGY = auto_select_accelerator()
+# enable_mixed_precision()
