@@ -140,18 +140,18 @@ def train_img_augment(img, label, img_size, channels):
     if p_shear >= .3: # Shear
         img = transform_shear(img, height=img_size, shear=20.)
     
-    # img = tf.image.resize(img, size=[img_size*2, img_size*2], )
-    # # Crops
-    # if p_crop > .4:
-    #     crop_size = tf.random.uniform([], int(img_size*.5), img_size, dtype=tf.int32)
-    #     img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
-    # elif p_crop > .7:
-    #     if p_crop > .9:
-    #         img = tf.image.central_crop(img, central_fraction=.6)
-    #     elif p_crop > .8:
-    #         img = tf.image.central_crop(img, central_fraction=.8)
-    #     else:
-    #         img = tf.image.central_crop(img, central_fraction=.9)
+    img = tf.image.resize(img, size=[img_size*2, img_size*2], )
+    # Crops
+    if p_crop > .4:
+        crop_size = tf.random.uniform([], int(img_size*.5), img_size, dtype=tf.int32)
+        img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
+    elif p_crop > .7:
+        if p_crop > .9:
+            img = tf.image.central_crop(img, central_fraction=.6)
+        elif p_crop > .8:
+            img = tf.image.central_crop(img, central_fraction=.8)
+        else:
+            img = tf.image.central_crop(img, central_fraction=.9)
             
     
     img = tf.image.resize(img, size=[img_size, img_size], )
