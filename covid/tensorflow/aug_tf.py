@@ -150,8 +150,8 @@ def train_img_augment(img, label, img_size, channels):
     #         img = tf.image.central_crop(img, central_fraction=.6)
     #     elif p_crop > .8:
     #         img = tf.image.central_crop(img, central_fraction=.8)
-        else:
-            img = tf.image.central_crop(img, central_fraction=.9)
+    #     else:
+    #         img = tf.image.central_crop(img, central_fraction=.9)
             
     
     img = tf.image.resize(img, size=[img_size, img_size], )
