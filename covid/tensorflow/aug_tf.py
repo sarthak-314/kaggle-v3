@@ -140,7 +140,7 @@ def train_img_augment(img, label, img_size, channels):
     if p_shear >= .3: # Shear
         img = transform_shear(img, height=img_size, shear=20.)
     
-    img = tf.image.resize(img, size=[img_size*2, img_size*2], method=get_interpolation())
+    img = tf.image.resize(img, size=[img_size*2, img_size*2], )
     # Crops
     if p_crop > .4:
         crop_size = tf.random.uniform([], int(img_size*.5), img_size, dtype=tf.int32)
@@ -154,7 +154,7 @@ def train_img_augment(img, label, img_size, channels):
             img = tf.image.central_crop(img, central_fraction=.9)
             
     
-    img = tf.image.resize(img, size=[img_size, img_size], method=get_interpolation())
+    img = tf.image.resize(img, size=[img_size, img_size], )
     # Pixel-level transforms
     if p_pixel >= .2:
         if p_pixel >= .8:
