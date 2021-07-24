@@ -66,8 +66,9 @@ def solve_hardware():
 def solve_internet_status(): 
     online = True
     try:  
-        # WandB Setup
-        subprocess.run(['pip', 'install' ,'wandb'])
+        # Install Libraries
+        os.system('pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib')
+        os.system('pip install wandb')
         subprocess.run(['wandb', 'login', '00dfbb85e215726cccc6f6f9ed40e618a7cf6539'])
         import wandb
     except: 
@@ -96,6 +97,16 @@ def sync():
     os.chdir(WORKING_DIR/'temp')
     subprocess.run(['git', 'pull'])
     sys.path.append(str(WORKING_DIR/'temp'))
+    
+# Clone a GitHub Repo
+def clone_repo(repo_url): 
+    repo_name = repo_url.split('/')[-1].replace('-', '_')
+    clone_dir = str(WORKING_DIR/repo_name)
+    subprocess.run(['git', 'clone', repo_url, clone_dir])
+    os.chdir(clone_dir)
+    sys.path.append(clone_dir)
+    print(f'Repo {repo_url} cloned')    
+
     
 # Log Remotely to 
 from urllib.parse import urlencode
