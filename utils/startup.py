@@ -96,3 +96,34 @@ def sync():
     os.chdir(WORKING_DIR/'temp')
     subprocess.run(['git', 'pull'])
     sys.path.append(str(WORKING_DIR/'temp'))
+    
+# Log Remotely to 
+from urllib.parse import urlencode
+import urllib.request as request
+import threading 
+class Logger(object):
+    CHANNEL_NAME = 'my-channel'
+    def __init__(self):
+        self.terminal = sys.stdout
+    def write(self, message):
+        if message != '\n':
+            self.terminal.write(message + '\n')
+            payload = {'msg': message}
+            quoted = urlencode(payload)
+            thr = threading.Thread(target=self.send, args=(quoted,), kwargs={})
+            thr.start()
+    def flush(self):
+        pass
+    @staticmethod
+    def send(msg):
+        msg = 'https://dweet.io/dweet/for/' + Logger.CHANNEL_NAME + '?' + msg
+        try:
+            request.urlopen(msg).read()
+        except Exception as e:
+            sys.stdout.terminal.write(e)
+
+def log_remotely(should_log_remotely, channel_name): 
+    if should_log_remotely: 
+        print('Logging output to', colored('https://shantanum91.github.io/kagglewatch/', 'green'))
+        Logger.CHANNEL_NAME = channel_name
+        sys.stdout = Logger()
