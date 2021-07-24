@@ -33,10 +33,10 @@ def get_early_stopping(patience=3):
         **common_kwargs,
     )
     
-def get_reduce_lr_on_plateau(): 
+def get_reduce_lr_on_plateau(patience): 
     return tf.keras.callbacks.ReduceLROnPlateau(
         factor=0.2,
-        patience=5,
+        patience=patience,
         min_delta=0.0001,
         min_lr=0,
         **common_kwargs, 

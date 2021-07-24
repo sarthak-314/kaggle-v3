@@ -5,6 +5,7 @@ from pl_bolts.callbacks import (
     TrainingDataMonitor, ModuleDataMonitor, BatchGradientVerificationCallback
 )
 from pl_bolts.callbacks.printing import PrintTableMetricsCallback
+import os 
 
 def get_backbone_finetuning(unfreeze_epoch=10, backbone_initial_ratio_lr=0.1, lr_multiplier=1.5): 
     # NOTE: Backbone should be at model.backbone
@@ -38,6 +39,7 @@ def get_lr_monitor(logging_interval='step'):
 
 def get_model_checkpoint(checkpoint_dir='./', filename='epoch_{epoch:02d}-loss_{val/loss:.4f}-acc_{val/acc:.4f}', save_top_k=3, monitor='val/acc', mode='max'):
     checkpoint_dir = str(checkpoint_dir)
+    os.makedirs(checkpoint_dir, exist_ok=True)
     print(f'Save top {save_top_k} models at {checkpoint_dir} with name {filename} if score increases')
     model_checkpoint = ModelCheckpoint(
         dirpath = checkpoint_dir,  
