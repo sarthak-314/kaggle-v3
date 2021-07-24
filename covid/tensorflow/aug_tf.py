@@ -143,7 +143,7 @@ def train_img_augment(img, label, img_size, channels):
     img = tf.image.resize(img, size=[img_size*2, img_size*2], )
     # Crops
     if p_crop > .4:
-        crop_size = tf.random.uniform([], int(img_size*.5), img_size, dtype=tf.int32)
+        crop_size = tf.random.uniform([], int(img_size*.5), int(img_size*.5), dtype=tf.int32)
         img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
     elif p_crop > .7:
         if p_crop > .9:
@@ -207,8 +207,6 @@ def cutmix(image, label, batch_size, img_size, classes=4, prob = 1.0):
     # RESHAPE HACK SO TPU COMPILER KNOWS SHAPE OF OUTPUT TENSOR (maybe use Python typing instead?)
     image2 = tf.reshape(tf.stack(imgs),(batch_size,img_size,img_size,3))
     label2 = tf.reshape(tf.stack(labs),(batch_size,classes))
-    print('image2: ', image2)
-    print('label2: ', label2)
     return image2,label2
 
 
