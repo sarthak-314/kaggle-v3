@@ -122,8 +122,7 @@ class Logger(object):
         except Exception as e:
             sys.stdout.terminal.write(e)
 
-def log_remotely(should_log_remotely, channel_name): 
-    if should_log_remotely: 
-        print('Logging output to', colored('https://shantanum91.github.io/kagglewatch/', 'green'))
-        Logger.CHANNEL_NAME = channel_name
-        sys.stdout = Logger()
+def log_remotely(channel_name): 
+    print('Logging output to', colored('https://shantanum91.github.io/kagglewatch/', 'green'))
+    Logger.CHANNEL_NAME = channel_name
+    sys.stdout = Logger()
