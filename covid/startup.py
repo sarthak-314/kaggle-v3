@@ -1,3 +1,9 @@
+# Some Setup
+import sys 
+sys.path.append('/kaggle/working/temp')
+sys.path.append('/content/temp')
+
+
 from utils.startup import * 
 from tqdm.auto import tqdm # Lazy
 from utils.utils import solve_environment
