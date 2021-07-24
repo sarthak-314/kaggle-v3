@@ -123,6 +123,6 @@ class Logger(object):
             sys.stdout.terminal.write(e)
 
 def log_remotely(channel_name): 
-    print('Logging output to', colored('https://shantanum91.github.io/kagglewatch/', 'green'))
+    print(f'Logging output to https://shantanum91.github.io/kagglewatch/ on channel {channel_name}')
     Logger.CHANNEL_NAME = channel_name
     sys.stdout = Logger()
