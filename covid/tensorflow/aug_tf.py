@@ -243,7 +243,8 @@ def mixup(image, label, batch_size, img_size, classes, prob = 1.0):
 
 
 def get_train_transforms(img_size, channels): 
-    train_transforms_fn = lambda (img, label): train_img_augment(img, label, img_size, channels)
+    def train_transforms_fn(img, label): 
+        return train_img_augment(img, label, img_size, channels)
     return train_transforms_fn
 
 def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
