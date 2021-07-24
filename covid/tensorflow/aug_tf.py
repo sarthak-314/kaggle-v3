@@ -155,6 +155,8 @@ def train_img_augment(img, img_size, channels):
             img = tf.image.random_brightness(img, max_delta=.2)
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
+            
+    img = tf.image.resize(img, size=[img_size, img_size])
 
     return img
 
