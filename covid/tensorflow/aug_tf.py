@@ -114,6 +114,7 @@ def get_interpolation():
 
 
 def train_img_augment(img, label, img_size, channels):
+    print('img: ', img)
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -260,8 +261,8 @@ def gridmask(img, label, batch_size, img_size, classes, prob = 1.0):
     grid = tf.expand_dims(grid, axis=0)
     grid = tf.tile(grid, multiples=[l, 1, 1, 1])
 
-    images = img * grid
-    images = tf.cast(images, tf.float32)
+    img = img * grid
+    img = tf.cast(img, tf.float32)
     return img, label
 
 def random_erasing(img, label, probability = 0.5, min_area = 0.02, max_area = 0.4, r1 = 0.3):
