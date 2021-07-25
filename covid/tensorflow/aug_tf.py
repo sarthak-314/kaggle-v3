@@ -176,7 +176,6 @@ def train_img_augment(img, label, img_size, channels):
     #     else:
     #         img = tf.image.adjust_gamma(img, gamma=.6)
     img = tf.image.resize(img, size=[img_size, img_size])
-    img.shape = (img_size, img_size, 3)
     img = ag.transform(img)
     return img, label
 
