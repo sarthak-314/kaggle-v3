@@ -133,12 +133,12 @@ def train_img_augment(img, label, crop, img_size, channels):
     elif p_rotate > .25:
         img = tf.image.rot90(img, k=1) # rotate 90º
     
-    if p_rotation >= .3: # Rotation
-        img = transform_rotation(img, height=img_size, rotation=45.)
-    if p_shift >= .3: # Shift
-        img = transform_shift(img, height=img_size, h_shift=15., w_shift=15.)
-    if p_shear >= .3: # Shear
-        img = transform_shear(img, height=img_size, shear=20.)
+    # if p_rotation >= .3: # Rotation
+    #     img = transform_rotation(img, height=img_size, rotation=45.)
+    # if p_shift >= .3: # Shift
+    #     img = transform_shift(img, height=img_size, h_shift=15., w_shift=15.)
+    # if p_shear >= .3: # Shear
+    #     img = transform_shear(img, height=img_size, shear=20.)
     
     if crop: 
         img = tf.image.resize(img, size=[img_size*2, img_size*2], )
@@ -237,8 +237,6 @@ def mixup(image, label, batch_size, img_size, classes, prob = 1.0):
     label2 = tf.reshape(tf.stack(labs),(batch_size,classes))
     return image2,label2
 
-
-import tensorflow as tf
 
 def random_erasing(img, label, probability = 0.5, min_area = 0.02, max_area = 0.4, r1 = 0.3):
     '''
