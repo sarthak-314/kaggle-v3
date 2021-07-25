@@ -137,6 +137,8 @@ def train_img_augment(img, label, img_size, channels):
     
     if p_rotation >= .3: # Rotation
         img = transform_rotation(img, height=img_size, rotation=45.)
+        
+        
     # if p_shift >= .3: # Shift
     #     img = transform_shift(img, height=img_size, h_shift=15., w_shift=15.)
     # if p_shear >= .3: # Shear
