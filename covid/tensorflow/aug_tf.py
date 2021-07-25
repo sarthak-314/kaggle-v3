@@ -161,18 +161,19 @@ def train_img_augment(img, label, crop_percentage, img_size, channels):
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
     
-    if p_cutout < 0.25: 
-        mask_size = tf.random.uniform([], 0, 4, dtype=tf.int32)
-        mask = (mask_size, mask_size)
-        img = tfa.image.random_cutout(img, mask , 0)
-    if p_cutout < 0.5:
-        mask_size = tf.random.uniform([], 0, 8, dtype=tf.int32)
-        mask = (mask_size, mask_size)
-        img = tfa.image.random_cutout(img, mask,  0)
-    if p_cutout < 1: 
-        mask_size = tf.random.uniform([], 0, 16, dtype=tf.int32)
-        mask = (mask_size, mask_size)
-        img = tfa.image.random_cutout(img, mask, 0)
+    # if p_cutout < 0.25: 
+    #     mask_size = tf.random.uniform([], 0, 4, dtype=tf.int32)
+    #     mask = (mask_size, mask_size)
+    #     img = tfa.image.random_cutout(img, mask , 0)
+    # if p_cutout < 0.5:
+    #     mask_size = tf.random.uniform([], 0, 8, dtype=tf.int32)
+    #     mask = (mask_size, mask_size)
+    #     img = tfa.image.random_cutout(img, mask,  0)
+    # if p_cutout < 1: 
+    #     mask_size = tf.random.uniform([], 0, 16, dtype=tf.int32)
+    #     mask = (mask_size, mask_size)
+    #     img = tfa.image.random_cutout(img, mask, 0)
+    
     img = tf.image.resize(img, size=[img_size, img_size])
     return img, label
 
