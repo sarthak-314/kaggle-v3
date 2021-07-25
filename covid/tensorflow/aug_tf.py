@@ -141,7 +141,7 @@ def train_img_augment(img, label, crop, img_size, channels):
     #     img = transform_shear(img, height=img_size, shear=20.)
     
     if crop: 
-        img = tf.image.resize(img, size=[img_size*2, img_size*2], )
+        # img = tf.image.resize(img, size=[img_size*2, img_size*2], )
         # Crops
         if p_crop > .4:
             crop_size = tf.random.uniform([], int(img_size*.5), int(img_size*.5), dtype=tf.int32)
