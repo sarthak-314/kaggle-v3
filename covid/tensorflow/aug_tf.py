@@ -111,7 +111,7 @@ def get_interpolation():
         return 'lanczos3'
     return 'nearest'
 
-def train_img_augment(img, label, img_size, channels):
+def train_img_augment(img, label, crop, img_size, channels):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -140,18 +140,19 @@ def train_img_augment(img, label, img_size, channels):
     if p_shear >= .3: # Shear
         img = transform_shear(img, height=img_size, shear=20.)
     
-    img = tf.image.resize(img, size=[img_size*2, img_size*2], )
-    # Crops
-    if p_crop > .4:
-        crop_size = tf.random.uniform([], int(img_size*.5), int(img_size*.5), dtype=tf.int32)
-        img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
-    elif p_crop > .7:
-        if p_crop > .9:
-            img = tf.image.central_crop(img, central_fraction=.6)
-        elif p_crop > .8:
-            img = tf.image.central_crop(img, central_fraction=.8)
-        else:
-            img = tf.image.central_crop(img, central_fraction=.9)
+    if crop: 
+        img = tf.image.resize(img, size=[img_size*2, img_size*2], )
+        # Crops
+        if p_crop > .4:
+            crop_size = tf.random.uniform([], int(img_size*.5), int(img_size*.5), dtype=tf.int32)
+            img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
+        elif p_crop > .7:
+            if p_crop > .9:
+                img = tf.image.central_crop(img, central_fraction=.6)
+            elif p_crop > .8:
+                img = tf.image.central_crop(img, central_fraction=.8)
+            else:
+                img = tf.image.central_crop(img, central_fraction=.9)
             
     
     img = tf.image.resize(img, size=[img_size, img_size], )
@@ -270,9 +271,9 @@ def random_erasing(img, label, probability = 0.5, min_area = 0.02, max_area = 0.
     return tf.cond(tf.random.uniform([], 0, 1) > probability, lambda: img, lambda: erasing_img), label
 
 
-def get_train_transforms(img_size, channels): 
+def get_train_transforms(img_size, channels, apply_crop): 
     def train_transforms_fn(img, label): 
-        return train_img_augment(img, label, img_size, channels)
+        return train_img_augment(img, label, apply_crop, img_size, channels)
     return train_transforms_fn
 
 def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
