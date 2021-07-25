@@ -114,12 +114,7 @@ def get_interpolation():
 
 
 
-from augmix import AugMix
-AUGMIX_SWD = 3, 1, -1
-# precalculated means and stds of the dataset (in RGB order)
-means = [0.44892993872313053, 0.4148519066242368, 0.301880284715257]
-stds = [0.24393544875614917, 0.2108791383467354, 0.220427056859487]
-ag = AugMix(means, stds)
+
 def train_img_augment(img, label, img_size, channels):
     print('img: ', img)
     # p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)

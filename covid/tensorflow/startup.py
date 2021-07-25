@@ -4,6 +4,7 @@ import tensorflow_hub as hub
 import tensorflow as tf
 
 # Full Imports 
+from covid.tensorflow.callbacks import * 
 from covid.tensorflow.model import * 
 from covid.tensorflow.data import * 
 
