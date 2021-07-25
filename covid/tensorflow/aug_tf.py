@@ -153,9 +153,6 @@ def train_img_augment(img, label, crop, img_size, channels):
                 img = tf.image.central_crop(img, central_fraction=.8)
             else:
                 img = tf.image.central_crop(img, central_fraction=.9)
-            
-    
-    img = tf.image.resize(img, size=[img_size, img_size], )
     # Pixel-level transforms
     if p_pixel >= .2:
         if p_pixel >= .8:
@@ -166,7 +163,7 @@ def train_img_augment(img, label, crop, img_size, channels):
             img = tf.image.random_brightness(img, max_delta=.2)
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
-            
+    img = tf.image.resize(img, size=[img_size, img_size])
     return img, label
 
 def cutmix(image, label, batch_size, img_size, classes=4, prob = 1.0):
