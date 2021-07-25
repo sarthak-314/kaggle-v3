@@ -146,7 +146,7 @@ def train_img_augment(img, label, crop_percentage, img_size, channels):
     minval = crop_percentage / 100
     crop_size = tf.random.uniform(shape=(), minval=img_size*minval, maxval=img_size)
     if p_crop > .4:
-        img = tf.image.random_crop(img, [crop_size, crop_size, 3])
+        img = tf.image.random_crop(img, [crop_size, crop_size, channels])
     else: 
         img = tf.image.central_crop(img, central_fraction=minval)
             
@@ -295,9 +295,9 @@ def random_erasing(img, label, probability = 0.5, min_area = 0.02, max_area = 0.
     return tf.cond(tf.random.uniform([], 0, 1) > probability, lambda: img, lambda: erasing_img), label
 
 
-def get_train_transforms(img_size, channels): 
+def get_train_transforms(crop_percentage, img_size, channels): 
     def train_transforms_fn(img, label): 
-        return train_img_augment(img, label, img_size, channels)
+        return train_img_augment(img, label, crop_percentage, img_size, channels)
     return train_transforms_fn
 
 def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
