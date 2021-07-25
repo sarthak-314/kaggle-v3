@@ -1,4 +1,5 @@
 from tensorflow.keras import backend as K  
+import tensorflow_addons as tfa
 import tensorflow as tf 
 import math 
 
@@ -111,7 +112,8 @@ def get_interpolation():
         return 'lanczos3'
     return 'nearest'
 
-def train_img_augment(img, label, crop, img_size, channels):
+
+def train_img_augment(img, label, img_size, channels):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -119,7 +121,7 @@ def train_img_augment(img, label, crop, img_size, channels):
     p_shear = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_shift = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_crop = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    
+    p_cutout = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     # Flips
     if p_spatial >= .2:
         img = tf.image.random_flip_left_right(img)
@@ -133,26 +135,27 @@ def train_img_augment(img, label, crop, img_size, channels):
     elif p_rotate > .25:
         img = tf.image.rot90(img, k=1) # rotate 90º
     
-    # if p_rotation >= .3: # Rotation
-    #     img = transform_rotation(img, height=img_size, rotation=45.)
+    if p_rotation >= .3: # Rotation
+        img = transform_rotation(img, height=img_size, rotation=45.)
     # if p_shift >= .3: # Shift
     #     img = transform_shift(img, height=img_size, h_shift=15., w_shift=15.)
     # if p_shear >= .3: # Shear
     #     img = transform_shear(img, height=img_size, shear=20.)
     
-    if crop: 
-        # img = tf.image.resize(img, size=[img_size*2, img_size*2], )
-        # Crops
-        if p_crop > .4:
-            crop_size = tf.random.uniform([], int(img_size*.5), int(img_size*.5), dtype=tf.int32)
-            img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
-        elif p_crop > .7:
-            if p_crop > .9:
-                img = tf.image.central_crop(img, central_fraction=.6)
-            elif p_crop > .8:
-                img = tf.image.central_crop(img, central_fraction=.8)
-            else:
-                img = tf.image.central_crop(img, central_fraction=.9)
+    # img = tf.image.resize(img, size=[img_size*2, img_size*2], )
+    # Crops
+    print('tf.size(img:): ', tf.size(img))
+    if p_crop > .4:
+        crop_size = tf.random.uniform([], 0, int(img_size*.7), dtype=tf.int32)
+        img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
+    elif p_crop > .7:
+        if p_crop > .9:
+            img = tf.image.central_crop(img, central_fraction=.7)
+        elif p_crop > .8:
+            img = tf.image.central_crop(img, central_fraction=.8)
+        else:
+            img = tf.image.central_crop(img, central_fraction=.9)
+            
     # Pixel-level transforms
     if p_pixel >= .2:
         if p_pixel >= .8:
@@ -163,6 +166,16 @@ def train_img_augment(img, label, crop, img_size, channels):
             img = tf.image.random_brightness(img, max_delta=.2)
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
+    
+    if p_cutout < 0.25: 
+        mask_size = tf.random.uniform([], 0, int(img_size//6)*2, dtype=tf.int32)
+        img = tfa.image.random_cutout(img, mask_size, 0)
+    if p_cutout < 0.5:
+        mask_size = tf.random.uniform([], 0, int(img_size//8)*2, dtype=tf.int32)
+        img = tfa.image.random_cutout(img, mask_size, 0)
+    if p_cutout < 1: 
+        mask_size = tf.random.uniform([], 0, int(img_size//16)*2, dtype=tf.int32)
+        img = tfa.image.random_cutout(img, mask_size, 0)
     img = tf.image.resize(img, size=[img_size, img_size])
     return img, label
 
