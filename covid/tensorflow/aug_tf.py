@@ -175,8 +175,9 @@ def train_img_augment(img, label, img_size, channels):
     #         img = tf.image.random_brightness(img, max_delta=.2)
     #     else:
     #         img = tf.image.adjust_gamma(img, gamma=.6)
-    img = ag.transform(img)
     img = tf.image.resize(img, size=[img_size, img_size])
+    img.shape = (img_size, img_size, 3)
+    img = ag.transform(img)
     return img, label
 
 def cutmix(image, label, batch_size, img_size, classes=4, prob = 1.0):
