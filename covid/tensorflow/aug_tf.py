@@ -271,7 +271,7 @@ def random_erasing(img, label, probability = 0.5, min_area = 0.02, max_area = 0.
     return tf.cond(tf.random.uniform([], 0, 1) > probability, lambda: img, lambda: erasing_img), label
 
 
-def get_train_transforms(img_size, channels, apply_crop): 
+def get_train_transforms(apply_crop, img_size, channels): 
     def train_transforms_fn(img, label): 
         return train_img_augment(img, label, apply_crop, img_size, channels)
     return train_transforms_fn
