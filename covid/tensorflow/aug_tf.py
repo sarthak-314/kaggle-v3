@@ -113,7 +113,7 @@ def get_interpolation():
     return 'nearest'
 
 
-def train_img_augment(img, label, crop_percentage, img_size, channels):
+def train_img_augment(img, label, crop_size, img_size, channels):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -142,13 +142,18 @@ def train_img_augment(img, label, crop_percentage, img_size, channels):
     # if p_shear >= .3: # Shear
     #     img = transform_shear(img, height=img_size, shear=20.)
     
-    img = tf.image.resize(img, size=[2*img_size, 2*img_size])
-    minval = crop_percentage / 100
-    crop_size = tf.random.uniform(shape=(), minval=img_size*minval, maxval=img_size)
-    if p_crop > .4:
-        img = tf.image.random_crop(img, [crop_size, crop_size, channels])
-    else: 
-        img = tf.image.central_crop(img, central_fraction=minval)
+    # img = tf.image.resize(img, size=[img_size*2, img_size*2], )
+    # Crops
+    # if p_crop > .4:
+    #     crop_size = tf.random.uniform([], 0, int(img_size*.7), dtype=tf.int32)
+    #     img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
+    # elif p_crop > .7:
+    #     if p_crop > .9:
+    #         img = tf.image.central_crop(img, central_fraction=.7)
+    #     elif p_crop > .8:
+    #         img = tf.image.central_crop(img, central_fraction=.8)
+    #     else:
+    #         img = tf.image.central_crop(img, central_fraction=.9)
             
     # Pixel-level transforms
     if p_pixel >= .2:
@@ -160,20 +165,6 @@ def train_img_augment(img, label, crop_percentage, img_size, channels):
             img = tf.image.random_brightness(img, max_delta=.2)
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
-    
-    # if p_cutout < 0.25: 
-    #     mask_size = tf.random.uniform([], 0, 4, dtype=tf.int32)
-    #     mask = (mask_size, mask_size)
-    #     img = tfa.image.random_cutout(img, mask , 0)
-    # if p_cutout < 0.5:
-    #     mask_size = tf.random.uniform([], 0, 8, dtype=tf.int32)
-    #     mask = (mask_size, mask_size)
-    #     img = tfa.image.random_cutout(img, mask,  0)
-    # if p_cutout < 1: 
-    #     mask_size = tf.random.uniform([], 0, 16, dtype=tf.int32)
-    #     mask = (mask_size, mask_size)
-    #     img = tfa.image.random_cutout(img, mask, 0)
-    
     img = tf.image.resize(img, size=[img_size, img_size])
     return img, label
 
@@ -271,10 +262,37 @@ def gridmask(img, label, batch_size, img_size, classes, prob = 1.0):
     images = tf.cast(images, tf.float32)
     return img, label
 
+def random_erasing(img, label, probability = 0.5, min_area = 0.02, max_area = 0.4, r1 = 0.3):
+    '''
+    img is a 3-D variable (ex: tf.Variable(image, validate_shape=False) ) and  HWC order
+    '''
+    # HWC order
+    height = tf.shape(img)[0]
+    width = tf.shape(img)[1]
+    channel = tf.shape(img)[2]
+    area = tf.cast(width*height, tf.float32)
 
-def get_train_transforms(img_size, channels, crop_percentage): 
+    erase_area_low_bound = tf.cast(tf.round(tf.sqrt(min_area * area * r1)), tf.int32)
+    erase_area_up_bound = tf.cast(tf.round(tf.sqrt((max_area * area) / r1)), tf.int32)
+    h_upper_bound = tf.minimum(erase_area_up_bound, height)
+    w_upper_bound = tf.minimum(erase_area_up_bound, width)
+
+    h = tf.random.uniform([], erase_area_low_bound, h_upper_bound, tf.int32)
+    w = tf.random.uniform([], erase_area_low_bound, w_upper_bound, tf.int32)
+
+    x1 = tf.random.uniform([], 0, height+1 - h, tf.int32)
+    y1 = tf.random.uniform([], 0, width+1 - w, tf.int32)
+
+    erase_area = tf.cast(tf.random.uniform([h, w, channel], 0, 255, tf.int32), tf.uint8)
+
+    erasing_img = img[x1:x1+h, y1:y1+w, :].assign(erase_area)
+
+    return tf.cond(tf.random.uniform([], 0, 1) > probability, lambda: img, lambda: erasing_img), label
+
+
+def get_train_transforms(img_size, channels): 
     def train_transforms_fn(img, label): 
-        return train_img_augment(img, label, crop_percentage, img_size, channels)
+        return train_img_augment(img, label, img_size, channels)
     return train_transforms_fn
 
 def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
