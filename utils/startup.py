@@ -81,6 +81,8 @@ HARDWARE, DEVICE = solve_hardware()
 ONLINE = solve_internet_status()
 print(f"Running on {colored(DEVICE, 'green')} on {ENV} with internet {['on', 'off'][ONLINE]}")
 
+RANDOM_STATE = 69420
+
 # Useful Paths depending on environment 
 if ENV == 'Colab': 
     DRIVE_DIR = Path('/content/drive/MyDrive')
