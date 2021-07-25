@@ -142,7 +142,7 @@ def train_img_augment(img, label, crop_percentage, img_size, channels):
     # if p_shear >= .3: # Shear
     #     img = transform_shear(img, height=img_size, shear=20.)
     
-    img = tf.image.resize(img, size=[img_size, img_size])
+    img = tf.image.resize(img, size=[2*img_size, 2*img_size])
     minval = crop_percentage / 100
     crop_size = tf.random.uniform(shape=(), minval=img_size*minval, maxval=img_size)
     if p_crop > .4:
