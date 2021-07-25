@@ -246,9 +246,9 @@ def mixup(image, label, batch_size, img_size, classes, prob = 1.0):
 def chance(x, y):
     return tf.random.uniform(shape=[], minval=0, maxval=y, dtype=tf.int32) < x
 
-def gridmask(img, label, batch_size, img_size, classes, prob = 1.0):
+def gridmask(img, label, batch_size, img_size, classes, prob = 0.1):
     l = len(img)
-    d = tf.random.uniform(minval=int(img_size * (9/512)), maxval=img_size, shape=[], dtype=tf.int32)
+    d = tf.random.uniform(minval=int(img_size), maxval=img_size, shape=[], dtype=tf.int32)
     grid = tf.constant([[[0], [1]],[[1], [0]]], dtype=tf.float32)
     grid = tf.image.resize(grid, [d, d], method='nearest')
     # 50% chance to rotate mask
