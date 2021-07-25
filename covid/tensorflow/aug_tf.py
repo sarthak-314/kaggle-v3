@@ -116,32 +116,29 @@ def get_interpolation():
 
 
 def train_img_augment(img, label, img_size, channels):
-    print('img: ', img)
-    # p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    # p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    # p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    # p_pixel = tf.random.uniform([], 0, 1.0, dtype=tf.float32)    
-    # p_shear = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    # p_shift = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    # p_crop = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    # p_cutout = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
-    # # Flips
-    # if p_spatial >= .2:
-    #     img = tf.image.random_flip_left_right(img)
-    #     img = tf.image.random_flip_up_down(img)
+    p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
+    p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
+    p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
+    p_pixel = tf.random.uniform([], 0, 1.0, dtype=tf.float32)    
+    p_shear = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
+    p_shift = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
+    p_crop = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
+    p_cutout = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
+    # Flips
+    if p_spatial >= .25:
+        img = tf.image.random_flip_left_right(img)
+        img = tf.image.random_flip_up_down(img)
         
-    # # Rotates
-    # if p_rotate > .75:
-    #     img = tf.image.rot90(img, k=3) # rotate 270º
-    # elif p_rotate > .5:
-    #     img = tf.image.rot90(img, k=2) # rotate 180º
-    # elif p_rotate > .25:
-    #     img = tf.image.rot90(img, k=1) # rotate 90º
+    # Rotates
+    if p_rotate > .75:
+        img = tf.image.rot90(img, k=3) # rotate 270º
+    elif p_rotate > .5:
+        img = tf.image.rot90(img, k=2) # rotate 180º
+    elif p_rotate > .25:
+        img = tf.image.rot90(img, k=1) # rotate 90º
     
-    # if p_rotation >= .3: # Rotation
-    #     img = transform_rotation(img, height=img_size, rotation=45.)
-        
-        
+    if p_rotation >= .3: # Rotation
+        img = transform_rotation(img, height=img_size, rotation=45.)
     # if p_shift >= .3: # Shift
     #     img = transform_shift(img, height=img_size, h_shift=15., w_shift=15.)
     # if p_shear >= .3: # Shear
@@ -152,26 +149,26 @@ def train_img_augment(img, label, img_size, channels):
     # if p_crop > .4:
     #     crop_size = tf.random.uniform([], 0, int(img_size*.7), dtype=tf.int32)
     #     img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
-    # elif p_crop > .7:
-    #     if p_crop > .9:
-    #         img = tf.image.central_crop(img, central_fraction=.7)
-    #     elif p_crop > .8:
-    #         img = tf.image.central_crop(img, central_fraction=.8)
-    #     else:
-    #         img = tf.image.central_crop(img, central_fraction=.9)
+    if p_crop > .7:
+        if p_crop > .9:
+            img = tf.image.central_crop(img, central_fraction=.7)
+        elif p_crop > .8:
+            img = tf.image.central_crop(img, central_fraction=.8)
+        else:
+            img = tf.image.central_crop(img, central_fraction=.9)
             
     # Pixel-level transforms
-    # if p_pixel >= .2:
-    #     if p_pixel >= .8:
-    #         img = tf.image.random_saturation(img, lower=0, upper=2)
-    #     elif p_pixel >= .6:
-    #         img = tf.image.random_contrast(img, lower=.8, upper=2)
-    #     elif p_pixel >= .4:
-    #         img = tf.image.random_brightness(img, max_delta=.2)
-    #     else:
-    #         img = tf.image.adjust_gamma(img, gamma=.6)
+    if p_pixel >= .2:
+        if p_pixel >= .8:
+            img = tf.image.random_saturation(img, lower=0, upper=2)
+        elif p_pixel >= .6:
+            img = tf.image.random_contrast(img, lower=.8, upper=2)
+        elif p_pixel >= .4:
+            img = tf.image.random_brightness(img, max_delta=.2)
+        else:
+            img = tf.image.adjust_gamma(img, gamma=.6)
     img = tf.image.resize(img, size=[img_size, img_size])
-    img = ag.transform(img)
+    # img = ag.transform(img)
     return img, label
 
 def cutmix(image, label, batch_size, img_size, classes=4, prob = 1.0):
@@ -280,7 +277,7 @@ def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
     def batch_transforms_fn(img, label): 
         img, label = cutmix(img, label, batch_size, img_size, classes, prob=prob)
         img, label = mixup(img, label, batch_size, img_size, classes, prob=prob)
-        # img, label = gridmask(img, label, batch_size, img_size, classes, prob=prob)
+        img, label = gridmask(img, label, batch_size, img_size, classes, prob=prob)
         # img, label = random_erasing(img, label, probability=prob, min_area = 0.02, max_area = 0.4, r1 = 0.3)
         return img, label 
     return batch_transforms_fn    
