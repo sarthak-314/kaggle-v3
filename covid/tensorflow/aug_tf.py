@@ -248,7 +248,7 @@ def chance(x, y):
 
 def gridmask(img, label, batch_size, img_size, classes, prob = 0.1):
     l = len(img)
-    d = tf.random.uniform(minval=int(img_size * (400/512)), maxval=img_size, shape=[], dtype=tf.int32)
+    d = tf.random.uniform(minval=int(img_size * (96/512)), maxval=img_size, shape=[], dtype=tf.int32)
     grid = tf.constant([[[0], [1]],[[1], [0]]], dtype=tf.float32)
     grid = tf.image.resize(grid, [d, d], method='nearest')
     # 50% chance to rotate mask
