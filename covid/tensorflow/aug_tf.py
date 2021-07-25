@@ -113,7 +113,7 @@ def get_interpolation():
     return 'nearest'
 
 
-def train_img_augment(img, label, img_size, channels):
+def train_img_augment(img, label, crop_percentage, img_size, channels):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -143,18 +143,12 @@ def train_img_augment(img, label, img_size, channels):
     #     img = transform_shear(img, height=img_size, shear=20.)
     
     # img = tf.image.resize(img, size=[img_size*2, img_size*2], )
-    # Crops
-    print('tf.size(img:): ', tf.size(img))
+    minval = crop_percentage / 100
+    crop_size = tf.random.uniform(shape=(), minval=img_size*minval, maxval=img_size)
     if p_crop > .4:
-        crop_size = tf.random.uniform([], 0, int(img_size*.7), dtype=tf.int32)
-        img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
-    elif p_crop > .7:
-        if p_crop > .9:
-            img = tf.image.central_crop(img, central_fraction=.7)
-        elif p_crop > .8:
-            img = tf.image.central_crop(img, central_fraction=.8)
-        else:
-            img = tf.image.central_crop(img, central_fraction=.9)
+        img = tf.image.random_crop(img, [crop_size, crop_size, 3])
+    else: 
+        img = tf.image.central_crop(img, central_fraction=minval)
             
     # Pixel-level transforms
     if p_pixel >= .2:
@@ -250,6 +244,28 @@ def mixup(image, label, batch_size, img_size, classes, prob = 1.0):
     label2 = tf.reshape(tf.stack(labs),(batch_size,classes))
     return image2,label2
 
+# chance of x in y to return true, used for conditional data augmentation
+def chance(x, y):
+    return tf.random.uniform(shape=[], minval=0, maxval=y, dtype=tf.int32) < x
+
+def gridmask(img, label, batch_size, img_size, classes, prob = 1.0):
+    l = len(img)
+    d = tf.random.uniform(minval=int(img_size * (96/224)), maxval=img_size, shape=[], dtype=tf.int32)
+    grid = tf.constant([[[0], [1]],[[1], [0]]], dtype=tf.float32)
+    grid = tf.image.resize(grid, [d, d], method='nearest')
+    # 50% chance to rotate mask
+    if chance(1, 2):
+        grid = tf.image.rot90(grid, 1)
+
+    repeats = img_size // d + 1
+    grid = tf.tile(grid, multiples=[repeats, repeats, 1])
+    grid = tf.image.random_crop(grid, [img_size, img_size, 1])
+    grid = tf.expand_dims(grid, axis=0)
+    grid = tf.tile(grid, multiples=[l, 1, 1, 1])
+
+    images = img * grid
+    images = tf.cast(images, tf.float32)
+    return img, label
 
 def random_erasing(img, label, probability = 0.5, min_area = 0.02, max_area = 0.4, r1 = 0.3):
     '''
@@ -288,6 +304,7 @@ def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
     def batch_transforms_fn(img, label): 
         img, label = cutmix(img, label, batch_size, img_size, classes, prob=prob)
         img, label = mixup(img, label, batch_size, img_size, classes, prob=prob)
+        img, label = gridmask(img, label, batch_size, img_size, classes, prob=prob)
         # img, label = random_erasing(img, label, probability=prob, min_area = 0.02, max_area = 0.4, r1 = 0.3)
         return img, label 
     return batch_transforms_fn    
