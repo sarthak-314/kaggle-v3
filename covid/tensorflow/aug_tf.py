@@ -113,7 +113,7 @@ def get_interpolation():
     return 'nearest'
 
 
-def train_img_augment(img, label, crop_size, img_size, channels):
+def train_img_augment(img, label, img_size, channels):
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_spatial = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
     p_rotate = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
