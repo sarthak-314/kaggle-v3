@@ -113,6 +113,13 @@ def get_interpolation():
     return 'nearest'
 
 
+
+from augmix import AugMix
+AUGMIX_SWD = 3, 1, -1
+# precalculated means and stds of the dataset (in RGB order)
+means = [0.44892993872313053, 0.4148519066242368, 0.301880284715257]
+stds = [0.24393544875614917, 0.2108791383467354, 0.220427056859487]
+ag = AugMix(means, stds)
 def train_img_augment(img, label, img_size, channels):
     print('img: ', img)
     p_rotation = tf.random.uniform([], 0, 1.0, dtype=tf.float32)
@@ -169,6 +176,7 @@ def train_img_augment(img, label, img_size, channels):
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
     img = tf.image.resize(img, size=[img_size, img_size])
+    img = ag.transform(img)
     return img, label
 
 def cutmix(image, label, batch_size, img_size, classes=4, prob = 1.0):
@@ -248,7 +256,7 @@ def chance(x, y):
 
 def gridmask(img, label, batch_size, img_size, classes, prob = 0.1):
     l = len(img)
-    d = tf.random.uniform(minval=int(img_size), maxval=img_size, shape=[], dtype=tf.int32)
+    d = tf.random.uniform(minval=int(img_size * (96/512)), maxval=img_size, shape=[], dtype=tf.int32)
     grid = tf.constant([[[0], [1]],[[1], [0]]], dtype=tf.float32)
     grid = tf.image.resize(grid, [d, d], method='nearest')
     # 50% chance to rotate mask
@@ -265,38 +273,13 @@ def gridmask(img, label, batch_size, img_size, classes, prob = 0.1):
     img = tf.cast(img, tf.float32)
     return img, label
 
-def random_erasing(img, label, probability = 0.5, min_area = 0.02, max_area = 0.4, r1 = 0.3):
-    '''
-    img is a 3-D variable (ex: tf.Variable(image, validate_shape=False) ) and  HWC order
-    '''
-    # HWC order
-    height = tf.shape(img)[0]
-    width = tf.shape(img)[1]
-    channel = tf.shape(img)[2]
-    area = tf.cast(width*height, tf.float32)
-
-    erase_area_low_bound = tf.cast(tf.round(tf.sqrt(min_area * area * r1)), tf.int32)
-    erase_area_up_bound = tf.cast(tf.round(tf.sqrt((max_area * area) / r1)), tf.int32)
-    h_upper_bound = tf.minimum(erase_area_up_bound, height)
-    w_upper_bound = tf.minimum(erase_area_up_bound, width)
-
-    h = tf.random.uniform([], erase_area_low_bound, h_upper_bound, tf.int32)
-    w = tf.random.uniform([], erase_area_low_bound, w_upper_bound, tf.int32)
-
-    x1 = tf.random.uniform([], 0, height+1 - h, tf.int32)
-    y1 = tf.random.uniform([], 0, width+1 - w, tf.int32)
-
-    erase_area = tf.cast(tf.random.uniform([h, w, channel], 0, 255, tf.int32), tf.uint8)
-
-    erasing_img = img[x1:x1+h, y1:y1+w, :].assign(erase_area)
-
-    return tf.cond(tf.random.uniform([], 0, 1) > probability, lambda: img, lambda: erasing_img), label
 
 
 def get_train_transforms(img_size, channels): 
     def train_transforms_fn(img, label): 
         return train_img_augment(img, label, img_size, channels)
     return train_transforms_fn
+
 
 def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
     def batch_transforms_fn(img, label): 
