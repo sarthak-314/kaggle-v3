@@ -30,7 +30,7 @@ class KaggleDatasetTrain(torch.utils.data.Dataset):
         }
         output_dict = {
             **feature_dict, 
-            'target': torch.tensor(row.label, dtype=torch.long)
+            'target': torch.tensor(row.label, dtype=torch.float)
         }
         return output_dict 
     

@@ -146,9 +146,9 @@ def train_img_augment(img, label, img_size, channels):
     
     # img = tf.image.resize(img, size=[img_size*2, img_size*2], )
     # Crops
-    # if p_crop > .4:
-    #     crop_size = tf.random.uniform([], 0, int(img_size*.7), dtype=tf.int32)
-    #     img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
+    if p_crop > .4:
+        crop_size = tf.random.uniform([], 0, int(img_size*.7), dtype=tf.int32)
+        img = tf.image.random_crop(img, size=[crop_size, crop_size, channels])
     if p_crop > .7:
         if p_crop > .9:
             img = tf.image.central_crop(img, central_fraction=.7)
@@ -164,12 +164,13 @@ def train_img_augment(img, label, img_size, channels):
         elif p_pixel >= .6:
             img = tf.image.random_contrast(img, lower=.8, upper=2)
         elif p_pixel >= .4:
-            img = tf.image.random_brightness(img, max_delta=.2)
+            img = tf.image.random_brightness(img, max_delta=.4) # Changed from 0.2
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
     img = tf.image.resize(img, size=[img_size, img_size])
     # img = ag.transform(img)
     return img, label
+
 
 def cutmix(image, label, batch_size, img_size, classes=4, prob = 1.0):
     label = tf.cast(label, tf.float32)
