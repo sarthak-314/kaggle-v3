@@ -169,7 +169,7 @@ def train_img_augment(img, label, img_size, channels):
         else:
             img = tf.image.adjust_gamma(img, gamma=.6)
     img = tf.image.resize(img, size=[img_size, img_size])
-    img, label = gridmask(img, label, img_size, prob=0.5)
+    img, label = gridmask(img, label, img_size)
     return img, label
 
 def cutmix(image, label, batch_size, img_size, classes=4, prob = 1.0):
@@ -247,7 +247,7 @@ def mixup(image, label, batch_size, img_size, classes, prob = 1.0):
 def chance(x, y):
     return tf.random.uniform(shape=[], minval=0, maxval=y, dtype=tf.int32) < x
 
-def gridmask(img, label, img_size, prob=0.5):
+def gridmask(img, label, img_size):
     l = len(img)
     d = tf.random.uniform(minval=int(img_size * (96/512)), maxval=img_size, shape=[], dtype=tf.int32)
     grid = tf.constant([[[0], [1]],[[1], [0]]], dtype=tf.float32)
