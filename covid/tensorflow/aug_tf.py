@@ -275,7 +275,7 @@ def get_batch_transforms(img_size, batch_size, classes, prob=0.5):
     def batch_transforms_fn(img, label): 
         img, label = cutmix(img, label, batch_size, img_size, classes, prob=prob)
         img, label = mixup(img, label, batch_size, img_size, classes, prob=prob)
-        img, label = random_erasing(img, label, probability=prob, min_area = 0.02, max_area = 0.4, r1 = 0.3)
+        # img, label = random_erasing(img, label, probability=prob, min_area = 0.02, max_area = 0.4, r1 = 0.3)
         return img, label 
     return batch_transforms_fn    
 
