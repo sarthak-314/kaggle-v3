@@ -33,8 +33,8 @@ def zoom_in(x, img_size, scale_factor):
 # SCALE
 def get_random_scale(img_size, aug_params_scale): 
     def random_scale(img, label): 
-        if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) > aug_params_scale['prob']:
-            if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) > 0.75:
+        if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) < aug_params_scale['prob']:
+            if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) < 0.75:
                 img = zoom_in(img, img_size, aug_params_scale['zoom_in'])
             else: 
                 img = zoom_out(img, img_size, aug_params_scale['zoom_out'])
@@ -130,7 +130,7 @@ def gaussian_blur(img, ksize=5, sigma=1):
 
 def get_random_rotate(img_size, rot_prob, rot_range=90): 
     def random_rotate(img, label): 
-        if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) > rot_prob:
+        if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) < rot_prob:
             angle = tf.random.uniform(shape=[], minval=-rot_range, maxval=rot_range, dtype=tf.int32)
             img = image_rotate(img, img_size, angle)
         return img, label
@@ -138,7 +138,7 @@ def get_random_rotate(img_size, rot_prob, rot_range=90):
 
 def get_random_cutout(img_size, aug_params_cutout):
     def random_cutout(img, label):
-        if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) > aug_params_cutout['prob']:
+        if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) < aug_params_cutout['prob']:
             sl, sh, rl = aug_params_cutout['sl'], aug_params_cutout['sh'], aug_params_cutout['rl']
             img = random_blockout(img, img_size, sl, sh, rl)
         return img, label
@@ -146,7 +146,7 @@ def get_random_cutout(img_size, aug_params_cutout):
 
 def get_random_blur(aug_params_blur): 
     def gaussian_blur_fn(img, label): 
-        if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) > aug_params_blur['prob']:
+        if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) < aug_params_blur['prob']:
             img = gaussian_blur(img, aug_params_blur['ksize'], sigma=1)
         return img, label
     return gaussian_blur_fn
