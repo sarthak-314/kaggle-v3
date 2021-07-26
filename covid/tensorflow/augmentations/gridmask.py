@@ -108,6 +108,6 @@ def apply_grid_mask(image, image_shape, aug_params_gridmask):
 def get_grid_mask(img_size, aug_params_gridmask):
     def grid_mask_fn(img, label):
         if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) > aug_params_gridmask['prob']:
-            img = apply_grid_mask(img, (img_size, img_size), aug_params_gridmask)
+            img = apply_grid_mask(img, (img_size, img_size, 3), aug_params_gridmask)
         return img, label
     return grid_mask_fn    
