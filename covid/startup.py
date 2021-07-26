@@ -44,3 +44,18 @@ def get_img_path_fn(filepaths):
                 return fp
         print(f'img id {img_id} not found in filepaths')
     return get_img_path
+
+def add_kaggle_and_gcs_path(train, valid, kaggle_dataset): 
+    dataset_dir = KAGGLE_INPUT_DIR/kaggle_dataset
+    filepaths = get_all_filepaths(dataset_dir)
+    get_img_path = get_img_path_fn(filepaths)
+    train['kaggle_path'] = train.img_id.apply(get_img_path)
+    valid['kaggle_path'] = valid.img_id.apply(get_img_path)
+    try: 
+        gcs_path = get_gcs_path(kaggle_dataset)
+        get_gcs_path = get_gcs_path_fn(gcs_path)
+        train['gcs_path'] = train.img_path.apply(get_gcs_path)
+        valid['gcs_path'] = train.img_path.apply(get_gcs_path)
+    except: 
+        print('Could not add gcs path')
+    return train, valid

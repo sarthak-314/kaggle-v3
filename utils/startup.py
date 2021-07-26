@@ -151,10 +151,20 @@ def get_gcs_path_fn(gcs_path, dataset_dir):
     return fn
 
 def oversample(train, class_to_oversample_ratio): 
+    print(train.label.value_counts())
+    org=len(train)
+    print('Original Training Samples: ', org)
+    print('Class weights: ', compute_class_weight('balanced', list(range(train.label.nunique())), train.label.values))
     oversampled_labels = []
     for label, times in class_to_oversample_ratio.items():
         label_df = train[train.label==label]
         oversampled_label = pd.concat([label_df]*times)
         oversampled_labels.append(oversampled_label)
     df = pd.concat(oversampled_labels).sample(frac=1)
+    new=len(train); new; new/org
+    print('New train samples: ', new)
+    print('new/original: ', new/org)
+    print(train.label.value_counts())
+    print('Class weights: ', compute_class_weight('balanced', list(range(train.label.nunique())), train.label.values))
     return df
+
