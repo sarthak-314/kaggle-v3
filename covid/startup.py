@@ -52,7 +52,8 @@ def add_kaggle_and_gcs_path(train, valid, kaggle_dataset):
     train['kaggle_path'] = train.img_id.apply(get_img_path)
     valid['kaggle_path'] = valid.img_id.apply(get_img_path)
     try: 
-        gcs_path = get_gcs_path(kaggle_dataset)
+        from kaggle_datasets import KaggleDatasets
+        gcs_path = KaggleDatasets().get_gcs_path(kaggle_dataset)
         get_gcs_path = get_gcs_path_fn(gcs_path)
         train['gcs_path'] = train.img_path.apply(get_gcs_path)
         valid['gcs_path'] = train.img_path.apply(get_gcs_path)
