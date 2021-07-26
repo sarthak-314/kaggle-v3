@@ -252,7 +252,7 @@ class CosineDecayRestarts(LearningRateSchedule):
     def __call__(self, step): 
         if step < 128: 
             return 1e-6
-        with ops.name_scope_v2(self.name or 'SGDRDecay' as name:
+        with ops.name_scope_v2(self.name or 'SGDRDecay') as name:
             initial_learning_rate = ops.convert_to_tensor_v2_with_dispatch(
                 self.initial_learning_rate, name="initial_learning_rate")
         dtype = initial_learning_rate.dtype
