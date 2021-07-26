@@ -149,3 +149,13 @@ def get_gcs_path_fn(gcs_path, dataset_dir):
         gcs_path = org_path.replace(dataset_dir, gcs_path)
         return gcs_path
     return fn
+
+def oversample(df, oversample_dict): 
+    label_dfs = [train[train.label == label] for label in oversample_dict.keys()]
+    oversampled_labels = []
+    for label, times in oversample_dict.items():
+        label_df = df[df.label==label]
+        oversampled_label = pd.concat([label_df]*times)
+        oversampled_labels.append(oversampled_label)
+    df = pd.concat(oversampled_labels).sample(frac=1)
+    return df
