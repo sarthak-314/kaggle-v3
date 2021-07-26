@@ -55,8 +55,8 @@ def add_kaggle_and_gcs_path(train, valid, kaggle_dataset):
         from kaggle_datasets import KaggleDatasets
         gcs_path = KaggleDatasets().get_gcs_path(kaggle_dataset)
         get_gcs_path = get_gcs_path_fn(gcs_path, dataset_dir)
-        train['gcs_path'] = train.img_path.apply(get_gcs_path)
-        valid['gcs_path'] = valid.img_path.apply(get_gcs_path)
-    except: 
-        print('Could not add gcs path')
+        train['gcs_path'] = train.kaggle_path.apply(get_gcs_path)
+        valid['gcs_path'] = valid.kaggle_path.apply(get_gcs_path)
+    except Exception as e: 
+        print('Could not add gcs path', e)
     return train, valid
