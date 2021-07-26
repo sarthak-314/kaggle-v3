@@ -185,7 +185,7 @@ def get_resize_fn(img_size):
 
 def get_basic_augs(img_size): 
     def basic_augs_fn(img, label):
-        img = basic_augmentations(img, img_size)
+        img = basic_augmentations(img)
         return img, label
     return basic_augs_fn 
 
