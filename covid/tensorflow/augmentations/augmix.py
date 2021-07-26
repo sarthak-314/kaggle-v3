@@ -58,7 +58,7 @@ def blend(image1, image2, factor):
     # We need to clip and then cast.
     return tf.cast(tf.clip_by_value(temp, 0.0, 255.0), tf.uint8)
 
-def rotate(image, level):
+def rotate(affine_transform, image, level):
     degrees = float_parameter(sample_level(level), 30)
     rand_var = tf.random.uniform(shape=[], dtype=tf.float32)
     degrees = tf.cond(rand_var > 0.5, lambda: degrees, lambda: -degrees)
@@ -75,7 +75,7 @@ def rotate(image, level):
     transformed = affine_transform(image, rotation_matrix)
     return transformed
 
-def translate_x(image, img_size, level):
+def translate_x(affine_transform, image, img_size, level):
     lvl = int_parameter(sample_level(level), img_size / 3)
     rand_var = tf.random.uniform(shape=[], dtype=tf.float32)
     lvl = tf.cond(rand_var > 0.5, lambda: lvl, lambda: -lvl)
@@ -88,7 +88,7 @@ def translate_x(image, img_size, level):
     transformed = affine_transform(image, translate_x_matrix)
     return transformed
 
-def translate_y(image, img_size, level):
+def translate_y(affine_transform, image, img_size, level):
     lvl = int_parameter(sample_level(level), img_size / 3)
     rand_var = tf.random.uniform(shape=[], dtype=tf.float32)
     lvl = tf.cond(rand_var > 0.5, lambda: lvl, lambda: -lvl)
@@ -101,7 +101,7 @@ def translate_y(image, img_size, level):
     transformed = affine_transform(image, translate_y_matrix)
     return transformed
 
-def shear_x(image, level):
+def shear_x(affine_transform, image, level):
     lvl = float_parameter(sample_level(level), 0.3)
     rand_var = tf.random.uniform(shape=[], dtype=tf.float32)
     lvl = tf.cond(rand_var > 0.5, lambda: lvl, lambda: -lvl)
@@ -114,7 +114,7 @@ def shear_x(image, level):
     transformed = affine_transform(image, shear_x_matrix)
     return transformed
 
-def shear_y(image, level):
+def shear_y(affine_transform, image, level):
     lvl = float_parameter(sample_level(level), 0.3)
     rand_var = tf.random.uniform(shape=[], dtype=tf.float32)
     lvl = tf.cond(rand_var > 0.5, lambda: lvl, lambda: -lvl)
@@ -127,14 +127,14 @@ def shear_y(image, level):
     transformed = affine_transform(image, shear_y_matrix)
     return transformed
 
-def solarize(image, level):
+def solarize(affine_transform, image, level):
     # For each pixel in the image, select the pixel
     # if the value is less than the threshold.
     # Otherwise, subtract 255 from the pixel.
     threshold = float_parameter(sample_level(level), 1)
     return tf.where(image < threshold, image, 1 - image)
 
-def solarize_add(image, level):
+def solarize_add(affine_transform, image, level):
     # For each pixel in the image less than threshold
     # we add 'addition' amount to it and then clip the
     # pixel value to be between 0 and 255. The value
@@ -148,7 +148,7 @@ def solarize_add(image, level):
     added_image = tf.cast(tf.clip_by_value(added_image, 0, 1), tf.float32)
     return tf.where(image < threshold, added_image, image)
 
-def posterize(image, level):
+def posterize(affine_transform, image, level):
     lvl = int_parameter(sample_level(level), 8)
     shift = 8 - lvl
     shift = tf.cast(shift, tf.uint8)
@@ -156,7 +156,7 @@ def posterize(image, level):
     image = tf.bitwise.left_shift(tf.bitwise.right_shift(image, shift), shift)
     return tf.cast(tf.clip_by_value(tf.math.divide(image, 255), 0, 1), tf.float32)
 
-def autocontrast(image, _):
+def autocontrast(affine_transform, image, _):
     image = tf.cast(tf.math.scalar_mul(255, image), tf.uint8)
 
     def scale_channel(image):
@@ -185,7 +185,7 @@ def autocontrast(image, _):
     image = tf.stack([s1, s2, s3], 2)
     return tf.cast(tf.clip_by_value(tf.math.divide(image, 255), 0, 1), tf.float32)
 
-def equalize(image, _):
+def equalize(affine_transform, image, _):
     image = tf.cast(tf.math.scalar_mul(255, image), tf.uint8)
 
     def scale_channel(im, c):
@@ -224,20 +224,20 @@ def equalize(image, _):
 
     return tf.cast(tf.clip_by_value(tf.math.divide(image, 255), 0, 1), tf.float32)
 
-def color(image, level):
+def color(affine_transform, image, level):
     factor = float_parameter(sample_level(level), 1.8) + 0.1
     image = tf.cast(tf.math.scalar_mul(255, image), tf.uint8)
     degenerate = tf.image.grayscale_to_rgb(tf.image.rgb_to_grayscale(image))
     blended = blend(degenerate, image, factor)
     return tf.cast(tf.clip_by_value(tf.math.divide(blended, 255), 0, 1), tf.float32)
 
-def brightness(image, level):
+def brightness(affine_transform, image, level):
     delta = float_parameter(sample_level(level), 0.5) + 0.1
     rand_var = tf.random.uniform(shape=[], dtype=tf.float32)
     delta = tf.cond(rand_var > 0.5, lambda: delta, lambda: -delta) 
     return tf.image.adjust_brightness(image, delta=delta)
 
-def contrast(image, level):
+def contrast(affine_transform, image, level):
     factor = float_parameter(sample_level(level), 1.8) + 0.1
     factor = tf.reshape(factor, [])
     rand_var = tf.random.uniform(shape=[], dtype=tf.float32)
@@ -260,19 +260,19 @@ def apply_op(image, level, which, img_size):
     def affine_transform(image, transform_matrix): 
         return affine_transform_(image, img_size, transform_matrix)
     augmented = image
-    augmented = tf.cond(which == tf.constant([0], dtype=tf.int32), lambda: rotate(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([1], dtype=tf.int32), lambda: translate_x(image, img_size, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([2], dtype=tf.int32), lambda: translate_y(image, img_size, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([3], dtype=tf.int32), lambda: shear_x(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([4], dtype=tf.int32), lambda: shear_y(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([5], dtype=tf.int32), lambda: solarize_add(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([6], dtype=tf.int32), lambda: solarize(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([7], dtype=tf.int32), lambda: posterize(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([8], dtype=tf.int32), lambda: autocontrast(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([9], dtype=tf.int32), lambda: equalize(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([10], dtype=tf.int32), lambda: color(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([11], dtype=tf.int32), lambda: contrast(image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([12], dtype=tf.int32), lambda: brightness(image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([0], dtype=tf.int32), lambda: rotate(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([1], dtype=tf.int32), lambda: translate_x(affine_transform, image, img_size, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([2], dtype=tf.int32), lambda: translate_y(affine_transform, image, img_size, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([3], dtype=tf.int32), lambda: shear_x(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([4], dtype=tf.int32), lambda: shear_y(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([5], dtype=tf.int32), lambda: solarize_add(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([6], dtype=tf.int32), lambda: solarize(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([7], dtype=tf.int32), lambda: posterize(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([8], dtype=tf.int32), lambda: autocontrast(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([9], dtype=tf.int32), lambda: equalize(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([10], dtype=tf.int32), lambda:color(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([11], dtype=tf.int32), lambda: contrast(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([12], dtype=tf.int32), lambda: brightness(affine_transform, image, level), lambda: augmented)
     return augmented
 
 def augmix(image, img_size, severity, width, depth):
