@@ -141,3 +141,11 @@ def log_remotely(channel_name):
     print(f'Logging output to https://shantanum91.github.io/kagglewatch/ on channel {channel_name}')
     Logger.CHANNEL_NAME = channel_name
     sys.stdout = Logger()
+    
+    
+def get_gcs_path_fn(gcs_path, dataset_dir): 
+    def get_gcs_path(org_path):
+        org_path, dataset_dir = str(org_path), str(dataset_dir)
+        gcs_path = org_path.replace(dataset_dir, gcs_path)
+        return gcs_path
+    return get_gcs_path

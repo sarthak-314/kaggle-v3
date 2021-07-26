@@ -1,11 +1,10 @@
-import tensorflow as tf
+import tensorflow as tf 
 import numpy as np
-import math
+import math 
 
 def transform(image, inv_mat, image_shape):
     h, w, c = image_shape
     cx, cy = w//2, h//2
-
     new_xs = tf.repeat( tf.range(-cx, cx, 1), h)
     new_ys = tf.tile( tf.range(-cy, cy, 1), [w])
     new_zs = tf.ones([h*w], dtype=tf.int32)
@@ -34,9 +33,7 @@ def transform(image, inv_mat, image_shape):
     return tf.transpose(tf.stack(rotated_image_channel), [1,2,0])
 
 def random_rotate(image, angle, image_shape):
-
     def get_rotation_mat_inv(angle):
-        #transform to radian
         angle = math.pi * angle / 180
 
         cos_val = tf.math.cos(angle)
@@ -44,33 +41,29 @@ def random_rotate(image, angle, image_shape):
         one = tf.constant([1], tf.float32)
         zero = tf.constant([0], tf.float32)
 
-        rot_mat_inv = tf.concat([cos_val, sin_val, zero, -sin_val, cos_val, zero, zero, zero, one], axis=0)
+        rot_mat_inv = tf.concat([cos_val, sin_val, zero,-sin_val, cos_val, zero, zero, zero, one], axis=0)
         rot_mat_inv = tf.reshape(rot_mat_inv, [3,3])
+
         return rot_mat_inv
     angle = float(angle) * tf.random.normal([1],dtype='float32')
     rot_mat_inv = get_rotation_mat_inv(angle)
     return transform(image, rot_mat_inv, image_shape)
 
-def GridMask(image_height, image_width, d1, d2, rotate_angle=1, ratio=0.5):
-
+def grid_mask(image_height, image_width, d1, d2, rotate_angle=1, ratio=0.5):
     h, w = image_height, image_width
     hh = int(np.ceil(np.sqrt(h*h+w*w)))
     hh = hh+1 if hh%2==1 else hh
     d = tf.random.uniform(shape=[], minval=d1, maxval=d2, dtype=tf.int32)
     l = tf.cast(tf.cast(d,tf.float32)*ratio+0.5, tf.int32)
-
     st_h = tf.random.uniform(shape=[], minval=0, maxval=d, dtype=tf.int32)
     st_w = tf.random.uniform(shape=[], minval=0, maxval=d, dtype=tf.int32)
-
     y_ranges = tf.range(-1 * d + st_h, -1 * d + st_h + l)
     x_ranges = tf.range(-1 * d + st_w, -1 * d + st_w + l)
-
     for i in range(0, hh//d+1):
-      s1 = i * d + st_h
-      s2 = i * d + st_w
-      y_ranges = tf.concat([y_ranges, tf.range(s1,s1+l)], axis=0)
-      x_ranges = tf.concat([x_ranges, tf.range(s2,s2+l)], axis=0)
-
+        s1 = i * d + st_h
+        s2 = i * d + st_w
+        y_ranges = tf.concat([y_ranges, tf.range(s1,s1+l)], axis=0)
+        x_ranges = tf.concat([x_ranges, tf.range(s2,s2+l)], axis=0)
     x_clip_mask = tf.logical_or(x_ranges <0 , x_ranges > hh-1)
     y_clip_mask = tf.logical_or(y_ranges <0 , y_ranges > hh-1)
     clip_mask = tf.logical_or(x_clip_mask, y_clip_mask)
@@ -97,3 +90,24 @@ def GridMask(image_height, image_width, d1, d2, rotate_angle=1, ratio=0.5):
     mask = tf.image.crop_to_bounding_box(mask, (hh-h)//2, (hh-w)//2, image_height, image_width)
 
     return mask
+
+def apply_grid_mask(image, image_shape, aug_params_gridmask):
+    mask = grid_mask(image_shape[0],
+                    image_shape[1],
+                    aug_params_gridmask['d1'],
+                    aug_params_gridmask['d2'],
+                    aug_params_gridmask['rotate'],
+                    aug_params_gridmask['ratio']), 
+    
+    if image_shape[-1] == 3:
+        mask = tf.concat([mask, mask, mask], axis=-1)
+
+    return image * tf.cast(mask, tf.uint8)
+
+
+def get_grid_mask(img_size, aug_params_gridmask):
+    def grid_mask_fn(img, label):
+        if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) > aug_params_gridmask['prob']:
+            img = apply_grid_mask(img, (img_size, img_size), aug_params_gridmask)
+        return img, label
+    return grid_mask_fn    
