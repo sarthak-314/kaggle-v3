@@ -23,7 +23,6 @@ def auto_select_accelerator():
     return strategy
 
 def get_gcs_path(dataset_name): 
-    # Shortcuts for Colab 
     from kaggle_datasets import KaggleDatasets
     return KaggleDatasets().get_gcs_path(dataset_name)
 
