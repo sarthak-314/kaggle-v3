@@ -260,9 +260,9 @@ def apply_op(image, level, which, img_size):
     def affine_transform(image, transform_matrix): 
         return affine_transform_(image, img_size, transform_matrix)
     augmented = image
-    # augmented = tf.cond(which == tf.constant([0], dtype=tf.int32), lambda: rotate(affine_transform, image, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([1], dtype=tf.int32), lambda: translate_x(affine_transform, image, img_size, level), lambda: augmented)
-    augmented = tf.cond(which == tf.constant([2], dtype=tf.int32), lambda: translate_y(affine_transform, image, img_size, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([0], dtype=tf.int32), lambda: rotate(affine_transform, image, level), lambda: augmented)
+    # augmented = tf.cond(which == tf.constant([1], dtype=tf.int32), lambda: translate_x(affine_transform, image, img_size, level), lambda: augmented)
+    # augmented = tf.cond(which == tf.constant([2], dtype=tf.int32), lambda: translate_y(affine_transform, image, img_size, level), lambda: augmented)
     augmented = tf.cond(which == tf.constant([3], dtype=tf.int32), lambda: shear_x(affine_transform, image, level), lambda: augmented)
     augmented = tf.cond(which == tf.constant([4], dtype=tf.int32), lambda: shear_y(affine_transform, image, level), lambda: augmented)
     augmented = tf.cond(which == tf.constant([5], dtype=tf.int32), lambda: solarize_add(affine_transform, image, level), lambda: augmented)
