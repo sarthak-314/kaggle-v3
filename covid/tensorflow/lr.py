@@ -206,6 +206,16 @@ class WarmUpCosineDecayScheduler(keras.callbacks.Callback):
 
 
 from tensorflow.python.keras.optimizer_v2 import *
+import abc
+import math
+from tensorflow.python.framework import constant_op
+from tensorflow.python.framework import ops
+from tensorflow.python.keras.utils import generic_utils
+from tensorflow.python.ops import control_flow_ops
+from tensorflow.python.ops import math_ops
+from tensorflow.python.ops import random_ops
+from tensorflow.python.util import nest
+from tensorflow.python.util.tf_export import keras_export
 @keras_export("keras.optimizers.schedules.CosineDecayRestarts")
 class CosineDecayRestarts(LearningRateSchedule):
     """A LearningRateSchedule that uses a cosine decay schedule with restarts.
