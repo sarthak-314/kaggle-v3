@@ -73,7 +73,6 @@ def mixup(image, label, batch_size, img_size, classes, prob = 1.0):
 
 def get_cutmix_mixup(img_size, classes, batch_size, cutmix_prob=0.5, mixup_prob=0.5):
     def cutmix_fn(img, label): 
-        print('cutmix_fn called')
         return cutmix(img, label, batch_size, img_size, classes, prob=cutmix_prob)
     def mixup_fn(img, label): 
         return mixup(img, label, batch_size, img_size, classes, prob=mixup_prob)
