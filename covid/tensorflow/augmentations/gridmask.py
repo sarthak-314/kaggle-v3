@@ -102,7 +102,7 @@ def apply_grid_mask(image, image_shape, aug_params_gridmask):
     if image_shape[-1] == 3:
         mask = tf.concat([mask, mask, mask], axis=-1)
 
-    return image * tf.cast(mask, tf.uint8)
+    return image * tf.cast(mask, tf.float32)
 
 
 def get_grid_mask(img_size, aug_params_gridmask):
