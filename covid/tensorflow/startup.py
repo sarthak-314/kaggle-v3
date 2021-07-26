@@ -4,9 +4,11 @@ import tensorflow_hub as hub
 import tensorflow as tf
 
 # Full Imports 
+from covid.tensorflow.augmentations.main import get_img_transforms, get_batch_transforms
 from covid.tensorflow.callbacks import * 
 from covid.tensorflow.model import * 
 from covid.tensorflow.data import * 
+
 
 def auto_select_accelerator():
     try:
@@ -66,3 +68,13 @@ def enable_mixed_precision():
     mixed_precision.set_policy(policy)
     print('Mixed precision enabled')
 
+def get_decode_fn(img_extension, channels):
+    def decode_fn(path, label): 
+        file_bytes = tf.io.read_file(path)
+        if img_extension == 'png':
+            img = tf.image.decode_png(file_bytes, channels=channels)
+        elif img_extension in ['jpg', 'jpeg']:
+            img = tf.image.decode_jpeg(file_bytes, channels=channels)
+        img = tf.cast(img, tf.float32) / 255.0
+        return img, label
+    return decode_fn

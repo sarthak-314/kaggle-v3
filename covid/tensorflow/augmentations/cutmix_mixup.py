@@ -71,9 +71,9 @@ def mixup(image, label, batch_size, img_size, classes, prob = 1.0):
     label2 = tf.reshape(tf.stack(labs),(batch_size,classes))
     return image2,label2
 
-def get_cutmix_mixup(img_size, classes, cutmix_prob=0.5, mixup_prob=0.5):
-    def cutmix_fn(img, label, batch_size): 
+def get_cutmix_mixup(img_size, classes, batch_size, cutmix_prob=0.5, mixup_prob=0.5):
+    def cutmix_fn(img, label): 
         return cutmix(img, label, batch_size, img_size, classes, prob=cutmix_prob)
-    def mixup_fn(img, label, batch_size): 
+    def mixup_fn(img, label): 
         return mixup(img, label, batch_size, img_size, classes, prob=mixup_prob)
     return cutmix_fn, mixup_fn
