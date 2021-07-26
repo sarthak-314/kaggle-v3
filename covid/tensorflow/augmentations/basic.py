@@ -193,33 +193,7 @@ def get_basic_augmentations():
     return get_basic_augs, get_random_scale, get_random_rotate, get_random_cutout, get_random_blur, get_resize_fn
 
 
-AUG_PARAMS = {
-    'scale': {
-        'zoom_in': 0,1, 
-        'zoom_out': 0.75, 
-        'prob': 0.75, 
-    }, 
-    'rot_prob': 0.75, 
-    'cutout': {
-        'sh': 0.2, 
-        'sl': 0.1,
-        'rl': 0.4,
-        'prob': 0.2, 
-    }, 
-    'blur': {
-        'ksize': 5, 
-        'prob': 0.2
-    }, 
-    'cutmix_prob': 0.75, 
-    'mixup_prob': 0.25, 
-    'gridmask': {
-        'd1': 160, 
-        'd2': 100, 
-        'rotate': 45, 
-        'ratio': 0.5, 
-        'prob': 0.5, 
-    },
-}
+
 """
 get_basic_augs, get_random_scale, get_random_rotate, get_random_cutout, get_random_blur, get_resize_fn = get_basic_augmentations()
 
@@ -237,7 +211,7 @@ random_blur = get_random_blur(AUG_PARAMS['blur'])
 resize = get_resize_fn(IMG_SIZE)
 
 cutmix, mixup = get_cutmix_mixup(IMG_SIZE, classes, cutmix_prob=AUG_PARAMS['cutmix_prob'], mixup_prob=AUG_PARAMS['mixup_prob'])
-
+gridmask = get_gridmask()
 """
 
 
