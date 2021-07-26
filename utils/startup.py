@@ -144,7 +144,7 @@ def log_remotely(channel_name):
     
     
 def get_gcs_path_fn(gcs_path, dataset_dir): 
-    def get_gcs_path(org_path):
+    def get_gcs_path(org_path, dataset_dir=dataset_dir ,gcs_path=gcs_path):
         org_path, dataset_dir = str(org_path), str(dataset_dir)
         gcs_path = org_path.replace(dataset_dir, gcs_path)
         return gcs_path
