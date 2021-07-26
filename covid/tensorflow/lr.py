@@ -202,4 +202,4 @@ class WarmUpCosineDecayScheduler(keras.callbacks.Callback):
         K.set_value(self.model.optimizer.lr, lr)
         if self.verbose > 0:
             if batch < 10 or batch // 64 == 0: 
-            print('\nBatch %05d: setting lr to %s.' % (self.global_step + 1, lr))
+                print('\nBatch %05d: setting lr to %s.' % (self.global_step + 1, lr))
