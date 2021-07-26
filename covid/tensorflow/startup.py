@@ -3,11 +3,14 @@ import tensorflow_addons as tfa
 import tensorflow_hub as hub
 import tensorflow as tf
 
-# Full Imports 
-from covid.tensorflow.augmentations.main import get_img_transforms, get_batch_transforms
+# Full Module Imports 
 from covid.tensorflow.callbacks import * 
 from covid.tensorflow.model import * 
 from covid.tensorflow.data import * 
+
+# Function Imports
+from covid.tensorflow.augmentations.main import get_img_transforms, get_batch_transforms
+from covid.tensorflow.model import save_model
 
 
 def auto_select_accelerator():

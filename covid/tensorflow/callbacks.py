@@ -71,7 +71,7 @@ def make_callbacks_list(model, callbacks):
     )
     
 
-def get_lr_callback(lr_min=1e-8, lr_warmup_epochs=10, lr_max=1e-3):
+def get_lr_callback(lr_warmup_epochs=10, lr_max=1e-3, lr_min=1e-8, ):
     def lrfn(epoch): 
         EXP_DECAY = 0.9
         if epoch < lr_warmup_epochs: 
