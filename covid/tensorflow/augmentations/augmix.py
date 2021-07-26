@@ -270,8 +270,8 @@ def apply_op(image, level, which, img_size):
     # augmented = tf.cond(which == tf.constant([7], dtype=tf.int32), lambda: posterize(affine_transform, image, level), lambda: augmented)
     # augmented = tf.cond(which == tf.constant([8], dtype=tf.int32), lambda: autocontrast(affine_transform, image, level), lambda: augmented)
     # augmented = tf.cond(which == tf.constant([9], dtype=tf.int32), lambda: equalize(affine_transform, image, level), lambda: augmented)
-    # augmented = tf.cond(which == tf.constant([10], dtype=tf.int32), lambda:color(affine_transform, image, level), lambda: augmented)
-    # augmented = tf.cond(which == tf.constant([11], dtype=tf.int32), lambda: contrast(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([10], dtype=tf.int32), lambda:color(affine_transform, image, level), lambda: augmented)
+    augmented = tf.cond(which == tf.constant([11], dtype=tf.int32), lambda: contrast(affine_transform, image, level), lambda: augmented)
     augmented = tf.cond(which == tf.constant([12], dtype=tf.int32), lambda: brightness(affine_transform, image, level), lambda: augmented)
     return augmented
 
