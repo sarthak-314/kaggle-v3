@@ -11,7 +11,7 @@ from covid.tensorflow.data import *
 # Function / Classes Imports
 from covid.tensorflow.augmentations.main import get_img_transforms, get_batch_transforms
 from covid.tensorflow.model import save_model
-from covid.tensorflow.lr import WarmUpCosineDecayScheduler, LRFinderCallback
+from covid.tensorflow.lr import WarmUpCosineDecayScheduler, LRFinder
 
 def auto_select_accelerator():
     try:
