@@ -15,8 +15,11 @@ import subprocess
 import warnings
 import random
 import shutil
-import pickle
-import torch
+import picklet
+try: 
+    import torch
+except: 
+    print('Could not import torch')
 import json
 import math
 import glob
