@@ -301,7 +301,7 @@ class CosineDecayRestarts(LearningRateSchedule):
     step and outputs the decayed learning rate, a scalar `Tensor` of the same
     type as `initial_learning_rate`.
     """
-    def __init__(self, initial_learning_rate, first_decay_steps, t_mul=2.0, m_mul=1.0, alpha=0, name=None): 
+    def __init__(self, initial_learning_rate, first_decay_steps, train_steps, t_mul=2.0, m_mul=1.0, alpha=0, name=None): 
         super(CosineDecayRestarts, self).__init__()
         self.initial_learning_rate = initial_learning_rate
         self.first_decay_steps = first_decay_steps
@@ -309,10 +309,18 @@ class CosineDecayRestarts(LearningRateSchedule):
         self._m_mul = m_mul
         self.alpha = alpha
         self.name = name
+        self.train_steps = train_steps
 
     def __call__(self, step): 
-        if step < 1024: 
+        # First 3 Epochs: Increase to 1e-6
+        if step < self.train_steps: 
+            return (step/self.train_steps) * 1e-8
+        if step <= 2 * self.train_steps: 
+            return 1e-7
+        if step <= 3 * self.train_steps: 
             return 1e-6
+        if step <= 5 * self.train_steps: 
+            return 1e-5
         with ops.name_scope_v2(self.name or 'SGDRDecay') as name:
             initial_learning_rate = ops.convert_to_tensor_v2_with_dispatch(
                 self.initial_learning_rate, name="initial_learning_rate")
