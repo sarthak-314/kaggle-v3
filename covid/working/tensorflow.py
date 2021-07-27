@@ -28,7 +28,7 @@ def load_model(weights_path, final_layers, dropout):
     with STRATEGY.scope(): 
         model = build_model(dropout, final_layers)
         model.build((None, IMAGE_SIZE_TRAIN, IMAGE_SIZE_TRAIN, 3)); model.summary()
-        model.load_weights(weights) 
+        model.load_weights(weights_path) 
         model.layers[0].trainable = True
         for layer in model.layers: layer.trainable = True
         # model.pop(); model.add(tf.keras.layers.Dense(4))
