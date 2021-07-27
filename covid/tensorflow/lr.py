@@ -303,7 +303,7 @@ class CosineDecayRestarts(LearningRateSchedule):
     type as `initial_learning_rate`.
     """
     def __init__(self, lr, decay_epochs, train_steps, t_mul=2.0, m_mul=1.0, alpha=0, name=None): 
-        super(CosineDecayRestarts, self).__init__()
+        super().__init__()
         self.initial_learning_rate = lr
         self.first_decay_steps = int(decay_epochs*train_steps)
         self._t_mul = t_mul
@@ -313,13 +313,13 @@ class CosineDecayRestarts(LearningRateSchedule):
         self.train_steps = train_steps
 
     def __call__(self, step): 
-        # First 5 epochs: Very gradual warmup lr
-        if step < self.train_steps: 
-            tf.Tensor((step/self.train_steps) * 1e-10, dtype=tf.float32)
-        if step <= 2 * self.train_steps: 
-            return tf.Tensor(1e-8, dtype=tf.float32)
-        if step <= 3 * self.train_steps: 
-            return tf.Tensor(1e-6, dtype=tf.float32)
+        # # First 5 epochs: Very gradual warmup lr
+        # if step < self.train_steps: 
+        #     tf.Tensor((step/self.train_steps) * 1e-10, dtype=tf.float32)
+        # if step <= 2 * self.train_steps: 
+        #     return tf.Tensor(1e-8, dtype=tf.float32)
+        # if step <= 3 * self.train_steps: 
+        #     return tf.Tensor(1e-6, dtype=tf.float32)
         
         with ops.name_scope_v2(self.name or 'SGDRDecay') as name:
             initial_learning_rate = ops.convert_to_tensor_v2_with_dispatch(
