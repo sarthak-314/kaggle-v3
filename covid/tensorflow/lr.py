@@ -319,10 +319,10 @@ class CosineDecayRestarts(LearningRateSchedule):
             return 1e-8
         if step <= 3 * self.train_steps: 
             return 1e-6
-        if step <= 4 * self.train_steps: 
-            return 1e-5
-        if step <= 5 * self.train_steps: 
-            return 5e-5
+        if step <= 10 * self.train_steps:
+            epoch = self.train_steps//step
+            return min(epoch*2e-5, self.initial_learning_rate)
+        
         with ops.name_scope_v2(self.name or 'SGDRDecay') as name:
             initial_learning_rate = ops.convert_to_tensor_v2_with_dispatch(
                 self.initial_learning_rate, name="initial_learning_rate")
