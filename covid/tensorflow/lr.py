@@ -152,17 +152,8 @@ class SGDRScheduler(Callback):
             self.history.setdefault(k, []).append(v)
 
         self.batch_since_restart += 1
-        # Very Gradual Warmup for 1st 10 epochs
-        if batch < 10: 
-            lr = 1e-12
-        if batch < self.steps_per_epoch: 
-            lr = (batch*1e-10)/self.steps_per_epoch
-        elif batch < 10 * self.steps_per_epoch:
-            lr =  1e-9 * (batch//self.steps_per_epoch)**2 
-        else: 
-            lr = self.clr()
-        if batch // 128 == 0: 
-            print(f'batch {batch} lr: {lr}')
+        lr = self.clr()
+        print(f'\nbatch #{batch} lr: {lr}')
         K.set_value(self.model.optimizer.lr, lr)
 
     def on_epoch_end(self, epoch, logs={}):
