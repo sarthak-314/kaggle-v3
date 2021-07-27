@@ -301,10 +301,10 @@ class CosineDecayRestarts(LearningRateSchedule):
     step and outputs the decayed learning rate, a scalar `Tensor` of the same
     type as `initial_learning_rate`.
     """
-    def __init__(self, initial_learning_rate, first_decay_steps, train_steps, t_mul=2.0, m_mul=1.0, alpha=0, name=None): 
+    def __init__(self, lr, decay_epochs, train_steps, t_mul=2.0, m_mul=1.0, alpha=0, name=None): 
         super(CosineDecayRestarts, self).__init__()
-        self.initial_learning_rate = initial_learning_rate
-        self.first_decay_steps = first_decay_steps
+        self.initial_learning_rate = lr
+        self.first_decay_steps = int(decay_epochs*train_steps)
         self._t_mul = t_mul
         self._m_mul = m_mul
         self.alpha = alpha
