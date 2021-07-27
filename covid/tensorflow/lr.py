@@ -314,14 +314,14 @@ class CosineDecayRestarts(LearningRateSchedule):
     def __call__(self, step): 
         # First 5 epochs: Very gradual warmup lr
         if step < self.train_steps: 
-            return (step/self.train_steps) * 1e-10
+            tf.Tensor((step/self.train_steps) * 1e-10, dtype=tf.float32)
         if step <= 2 * self.train_steps: 
-            return 1e-8
+            return tf.Tensor(1e-8, dtype=tf.float32)
         if step <= 3 * self.train_steps: 
-            return 1e-6
+            return tf.Tensor(1e-6, dtype=tf.float32)
         if step <= 10 * self.train_steps:
             epoch = self.train_steps//step
-            return min(epoch*2e-5, self.initial_learning_rate)
+            return tf.Tensor(min(epoch*2e-5, self.initial_learning_rate), dtype=tf.float32)
         
         with ops.name_scope_v2(self.name or 'SGDRDecay') as name:
             initial_learning_rate = ops.convert_to_tensor_v2_with_dispatch(
