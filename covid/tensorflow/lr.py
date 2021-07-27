@@ -320,7 +320,7 @@ class CosineDecayRestarts(LearningRateSchedule):
         #     return tf.Tensor(1e-8, dtype=tf.float32)
         # if step <= 3 * self.train_steps: 
         #     return tf.Tensor(1e-6, dtype=tf.float32)
-        
+        print('step: ', step)
         with ops.name_scope_v2(self.name or 'SGDRDecay') as name:
             initial_learning_rate = ops.convert_to_tensor_v2_with_dispatch(
                 self.initial_learning_rate, name="initial_learning_rate")
@@ -355,8 +355,9 @@ class CosineDecayRestarts(LearningRateSchedule):
         cosine_decayed = 0.5 * m_fac * (1.0 + math_ops.cos(
             constant_op.constant(math.pi) * completed_fraction))
         decayed = (1 - alpha) * cosine_decayed + alpha
-
-        return math_ops.multiply(initial_learning_rate, decayed, name=name)
+        lr = math_ops.multiply(initial_learning_rate, decayed, name=name)
+        print('lr: ', lr)
+        return lr
 
     def get_config(self):
         return {
