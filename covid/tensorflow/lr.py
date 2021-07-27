@@ -170,8 +170,14 @@ class SGDRScheduler(Callback):
             self.cycle_length = np.ceil(self.cycle_length * self.mult_factor)
             self.next_restart += self.cycle_length
             self.max_lr *= self.lr_decay
-            self.best_weights = self.model.get_weights()
+            try: 
+                self.best_weights = self.model.get_weights()
+            except: 
+                print('Could not set best weights')
             
     def on_train_end(self, logs={}):
         '''Set weights to the values from the end of the most recent cycle for best performance.'''
-        self.model.set_weights(self.best_weights)
+        try: 
+            self.model.set_weights(self.best_weights)
+        except: 
+            print('Set best weights skipped')
