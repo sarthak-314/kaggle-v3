@@ -1,6 +1,7 @@
 from tensorflow.keras.callbacks import Callback
 import tensorflow.keras.backend as K
 import matplotlib.pyplot as plt
+import tensorflow as tf
 import numpy as np
 
 class LRFinder(Callback):
@@ -319,9 +320,6 @@ class CosineDecayRestarts(LearningRateSchedule):
             return tf.Tensor(1e-8, dtype=tf.float32)
         if step <= 3 * self.train_steps: 
             return tf.Tensor(1e-6, dtype=tf.float32)
-        if step <= 10 * self.train_steps:
-            epoch = self.train_steps//step
-            return tf.Tensor(min(epoch*2e-5, self.initial_learning_rate), dtype=tf.float32)
         
         with ops.name_scope_v2(self.name or 'SGDRDecay') as name:
             initial_learning_rate = ops.convert_to_tensor_v2_with_dispatch(
