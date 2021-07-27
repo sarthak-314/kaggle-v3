@@ -337,6 +337,18 @@ class CosineDecayRestarts(LearningRateSchedule):
                 i_restart = math_ops.floor(completed_fraction)
                 completed_fraction -= i_restart
             return i_restart, completed_fraction
+        
+        i_restart, completed_fraction = control_flow_ops.cond(
+            math_ops.equal(t_mul, 1.0),
+            lambda: compute_step(completed_fraction, geometric=False),
+            lambda: compute_step(completed_fraction, geometric=True))
+
+        m_fac = m_mul**i_restart
+        cosine_decayed = 0.5 * m_fac * (1.0 + math_ops.cos(
+            constant_op.constant(math.pi) * completed_fraction))
+        decayed = (1 - alpha) * cosine_decayed + alpha
+
+        return math_ops.multiply(initial_learning_rate, decayed, name=name)
 
     def get_config(self):
         return {
