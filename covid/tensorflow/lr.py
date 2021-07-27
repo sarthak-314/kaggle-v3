@@ -161,6 +161,8 @@ class SGDRScheduler(Callback):
             lr =  1e-9 * (batch//self.steps_per_epoch)**2 
         else: 
             lr = self.clr()
+        if batch // 128 == 0: 
+            print(f'batch {batch} lr: {lr}')
         K.set_value(self.model.optimizer.lr, lr)
 
     def on_epoch_end(self, epoch, logs={}):
