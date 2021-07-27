@@ -305,7 +305,7 @@ class CosineDecayRestarts(LearningRateSchedule):
     def __init__(self, lr, decay_epochs, train_steps, t_mul=2.0, m_mul=1.0, alpha=0, name=None): 
         super().__init__()
         self.initial_learning_rate = lr
-        self.first_decay_steps = int(decay_epochs*train_steps)
+        self.first_decay_steps = decay_epochs*train_steps
         self._t_mul = t_mul
         self._m_mul = m_mul
         self.alpha = alpha
