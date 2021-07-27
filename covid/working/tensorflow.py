@@ -3,7 +3,7 @@ user_secrets = UserSecretsClient()
 DIR, NAME = user_secrets.get_secret('DIR'), user_secrets.get_secret('NAME')
 import subprocess
 subprocess.run(['git', 'clone', NAME, DIR])
-%run $DIR'/covid/startup.py'
+
 
 FOLD_NUMBER_TO_TAKE = 0
 BACKBONE_TO_TRAIN, IMAGE_SIZE_TRAIN = 'efficientnetv2-xl-21k-ft1k', 512
@@ -12,7 +12,6 @@ sync(); train, valid, test = read_dataframes(FOLD_NUMBER_TO_TAKE)
 THE_SAVE_PATH_DIR = WORKING_DIR / 'Checkpoints'
 
 # Tensorflow Setup
-%run $DIR'/covid/tensorflow/startup.py'
 STRATEGY = auto_select_accelerator()
 # enable_mixed_precision() ## BUG: Loading from TFHub
 # WEIGHTS_PATH = KAGGLE_INPUT_DIR/'tensorflow-models'/'effnetv2_cxr100.h5'
