@@ -13,7 +13,8 @@ def apply_to_img(func, ds):
     return ds
 
 def get_steps(df, batch_size): 
-    return len(df) // batch_size
+    steps = len(df) // batch_size
+    return max(steps, 1)
 
 def visualize_augmentations(should_visualize, train_ds, rows, cols): 
     if not should_visualize: 
