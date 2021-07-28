@@ -5,7 +5,8 @@ import tensorflow as tf
 
 # Full Module Imports 
 from covid.tensorflow.callbacks import * 
-from covid.tensorflow.model import * 
+from covid.tensorflow.tfrecord import * 
+from covid.tensorflow.model import *
 from covid.tensorflow.data import * 
 from covid.tensorflow.lr import *
 
