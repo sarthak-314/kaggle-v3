@@ -27,6 +27,8 @@ def build_dataset(img_paths, labels, decode_fn, img_transforms=[], batch_transfo
         ds = ds.map(batch_transform, num_parallel_calls=tf.data.AUTOTUNE)
     return ds.prefetch(tf.data.AUTOTUNE)
 
+
+
 def _get_steps(df, batch_size): 
     steps = len(df) // batch_size
     return max(steps, 1)

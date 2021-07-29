@@ -39,7 +39,6 @@ def get_decode_fn(img_extension, channels):
             img = tf.image.decode_png(file_bytes, channels=channels)
         elif img_extension in ['jpg', 'jpeg']:
             img = tf.image.decode_jpeg(file_bytes, channels=channels)
-        img = tf.cast(img, tf.float32) / 255.0
         return img, label
     return decode_fn
 
@@ -68,3 +67,15 @@ def get_tfrec_builder(img_size, shard_size, tfrec_dir, random_state):
             os.makedirs(dataset_tfrec_dir, exist_ok=True)
             build_tfrecords(split_df, img_size, shard_size, dataset_tfrec_dir, ext=ext)
     return tfrec_builder
+
+
+
+def read_tfrecord(example): 
+    features = {
+        'img': tf.io.FixedLenFeature([], tf.string), 
+        'label': tf.io.FixedLenFeature([], tf.string), 
+    }
+    example = tf.io.parse_single_example(example, features)
+    img = tf.image.decode_jpeg(example['image'], channels=3)
+    label  = example['label']
+    return img, label
