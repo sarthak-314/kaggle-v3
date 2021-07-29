@@ -21,11 +21,16 @@ def _get_ranger(ranger_kwargs):
     ranger = tfa.optimizers.Lookahead(radam, sync_period=6, slow_step_size=0.5)
     return ranger
 
-def build_model(tfhub_url, num_dense, dropout=0.5): 
+def build_model(tfhub_url, z_dim, num_dense, dropout=0.5): 
     model = tf.keras.Sequential([
         hub.KerasLayer(tfhub_url, trainable=True), 
+        tf.keras.layers.Dense(
+            z_dim, 
+            activation=tfa.activations.mish, 
+            kernel_regularizer=tf.keras.regularizers.l2(1e-4)
+        ),
         tf.keras.layers.Dropout(dropout), 
-        tf.keras.layers.Dense(num_dense, kernel_regularizer=tf.keras.regularizers.l2(1e-4)),
+        tf.keras.layers.Dense(num_dense, kernel_regularizer=tf.keras.regularizers.l2(1e-3)),
     ])
     return model
 
