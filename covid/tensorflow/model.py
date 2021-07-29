@@ -1,4 +1,5 @@
 import tensorflow_addons as tfa
+from termcolor import colored
 import tensorflow_hub as hub
 import tensorflow as tf
 import wandb
@@ -55,3 +56,8 @@ def save_model(model, path):
     except: 
         print('Skipping wandb save')
 
+def save_weights(model, filepath): 
+    filepath = str(filepath)
+    print('Saving model weights at', colored(filepath, 'blue'))
+    model.save_weights(filepath=filepath, options=get_save_locally())
+    
