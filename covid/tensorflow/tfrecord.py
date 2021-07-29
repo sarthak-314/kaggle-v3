@@ -1,6 +1,9 @@
 from sklearn.model_selection import train_test_split
 from tqdm.auto import tqdm
+from termcolor import colored
 import tensorflow as tf
+import random
+import glob
 import os
 
 def compress_img(img, label):
@@ -82,3 +85,15 @@ def read_tfrecord(example):
     img = tf.image.decode_jpeg(example['image'], channels=3)
     label  = example['label']
     return img, label
+
+def load_tfrecords(tfrec_dir, load_datasets): 
+    train_tfrecords = []
+    valid_tfrecords = []
+    for dataset_name in load_datasets: 
+        train_tfrecords += glob.glob(str(tfrec_dir/dataset_name/'train'/'*.tfrec'), recursive=True)
+        valid_tfrecords += glob.glob(str(tfrec_dir/dataset_name/'valid'/'*.tfrec'), recursive=True)
+    random.shuffle(train_tfrecords)
+    random.shuffle(valid_tfrecords)
+    print(colored(len(train_tfrecords), 'blue'), 'train tfrecords found')
+    print(colored(len(valid_tfrecords), 'blue'), 'valid tfrecords found')
+    return train_tfrecords, valid_tfrecords
