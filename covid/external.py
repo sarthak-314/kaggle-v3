@@ -40,6 +40,17 @@ def build_covid19_radiography(dataset_dir):
     df = pd.DataFrame.from_dict(df_dict)
     return df
 
-
-
+def build_chest_xray_pneumonia(dataset_dir): 
+    filepaths = get_all_filepaths(dataset_dir)
+    df_dict = {'img_path': [], 'label': []}
+    for filepath in filepaths: 
+        if 'png' not in filepath: continue
+        if 'PNEUMONIA' in filepath: 
+            label = 'pneumonia'
+        elif 'NORMAL' in filepath: 
+            label = 'normal'
+        df_dict['img_path'].append(filepath)
+        df_dict['label'].append(label)
+    df = pd.DataFrame.from_dict(df_dict)
+    return df
 
