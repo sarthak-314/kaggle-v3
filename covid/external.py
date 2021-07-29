@@ -13,6 +13,8 @@ def build_cxr(dataset_dir):
     cxr_df = cxr_df[cxr_df.filename.str.contains('png')]
     cxr_df = cxr_df[cxr_df.source!='actmed'] # BUG: BMP Images
     cxr_df['img_path'] = cxr_df.filename.apply(lambda fp: str(dataset_dir/'train'/fp))
+    label_map = {'negative': 'normal', 'positive': 'covid'}
+    cxr_df.label = cxr_df.label.map(label_map)
     return cxr_df
 
 def build_bimcv(dataset_dir): 
