@@ -14,13 +14,14 @@ def get_all_filepaths(data_dir):
     return filepaths
 
 def post_process(df, kaggle_dataset):
-    print(colored(kaggle_dataset, 'blue')) 
+    print('Processing', colored(kaggle_dataset, 'blue')) 
+    print(f'Length of {kaggle_dataset} df: ', colored(len(df), 'blue'))
     df = df[['img_path', 'label']]
     df.img_path = df.img_path.apply(str)
     df['img_ext'] = df.img_path.apply(lambda x: x.split('.')[-1])
     df = df[(df.img_ext=='png') | (df.img_ext=='jpg') | (df.img_ext=='jpeg')]
     print(df.label.value_counts())
-    print('Length of df: ', colored(len(df), 'green'))
+    print()
     return df
 
 def build_cxr(dataset_dir=KAGGLE_INPUT_DIR/'covidx-cxr2'): 

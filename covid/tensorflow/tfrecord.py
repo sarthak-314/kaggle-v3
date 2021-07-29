@@ -57,8 +57,8 @@ def build_tfrecords(df, img_size, shard_size, tfrec_dir, ext='png'):
             print("Wrote file {} containing {} records".format(filename, shard_size))
             
 def get_tfrec_builder(img_size, shard_size, tfrec_dir): 
-    def tfrec_builder(df, dataset_name, ext): 
-        dataset_tfrec_dir = tfrec_dir / dataset_name
+    def tfrec_builder(df, dataset_name, split, ext): 
+        dataset_tfrec_dir = tfrec_dir / dataset_name / split 
         print(f'Building TFRecords in {dataset_tfrec_dir}')
         os.makedirs(dataset_tfrec_dir, exist_ok=True)
         return build_tfrecords(df, img_size, shard_size, dataset_tfrec_dir, ext=ext)
