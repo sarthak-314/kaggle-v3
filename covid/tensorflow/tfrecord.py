@@ -44,7 +44,9 @@ def get_decode_fn(img_extension, channels):
 def build_tfrecords(df, img_size, shard_size, tfrec_dir): 
     decode_fn = get_decode_fn('png', 3) 
     print('Using png decode fn')    
-    resize_fn = lambda img: tf.image.resize(img, size=[img_size, img_size])
+    def resize_fn(img, label): 
+        img = tf.image.resize(img, size=[img_size, img_size])
+        return img, label
     ds = get_tfrec_dataset(df.img_path.values, df.label.values, shard_size, decode_fn, resize_fn)
     for shard, (img, label) in tqdm(enumerate(ds), total=len(df)//shard_size):
         filename = str(tfrec_dir / f'{shard}-{shard_size}.tfrec')
