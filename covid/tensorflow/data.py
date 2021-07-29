@@ -42,7 +42,7 @@ def get_decode_fn(img_extension, channels):
         return img, label
     return decode_fn
 
-def get_img_transforms(img_transforms, img_size, aug_params): 
+def _get_img_transforms(img_transforms, img_size, aug_params): 
     get_basic_augs, get_random_scale, get_random_rotate, get_random_cutout, get_random_blur, get_resize_fn = get_basic_augmentations()
     transform_string_to_transform = {
         'basic_augmentations': get_basic_augs(img_size), 
@@ -80,7 +80,7 @@ def get_train_ds_fn(img_size, img_ext, num_classes, aug_params, img_transforms, 
             img_paths=train.img_path.values, 
             labels=pd.get_dummies(train.label).values, 
             decode_fn=get_decode_fn(img_ext, channels=3), 
-            img_transforms=get_img_transforms(img_transforms, img_size, aug_params), 
+            img_transforms=_get_img_transforms(img_transforms, img_size, aug_params), 
             batch_transforms=_get_batch_transforms(batch_transforms, img_size, aug_params, num_classes, batch_size), 
             batch_size=batch_size, 
             is_training=False, 
@@ -107,7 +107,7 @@ def get_clean_ds_fn(img_size, img_ext, aug_params, img_transforms=['resize']):
             img_paths=df.img_path.values, 
             labels=pd.get_dummies(df.label).values, 
             decode_fn= get_decode_fn(img_ext, channels=3), 
-            img_transforms=get_img_transforms(img_transforms, img_size, aug_params), 
+            img_transforms=_get_img_transforms(img_transforms, img_size, aug_params), 
             batch_transforms=[], 
             batch_size=batch_size, 
             is_training=False, 

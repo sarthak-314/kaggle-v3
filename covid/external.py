@@ -1,3 +1,5 @@
+from sklearn.utils.class_weight import compute_class_weight
+from termcolor import colored
 import pandas as pd
 import glob
 import os 
@@ -57,3 +59,17 @@ def build_chest_xray_pneumonia(dataset_dir):
     df = pd.DataFrame.from_dict(df_dict)
     return df
 
+
+def process_df(dataframes, labels): 
+    df = pd.concat(dataframes)
+    df = df[['img_path', 'label']]
+    df.img_path = df.img_path.apply(str)
+    df['img_ext'] = df.img_path.apply(lambda x: x.split('.')[-1])
+    df = df[(df.img_ext=='png') | (df.img_ext=='jpg') | (df.img_ext=='jpeg')]
+    label2idx = {label:idx for idx, label in enumerate(labels)}
+    print(f'Label to index: {label2idx}')
+    df.label = df.label.map(label2idx)
+    print(df.label.value_counts())
+    print('Class weights: ', compute_class_weight('balanced', list(range(len(labels))), df.label.values))
+    print('Length of df: ', colored(len(df), 'green'))
+    return df
