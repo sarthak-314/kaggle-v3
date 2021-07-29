@@ -1,3 +1,4 @@
+from sklearn.model_selection import train_test_split
 from tqdm.auto import tqdm
 import tensorflow as tf
 import os
@@ -56,10 +57,14 @@ def build_tfrecords(df, img_size, shard_size, tfrec_dir, ext='png'):
                 out_file.write(example.SerializeToString())
             print("Wrote file {} containing {} records".format(filename, shard_size))
             
-def get_tfrec_builder(img_size, shard_size, tfrec_dir): 
-    def tfrec_builder(df, dataset_name, split, ext): 
-        dataset_tfrec_dir = tfrec_dir / dataset_name / split 
-        print(f'Building TFRecords in {dataset_tfrec_dir}')
-        os.makedirs(dataset_tfrec_dir, exist_ok=True)
-        return build_tfrecords(df, img_size, shard_size, dataset_tfrec_dir, ext=ext)
+def get_tfrec_builder(img_size, shard_size, tfrec_dir, random_state): 
+    def tfrec_builder(df, dataset_name, ext): 
+        train, valid = train_test_split(df, test_size=0.2, random_state=random_state)
+        for split in 'train', 'valid': 
+            print(f'Building TFRecords for {split} split')
+            split_df = train if split is 'train' else valid
+            dataset_tfrec_dir = tfrec_dir / dataset_name / split 
+            print(f'Building TFRecords in {dataset_tfrec_dir}')
+            os.makedirs(dataset_tfrec_dir, exist_ok=True)
+            build_tfrecords(split_df, img_size, shard_size, dataset_tfrec_dir, ext=ext)
     return tfrec_builder
