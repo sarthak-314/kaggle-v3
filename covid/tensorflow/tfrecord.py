@@ -41,9 +41,8 @@ def get_decode_fn(img_extension, channels):
         return img, label
     return decode_fn
 
-def build_tfrecords(df, img_size, shard_size, tfrec_dir): 
-    decode_fn = get_decode_fn('png', 3) 
-    print('Using png decode fn')    
+def build_tfrecords(df, img_size, shard_size, tfrec_dir, ext='png'): 
+    decode_fn = get_decode_fn(ext, 3) 
     def resize_fn(img, label): 
         img = tf.image.resize(img, size=[img_size, img_size])
         return img, label
@@ -55,3 +54,8 @@ def build_tfrecords(df, img_size, shard_size, tfrec_dir):
                 example = to_tfrecord(out_file, img.numpy()[i], label.numpy()[i])
                 out_file.write(example.SerializeToString())
             print("Wrote file {} containing {} records".format(filename, shard_size))
+            
+def get_tfrec_builder(img_size, shard_size, tfrec_dir): 
+    def tfrec_builder(df, ext): 
+        return build_tfrecords(df, img_size, shard_size, tfrec_dir, ext=ext)
+    return tfrec_builder
