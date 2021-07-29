@@ -1,10 +1,10 @@
 from tqdm.auto import tqdm
 import tensorflow as tf
 
-def compress_img(img):
+def compress_img(img, label):
     img = tf.cast(img, tf.uint8)
     img = tf.io.encode_jpeg(img, optimize_size=True)
-    return img
+    return img, label
 
 def _bytestring_feature(list_of_bytestrings):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=list_of_bytestrings))
@@ -16,12 +16,10 @@ def _float_feature(list_of_floats): # float32
     return tf.train.Feature(float_list=tf.train.FloatList(value=list_of_floats))
 
 def get_tfrec_dataset(img_paths, labels, shard_size, decode_fn, resize_fn):
-    path_ds = tf.data.Dataset.from_tensor_slices(img_paths)
-    label_ds = tf.data.Dataset.from_tensor_slices(labels) 
-    img_ds = path_ds.map(decode_fn, num_parallel_calls=tf.data.AUTOTUNE)
-    img_ds = img_ds.map(resize_fn, num_parallel_calls=tf.data.AUTOTUNE)
-    img_ds = img_ds.map(compress_img, num_parallel_calls=tf.data.AUTOTUNE)
-    ds = tf.data.Dataset.zip((img_ds, label_ds))
+    ds = tf.data.Dataset.from_tensor_slices((img_paths, labels))
+    ds = ds.map(decode_fn, num_parallel_calls=tf.data.AUTOTUNE)
+    ds = ds.map(resize_fn, num_parallel_calls=tf.data.AUTOTUNE)
+    ds = ds.map(compress_img, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.batch(shard_size, drop_remainder=False)
     return ds
 
