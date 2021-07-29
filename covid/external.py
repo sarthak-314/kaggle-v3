@@ -1,6 +1,6 @@
 import pandas as pd
 import glob
-
+import os 
 def get_all_filepaths(data_dir):
     filepaths = glob.glob(str(data_dir / '**' / '*'), recursive=True) 
     print(f'{len(filepaths)} files found in {data_dir}')    
@@ -44,6 +44,7 @@ def build_chest_xray_pneumonia(dataset_dir):
     filepaths = get_all_filepaths(dataset_dir)
     df_dict = {'img_path': [], 'label': []}
     for filepath in filepaths: 
+        if os.isdir(filepath): continue
         if 'PNEUMONIA' in filepath: 
             label = 'pneumonia'
         elif 'NORMAL' in filepath: 
