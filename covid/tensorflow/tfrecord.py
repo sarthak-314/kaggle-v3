@@ -22,7 +22,7 @@ def get_tfrec_dataset(img_paths, labels, shard_size, decode_fn, resize_fn):
     ds = ds.map(decode_fn, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.map(resize_fn, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.map(compress_img, num_parallel_calls=tf.data.AUTOTUNE)
-    ds = ds.batch(shard_size, drop_remainder=False)
+    ds = ds.batch(shard_size, drop_remainder=True)
     return ds
 
 def to_tfrecord(tfrec_filewriter, img_bytes, label):
