@@ -82,7 +82,7 @@ def read_tfrecord(example):
         'label': tf.io.FixedLenFeature([], tf.string), 
     }
     example = tf.io.parse_single_example(example, features)
-    img = tf.image.decode_jpeg(example['image'], channels=3)
+    img = tf.image.decode_jpeg(example['img'], channels=3)
     label  = example['label']
     return img, label
 
