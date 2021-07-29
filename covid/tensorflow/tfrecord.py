@@ -1,5 +1,6 @@
 from tqdm.auto import tqdm
 import tensorflow as tf
+import os
 
 def compress_img(img, label):
     img = tf.cast(img, tf.uint8)
@@ -59,5 +60,6 @@ def get_tfrec_builder(img_size, shard_size, tfrec_dir):
     def tfrec_builder(df, dataset_name, ext): 
         dataset_tfrec_dir = tfrec_dir / dataset_name
         print(f'Building TFRecords in {dataset_tfrec_dir}')
+        os.makedirs(dataset_tfrec_dir, exist_ok=True)
         return build_tfrecords(df, img_size, shard_size, dataset_tfrec_dir, ext=ext)
     return tfrec_builder
