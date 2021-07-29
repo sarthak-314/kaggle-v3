@@ -1,6 +1,7 @@
 import pandas as pd
 import glob
 import os 
+
 def get_all_filepaths(data_dir):
     filepaths = glob.glob(str(data_dir / '**' / '*'), recursive=True) 
     print(f'{len(filepaths)} files found in {data_dir}')    
