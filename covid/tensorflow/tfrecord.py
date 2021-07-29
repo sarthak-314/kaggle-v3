@@ -22,7 +22,7 @@ def get_tfrec_dataset(img_paths, labels, shard_size, decode_fn, resize_fn):
     ds = ds.map(decode_fn, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.map(resize_fn, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.map(compress_img, num_parallel_calls=tf.data.AUTOTUNE)
-    ds = ds.batch(shard_size, drop_remainder=True)
+    ds = ds.batch(shard_size, drop_remainder=False)
     return ds
 
 def to_tfrecord(tfrec_filewriter, img_bytes, label):
@@ -52,10 +52,13 @@ def build_tfrecords(df, img_size, shard_size, tfrec_dir, ext='png'):
         filename = str(tfrec_dir / f'{shard}-{shard_size}.tfrec')
         with tf.io.TFRecordWriter(filename) as out_file:
             for i in range(shard_size):
-                example = to_tfrecord(out_file, img.numpy()[i], label.numpy()[i])
-                out_file.write(example.SerializeToString())
+                try: 
+                    example = to_tfrecord(out_file, img.numpy()[i], label.numpy()[i])
+                    out_file.write(example.SerializeToString())
+                except: 
+                    pass
             print("Wrote file {} containing {} records".format(filename, shard_size))
-            
+
 def get_tfrec_builder(img_size, shard_size, tfrec_dir, random_state): 
     def tfrec_builder(df, dataset_name, ext): 
         train, valid = train_test_split(df, test_size=0.2, random_state=random_state)
