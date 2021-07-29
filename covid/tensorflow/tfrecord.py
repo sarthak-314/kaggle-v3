@@ -92,7 +92,7 @@ def load_tfrecords(gcs_path, load_datasets):
     valid_tfrecords = []
     for dataset_name in load_datasets: 
         train_tfrecords += tf.io.gfile.glob(f'{gcs_path}/{dataset_name}/train/*tfrec')
-        train_tfrecords += tf.io.gfile.glob(f'{gcs_path}/{dataset_name}/valid/*tfrec')
+        valid_tfrecords += tf.io.gfile.glob(f'{gcs_path}/{dataset_name}/valid/*tfrec')
     random.shuffle(train_tfrecords)
     random.shuffle(valid_tfrecords)
     print(colored(len(train_tfrecords), 'blue'), 'train tfrecords found')
