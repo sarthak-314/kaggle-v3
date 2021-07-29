@@ -27,7 +27,7 @@ def get_tfrec_dataset(img_paths, labels, shard_size, decode_fn, resize_fn):
 def to_tfrecord(tfrec_filewriter, img_bytes, label):
     feature = {
         "img": _bytestring_feature([img_bytes]), 
-        "label": _int_feature([label]),
+        "label": _bytestring_feature([label]), 
     }
     return tf.train.Example(features=tf.train.Features(feature=feature))
 
