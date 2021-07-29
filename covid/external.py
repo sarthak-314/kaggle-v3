@@ -11,7 +11,7 @@ def build_cxr(dataset_dir):
     cxr_df.columns = ['patient_id', 'filename', 'label', 'source']
     cxr_df = cxr_df[cxr_df.filename.str.contains('png')]
     cxr_df = cxr_df[cxr_df.source!='actmed'] # BUG: BMP Images
-    cxr_df['img_path'] = cxr_df.filepath.apply(lambda fp: str(dataset_dir/fp))
+    cxr_df['img_path'] = cxr_df.filename.apply(lambda fp: str(dataset_dir/fp))
     return cxr_df
 
 def build_bimcv(dataset_dir): 
