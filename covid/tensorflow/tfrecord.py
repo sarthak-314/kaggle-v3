@@ -1,5 +1,4 @@
 from tqdm.auto import tqdm
-from pathlib import Path
 import tensorflow as tf
 
 def compress_img(img, label):
@@ -58,7 +57,7 @@ def build_tfrecords(df, img_size, shard_size, tfrec_dir, ext='png'):
             
 def get_tfrec_builder(img_size, shard_size, tfrec_dir): 
     def tfrec_builder(df, dataset_name, ext): 
-        dataset_tfrec_dir = str(Path(tfrec_dir) / dataset_name)
+        dataset_tfrec_dir = tfrec_dir / dataset_name
         print(f'Building TFRecords in {dataset_tfrec_dir}')
         return build_tfrecords(df, img_size, shard_size, dataset_tfrec_dir, ext=ext)
     return tfrec_builder
