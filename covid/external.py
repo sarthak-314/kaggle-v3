@@ -75,6 +75,5 @@ def process_df(df, labels):
     print(f'Label to index: {label2idx}')
     df.label = df.label.map(label2idx)
     print(df.label.value_counts())
-    print('Class weights: ', compute_class_weight('balanced', list(range(len(labels))), df.label.values))
     print('Length of df: ', colored(len(df), 'green'))
     return df
