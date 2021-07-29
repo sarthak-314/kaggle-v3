@@ -60,8 +60,9 @@ def build_chest_xray_pneumonia(dataset_dir):
     return df
 
 
-def process_df(dataframes, labels): 
-    df = pd.concat(dataframes)
+def process_df(df, labels):
+    if isinstance(df, list): 
+        df = pd.concat(df)
     df = df[['img_path', 'label']]
     df.img_path = df.img_path.apply(str)
     df['img_ext'] = df.img_path.apply(lambda x: x.split('.')[-1])
