@@ -2,6 +2,7 @@ import tensorflow_addons as tfa
 from termcolor import colored
 import tensorflow_hub as hub
 import tensorflow as tf
+from time import time
 import wandb
 import os 
 
@@ -23,6 +24,7 @@ def _get_ranger(ranger_kwargs):
     return ranger
 
 def build_model(tfhub_url, z_dim, num_dense, dropout=0.5): 
+    start_time = time()
     model = tf.keras.Sequential([
         hub.KerasLayer(tfhub_url, trainable=True), 
         tf.keras.layers.Dropout(dropout),
@@ -34,6 +36,7 @@ def build_model(tfhub_url, z_dim, num_dense, dropout=0.5):
         tf.keras.layers.Dropout(dropout), 
         tf.keras.layers.Dense(num_dense, kernel_regularizer=tf.keras.regularizers.l2(1e-3)),
     ])
+    print(f'{time()-start_time} seconds to build the model')
     return model
 
 def compile_model(model, strategy, loss, metrics=['accuracy'], ranger_kwargs=None): 
@@ -56,7 +59,7 @@ def save_model(model, path):
     except: 
         print('Skipping wandb save')
 
-def save_weights(model, filepath): 
+def save_weights(model, filepath):
     filepath = str(filepath)
     print('Saving model weights at', colored(filepath, 'blue'))
     model.save_weights(filepath=filepath, options=get_save_locally())
