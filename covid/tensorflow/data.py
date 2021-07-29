@@ -31,7 +31,7 @@ def _get_steps(df, batch_size):
     steps = len(df) // batch_size
     return max(steps, 1)
 
-def _get_decode_fn(img_extension, channels):
+def get_decode_fn(img_extension, channels):
     def decode_fn(path, label): 
         file_bytes = tf.io.read_file(path)
         if img_extension == 'png':
@@ -79,7 +79,7 @@ def get_train_ds_fn(img_size, img_ext, num_classes, aug_params, img_transforms, 
         train_ds = build_dataset(
             img_paths=train.img_path.values, 
             labels=pd.get_dummies(train.label).values, 
-            decode_fn=_get_decode_fn(img_ext, channels=3), 
+            decode_fn=get_decode_fn(img_ext, channels=3), 
             img_transforms=_get_img_transforms(img_transforms, img_size, aug_params), 
             batch_transforms=_get_batch_transforms(batch_transforms, img_size, aug_params, num_classes, batch_size), 
             batch_size=batch_size, 
@@ -106,7 +106,7 @@ def get_clean_ds_fn(img_size, img_ext, aug_params, img_transforms=['resize']):
         clean_ds = build_dataset(
             img_paths=df.img_path.values, 
             labels=pd.get_dummies(df.label).values, 
-            decode_fn= _get_decode_fn(img_ext, channels=3), 
+            decode_fn= get_decode_fn(img_ext, channels=3), 
             img_transforms=_get_img_transforms(img_transforms, img_size, aug_params), 
             batch_transforms=[], 
             batch_size=batch_size, 
