@@ -14,7 +14,7 @@ def get_ignore_order():
     ignore_order.experimental_deterministic = False # disable order, increase speed
     return ignore_order
 
-def build_dataset(img_paths, labels, decode_fn, img_transforms=[], batch_transforms=[], batch_size=4, is_training=False):
+def build_dataset_v1(img_paths, labels, decode_fn, img_transforms=[], batch_transforms=[], batch_size=4, is_training=False):
     ds = tf.data.Dataset.from_tensor_slices((img_paths, labels))
     ds = ds.map(decode_fn, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.cache().with_options(get_ignore_order())
@@ -78,7 +78,7 @@ def get_train_ds_fn(img_size, img_ext, num_classes, aug_params, img_transforms, 
         
         # Build train dataset
         start_time = time()
-        train_ds = build_dataset(
+        train_ds = build_dataset_v1(
             img_paths=train.img_path.values, 
             labels=pd.get_dummies(train.label).values, 
             decode_fn=get_decode_fn(img_ext, channels=3), 
@@ -105,7 +105,7 @@ def get_clean_ds_fn(img_size, img_ext, aug_params, img_transforms=['resize']):
         
         # Load the dataset 
         start_time = time()
-        clean_ds = build_dataset(
+        clean_ds = build_dataset_v1(
             img_paths=df.img_path.values, 
             labels=pd.get_dummies(df.label).values, 
             decode_fn= get_decode_fn(img_ext, channels=3), 
@@ -130,3 +130,28 @@ def visualize_augmentations(should_visualize, train_ds, rows, cols):
         if i < 5: print(f'label #{i}: ', label)
         fig.add_subplot(rows, cols, i+1)
         plt.imshow(img)
+        
+        
+def get_encode_label(labels): 
+    'Convert labels to number than one hot encode them'
+    label2idx = {label: idx for idx, label in enumerate(labels)}
+    keys = list(label2idx.keys())
+    values = list(label2idx.values())
+    def encode_label(img, label): 
+        table = tf.lookup.StaticHashTable(
+            initializer=tf.lookup.KeyValueTensorInitializer(
+                keys=tf.constant(keys),
+                values=tf.constant(values), 
+            ), 
+            default_value=-1,
+        )
+        label = table.lookup(label)
+        label = tf.cast(label, tf.uint8)
+        label = tf.one_hot(label, len(labels))
+        return img, label
+    return encode_label
+
+
+def img_as_float(img, label): 
+    img = tf.cast(img, tf.float32) / 255.0
+    return img, label
