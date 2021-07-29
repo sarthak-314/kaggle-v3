@@ -86,12 +86,12 @@ def read_tfrecord(example):
     label  = example['label']
     return img, label
 
-def load_tfrecords(tfrec_dir, load_datasets): 
+def load_tfrecords(tfrec_dir, load_datasets, gcs_path): 
     train_tfrecords = []
     valid_tfrecords = []
     for dataset_name in load_datasets: 
-        train_tfrecords += glob.glob(str(tfrec_dir/dataset_name/'train'/'*.tfrec'), recursive=True)
-        valid_tfrecords += glob.glob(str(tfrec_dir/dataset_name/'valid'/'*.tfrec'), recursive=True)
+        train_tfrecords += tf.io.gfile.glob(str(tfrec_dir/dataset_name/'train'/'*.tfrec'))
+        valid_tfrecords += tf.io.gfile.glob(str(tfrec_dir/dataset_name/'valid'/'*.tfrec'))
     random.shuffle(train_tfrecords)
     random.shuffle(valid_tfrecords)
     print(colored(len(train_tfrecords), 'blue'), 'train tfrecords found')
