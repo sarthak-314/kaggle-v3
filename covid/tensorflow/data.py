@@ -130,7 +130,18 @@ def visualize_augmentations(should_visualize, train_ds, rows, cols):
         if i < 5: print(f'label #{i}: ', label)
         fig.add_subplot(rows, cols, i+1)
         plt.imshow(img)
-        
+
+def build_static_hash_table(input_dict, default_value=-1):
+    keys = list(input_dict.keys()) 
+    values = list(input_dict.values())
+    table = tf.lookup.StaticHashTable(
+            initializer=tf.lookup.KeyValueTensorInitializer(
+                keys=tf.constant(list(keys)),
+                values=tf.constant(list(values)), 
+            ), 
+            default_value=default_value,
+        )
+    return table
         
 def get_encode_label(labels): 
     'Convert labels to number than one hot encode them'
