@@ -70,4 +70,6 @@ def enable_mixed_precision():
     mixed_precision.set_policy(policy)
     print('Mixed precision enabled')
 
-
+def enable_jit(): 
+    tf.config.optimizer.set_jit(True)
+    print('Accelerated Linear Algebra enabled')
