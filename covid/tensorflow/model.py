@@ -45,7 +45,7 @@ def compile_model(model, strategy, loss, metrics=['accuracy'], ranger_kwargs=Non
             loss=loss,
             metrics=metrics, 
             optimizer=_get_ranger(ranger_kwargs), 
-            steps_per_execution=32,
+            steps_per_execution=64,
         )
     print('Model Compiled')
 
