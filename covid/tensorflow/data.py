@@ -29,7 +29,7 @@ def build_dataset(img_paths, labels, decode_fn, img_transforms=[], batch_transfo
 
 
 
-def _get_steps(df, batch_size): 
+def get_steps(df, batch_size): 
     steps = len(df) // batch_size
     return max(steps, 1)
 
@@ -90,7 +90,7 @@ def get_train_ds_fn(img_size, img_ext, num_classes, aug_params, img_transforms, 
         print(f'{time()-start_time} seconds to load train_ds')
         
         # train_steps 
-        train_steps = _get_steps(train, batch_size)
+        train_steps = get_steps(train, batch_size)
         print(f'{(time()-start_time)*(train_steps/60)} minutes, {train_steps} steps for the first epoch ')
         return train_ds, train_steps
     return get_train_ds
@@ -116,7 +116,7 @@ def get_clean_ds_fn(img_size, img_ext, aug_params, img_transforms=['resize']):
         )
         print(f'{time()-start_time} seconds to load clean ds')
         
-        return clean_ds, _get_steps(df, batch_size)
+        return clean_ds, get_steps(df, batch_size)
     return get_clean_ds
 
 
