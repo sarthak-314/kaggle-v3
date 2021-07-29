@@ -32,19 +32,26 @@ def to_tfrecord(tfrec_filewriter, img_bytes, label):
     }
     return tf.train.Example(features=tf.train.Features(feature=feature))
 
+def get_decode_fn(img_extension, channels):
+    def decode_fn(path, label): 
+        file_bytes = tf.io.read_file(path)
+        if img_extension == 'png':
+            img = tf.image.decode_png(file_bytes, channels=channels)
+        elif img_extension in ['jpg', 'jpeg']:
+            img = tf.image.decode_jpeg(file_bytes, channels=channels)
+        img = tf.cast(img, tf.float32) / 255.0
+        return img, label
+    return decode_fn
+
 def build_tfrecords(df, img_size, shard_size, tfrec_dir): 
-    png_df = df[df.img_ext == 'png']
-    jpg_df = df[(df.img_ext == 'jpeg') | (df.img_ext == 'jpg')]
-    png_decode_fn = lambda path: tf.image.decode_png(path, channels=3)
-    jpg_decode_fn = lambda path: tf.image.decode_jpeg(path, channels=3)
+    decode_fn = get_decode_fn('png', 3) 
+    print('Using png decode fn')    
     resize_fn = lambda img: tf.image.resize(img, size=[img_size, img_size])
-    png_ds = get_tfrec_dataset(png_df.img_path.values, png_df.label.values, shard_size, png_decode_fn, resize_fn)
-    jpg_ds = get_tfrec_dataset(jpg_df.img_path.values, jpg_df.label.values, shard_size, jpg_decode_fn, resize_fn)
-    for ds in png_ds, jpg_ds: 
-        for shard, (img, label) in tqdm(enumerate(ds), total=len(df)//shard_size):
-            filename = str(tfrec_dir / f'{shard}-{shard_size}.tfrec')
-            with tf.io.TFRecordWriter(filename) as out_file:
-                for i in range(shard_size):
-                    example = to_tfrecord(out_file, img.numpy()[i], label.numpy()[i])
-                    out_file.write(example.SerializeToString())
-                print("Wrote file {} containing {} records".format(filename, shard_size))
+    ds = get_tfrec_dataset(df.img_path.values, df.label.values, shard_size, decode_fn, resize_fn)
+    for shard, (img, label) in tqdm(enumerate(ds), total=len(df)//shard_size):
+        filename = str(tfrec_dir / f'{shard}-{shard_size}.tfrec')
+        with tf.io.TFRecordWriter(filename) as out_file:
+            for i in range(shard_size):
+                example = to_tfrecord(out_file, img.numpy()[i], label.numpy()[i])
+                out_file.write(example.SerializeToString())
+            print("Wrote file {} containing {} records".format(filename, shard_size))
