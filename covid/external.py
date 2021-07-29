@@ -1,15 +1,19 @@
+from utils.startup import KAGGLE_INPUT_DIR
 from sklearn.utils.class_weight import compute_class_weight
 from termcolor import colored
+from pathlib import Path
 import pandas as pd
 import glob
 import os 
+
+KAGGLE_INPUT_DIR = Path('/kaggle/input')
 
 def get_all_filepaths(data_dir):
     filepaths = glob.glob(str(data_dir / '**' / '*'), recursive=True) 
     print(f'{len(filepaths)} files found in {data_dir}')    
     return filepaths
 
-def build_cxr(dataset_dir): 
+def build_cxr(dataset_dir=KAGGLE_INPUT_DIR/'covidx-cxr2'): 
     cxr_df = pd.read_csv(dataset_dir/'train.txt', sep=' ', header=None)
     cxr_df.columns = ['patient_id', 'filename', 'label', 'source']
     cxr_df = cxr_df[cxr_df.filename.str.contains('png')]
@@ -19,7 +23,7 @@ def build_cxr(dataset_dir):
     cxr_df.label = cxr_df.label.map(label_map)
     return cxr_df
 
-def build_bimcv(dataset_dir): 
+def build_bimcv(dataset_dir=KAGGLE_INPUT_DIR/'bimcv-external'): 
     filepaths = get_all_filepaths(dataset_dir)
     df_dict = {
         'img_path': filepaths, 
@@ -28,7 +32,7 @@ def build_bimcv(dataset_dir):
     df = pd.DataFrame.from_dict(df_dict)
     return df
 
-def build_covid19_radiography(dataset_dir): 
+def build_covid19_radiography(dataset_dir=KAGGLE_INPUT_DIR/'covid19-radiography-database'): 
     filepaths = get_all_filepaths(dataset_dir)
     df_dict = {'img_path': [], 'label': []}
     for filepath in filepaths: 
@@ -45,7 +49,7 @@ def build_covid19_radiography(dataset_dir):
     df = pd.DataFrame.from_dict(df_dict)
     return df
 
-def build_chest_xray_pneumonia(dataset_dir): 
+def build_chest_xray_pneumonia(dataset_dir=KAGGLE_INPUT_DIR/'chest-xray-pneumonia'): 
     filepaths = get_all_filepaths(dataset_dir)
     df_dict = {'img_path': [], 'label': []}
     for filepath in filepaths: 
