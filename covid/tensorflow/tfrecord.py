@@ -34,7 +34,7 @@ def to_tfrecord(tfrec_filewriter, img_bytes, label):
 
 def build_tfrecords(df, img_size, shard_size, tfrec_dir): 
     png_df = df[df.img_ext == 'png']
-    jpg_df = df[df.img_ext == 'jpeg' | df.img_ext == 'jpg']
+    jpg_df = df[(df.img_ext == 'jpeg') | (df.img_ext == 'jpg')]
     png_decode_fn = lambda path: tf.image.decode_png(path, channels=3)
     jpg_decode_fn = lambda path: tf.image.decode_jpeg(path, channels=3)
     resize_fn = lambda img: tf.image.resize(img, size=[img_size, img_size])
