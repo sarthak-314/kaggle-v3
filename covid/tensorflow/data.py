@@ -9,7 +9,7 @@ from covid.tensorflow.augmentations.cutmix_mixup import get_cutmix_mixup
 from covid.tensorflow.augmentations.gridmask import get_grid_mask
 from covid.tensorflow.augmentations.augmix import get_augmix
 
-def _get_ignore_order(): 
+def get_ignore_order(): 
     ignore_order = tf.data.Options()
     ignore_order.experimental_deterministic = False # disable order, increase speed
     return ignore_order
@@ -17,7 +17,7 @@ def _get_ignore_order():
 def build_dataset(img_paths, labels, decode_fn, img_transforms=[], batch_transforms=[], batch_size=4, is_training=False):
     ds = tf.data.Dataset.from_tensor_slices((img_paths, labels))
     ds = ds.map(decode_fn, num_parallel_calls=tf.data.AUTOTUNE)
-    ds = ds.cache().with_options(_get_ignore_order())
+    ds = ds.cache().with_options(get_ignore_order())
     if is_training: 
         ds = ds.repeat().shuffle(512)
     for img_transform in img_transforms: 
