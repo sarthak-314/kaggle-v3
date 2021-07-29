@@ -44,7 +44,7 @@ def build_chest_xray_pneumonia(dataset_dir):
     filepaths = get_all_filepaths(dataset_dir)
     df_dict = {'img_path': [], 'label': []}
     for filepath in filepaths: 
-        if 'png' not in filepath: continue
+        if 'jpeg' not in filepath: continue
         if 'PNEUMONIA' in filepath: 
             label = 'pneumonia'
         elif 'NORMAL' in filepath: 
