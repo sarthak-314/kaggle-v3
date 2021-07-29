@@ -24,6 +24,7 @@ def _get_ranger(ranger_kwargs):
 def build_model(tfhub_url, z_dim, num_dense, dropout=0.5): 
     model = tf.keras.Sequential([
         hub.KerasLayer(tfhub_url, trainable=True), 
+        tf.keras.layers.Dropout(dropout),
         tf.keras.layers.Dense(
             z_dim, 
             activation=tfa.activations.mish, 
