@@ -38,8 +38,8 @@ def build_tfrecords(df, img_size, shard_size, tfrec_dir):
     png_decode_fn = lambda path: tf.image.decode_png(path, channels=3)
     jpg_decode_fn = lambda path: tf.image.decode_jpeg(path, channels=3)
     resize_fn = lambda img: tf.image.resize(img, size=[img_size, img_size])
-    png_ds = get_tfrec_dataset(png_df.img_path.values, png_df.label.values, png_decode_fn, resize_fn)
-    jpg_ds = get_tfrec_dataset(jpg_df.img_path.values, jpg_df.label.values, jpg_decode_fn, resize_fn)
+    png_ds = get_tfrec_dataset(png_df.img_path.values, png_df.label.values, shard_size, png_decode_fn, resize_fn)
+    jpg_ds = get_tfrec_dataset(jpg_df.img_path.values, jpg_df.label.values, shard_size, jpg_decode_fn, resize_fn)
     for ds in png_ds, jpg_ds: 
         for shard, (img, label) in tqdm(enumerate(ds), total=len(df)//shard_size):
             filename = str(tfrec_dir / f'{shard}-{shard_size}.tfrec')
