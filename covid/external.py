@@ -30,7 +30,7 @@ def build_covid19_radiography(dataset_dir):
         if 'png' not in filepath: continue
         if 'Lung_Opacity' in filepath: continue
         if 'Viral Pneumonia' in filepath: 
-            label = 'pnumonia'
+            label = 'pneumonia'
         elif 'Normal' in filepath: 
             label = 'normal'
         elif 'COVID' in filepath: 
