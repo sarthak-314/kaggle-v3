@@ -11,6 +11,7 @@ def get_save_locally():
 
 def optimizer_factory(optimizer_args):
     optimizer_name, lr = optimizer_args['optimizer'], optimizer_args['lr']
+    print(f'Using {optimizer_name} optimizer with lr: {lr}')
     if optimizer_name.lower() == 'adam': 
         return tf.keras.optimizers.Adam(lr)
     elif optimizer_name.lower() == 'ranger': 
