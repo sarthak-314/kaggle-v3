@@ -1,10 +1,10 @@
-from utils.tensorflow import get_load_locally
+from kaggle.tensorflow import get_load_locally
 from wandb.keras import WandbCallback
 import tensorflow_addons as tfa
 import tensorflow as tf 
 import os
 
-from utils.tensorflow import get_save_locally
+from kaggle.tensorflow import get_save_locally
 
 # Config for the Competition
 MONITOR = 'val_accuracy'

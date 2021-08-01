@@ -4,9 +4,9 @@ sys.path.append('/kaggle/working/temp')
 sys.path.append('/content/temp')
 
 
-from utils.startup import * 
+from kaggle.startup import * 
 from tqdm.auto import tqdm # Lazy
-from utils.utils import solve_environment
+from kaggle.utils import solve_environment
 
 from covid.dataframes import (
     LABEL_COLS, CAPTIAL_TO_SMALL_STUDY_LABEL, SMALL_TO_CAPITAL_STUDY_LABEL, DICOM_META_COLS, \
