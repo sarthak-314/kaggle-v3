@@ -1,4 +1,4 @@
-from kaggle.startup import KAGGLE_INPUT_DIR
+from kaggle_utils.startup import KAGGLE_INPUT_DIR
 from sklearn.utils.class_weight import compute_class_weight
 from termcolor import colored
 from pathlib import Path

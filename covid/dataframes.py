@@ -5,7 +5,7 @@ import glob
 import ast
 import os
 
-import kaggle.dataframes
+import kaggle_utils.dataframes
 import covid
 
 DATASET_NAME = 'siim-covid19-detection'
@@ -107,8 +107,8 @@ def build_folds(output_dir=OUTPUT_DIR, raw_data_dir=RAW_DATA_DIR):
     train = standardize_train(train)
     train = add_dicom_metadata(train, raw_data_dir/'train')
     train = post_process(train)
-    fold_dfs = kaggle.dataframes.get_fold_dfs(train, SPLIT_BY, NUM_FOLDS)
-    kaggle.dataframes.save_folds(fold_dfs, output_dir)
+    fold_dfs = kaggle_utils.dataframes.get_fold_dfs(train, SPLIT_BY, NUM_FOLDS)
+    kaggle_utils.dataframes.save_folds(fold_dfs, output_dir)
     return fold_dfs
     
 def build_test(output_dir, raw_data_dir):
@@ -120,7 +120,7 @@ def build_test(output_dir, raw_data_dir):
 
 DATAFRAMES_DIR = Path('covid/built_dataframes')
 def read_dataframes(fold=0, dataframes_dir=DATAFRAMES_DIR):
-    train, valid = kaggle.dataframes.read_fold(fold, dataframes_dir, num_folds=NUM_FOLDS)
+    train, valid = kaggle_utils.dataframes.read_fold(fold, dataframes_dir, num_folds=NUM_FOLDS)
     test = pd.read_pickle(dataframes_dir/'test.pkl')
     return train, valid, test    
 
