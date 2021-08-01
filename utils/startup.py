@@ -89,12 +89,12 @@ print(f"Running on {colored(DEVICE, 'green')} on {ENV} with internet {['on', 'of
 RANDOM_STATE = 69420
 
 # Useful Paths depending on environment 
+KAGGLE_INPUT_DIR = Path('/kaggle/input')
 if ENV == 'Colab': 
     DRIVE_DIR = Path('/content/drive/MyDrive')
     WORKING_DIR = Path('/content')
     TMP_DIR = Path('/content/tmp')
 elif ENV == 'Kaggle': 
-    KAGGLE_INPUT_DIR = Path('/kaggle/input')
     WORKING_DIR = Path('/kaggle/working')
     TMP_DIR = Path('/kaggle/tmp')
     
