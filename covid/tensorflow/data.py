@@ -126,8 +126,8 @@ def visualize_augmentations(should_visualize, train_ds, rows, cols):
         return 
     fig = plt.figure(figsize=(32, 12))
     num_imgs = rows * cols
-    for i, (img, label) in tqdm(enumerate(train_ds.unbatch().take(num_imgs)), total=num_imgs): 
-        if i < 5: print(f'label #{i}: ', label)
+    for i, x in tqdm(enumerate(train_ds.unbatch().take(num_imgs)), total=num_imgs): 
+        img = x[0]
         fig.add_subplot(rows, cols, i+1)
         plt.imshow(img)
 
