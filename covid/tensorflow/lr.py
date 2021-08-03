@@ -118,27 +118,9 @@ class LRScheduler(Callback):
         Blog post: jeremyjordan.me/nn-learning-rate
         Original paper: http://arxiv.org/abs/1608.03983
     '''
-    def __init__(self, min_lr, max_lr, steps_per_epoch, lr_decay=1, cycle_length=10, mult_factor=2):
+    def __init__(self, min_lr, lr):
         self.min_lr = min_lr
-        self.max_lr = max_lr
-        self.lr_decay = lr_decay
-
-        self.batch_since_restart = 0
-        self.next_restart = cycle_length
-
-        self.steps_per_epoch = steps_per_epoch
-
-        self.cycle_length = cycle_length
-        self.mult_factor = mult_factor
-
-        self.history = {}
-        self.epochs = 0
-
-    def clr(self):
-        '''Calculate the learning rate.'''
-        fraction_to_restart = self.batch_since_restart / (self.steps_per_epoch * self.cycle_length)
-        lr = self.min_lr + 0.5 * (self.max_lr - self.min_lr) * (1 + np.cos(fraction_to_restart * np.pi))
-        return lr
+        self.lr = lr
 
     def on_train_begin(self, logs={}):
         '''Initialize the learning rate to the minimum value at the start of training.'''
@@ -150,12 +132,14 @@ class LRScheduler(Callback):
         self.epochs = epoch
         if epoch == 0: 
             K.set_value(self.model.optimizer.lr, 1e-6)
-        if epoch == 1: 
+        elif epoch == 1: 
             K.set_value(self.model.optimizer.lr, 1e-5)
-        if epoch == 2:
-            K.set_value(self.model.optimizer.lr, 1e-4)
-        else: 
-            lr = self.max_lr * 0.99 ** epoch
-            print('learning rate: ', lr)
-            K.set_value(self.model.optimizer.lr, lr)
-            
+        
+        # Warmup to min lr in 5 epochs
+        lr = self.epoch/5*self.min_lr
+        print('learning rate: ', lr)
+        K.set_value(self.model.optimizer.lr, lr)
+        
+        # Keep the lr after 5 epochs
+        print('learning rate: ', self.lr)
+        K.set_value(self.model.optimizer.lr, self.lr)
