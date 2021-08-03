@@ -103,7 +103,7 @@ class WarmUpLearningRateScheduler(keras.callbacks.Callback):
             if self.verbose > 0:
                 print('\nBatch %05d: WarmUpLearningRateScheduler setting learning rate to %s.' % (self.batch_count + 1, lr))
                 
-class SGDRScheduler(Callback):
+class LRScheduler(Callback):
     '''
     Cosine annealing learning rate scheduler with periodic restarts & gradual warmup
     # Arguments
@@ -145,14 +145,6 @@ class SGDRScheduler(Callback):
         logs = logs or {}
         K.set_value(self.model.optimizer.lr, 1e-8)
 
-    def on_batch_end(self, batch, logs={}):
-        '''Record previous batch statistics and update the learning rate.'''
-        self.batch_since_restart += 1
-        if batch % 16 == 0: 
-            lr = self.clr()
-            print(f'\nbatch #{batch} lr: {lr}')
-            K.set_value(self.model.optimizer.lr, lr)
-
     def on_epoch_end(self, epoch, logs={}):
         '''Check for end of current cycle, apply restarts when necessary.'''
         self.epochs = epoch
@@ -162,21 +154,8 @@ class SGDRScheduler(Callback):
             K.set_value(self.model.optimizer.lr, 1e-5)
         if epoch == 2:
             K.set_value(self.model.optimizer.lr, 1e-4)
-        if epoch + 1 == self.next_restart:
-            self.batch_since_restart = 0
-            self.cycle_length = np.ceil(self.cycle_length * self.mult_factor)
-            self.next_restart += self.cycle_length
-            self.max_lr *= self.lr_decay
-            try: 
-                self.best_weights = self.model.get_weights()
-            except: 
-                print('Could not set best weights')
-        if epoch % 4 == 0: 
-            print('learning rate: ', self.model.optimizer.learning_rate.numpy())
+        else: 
+            lr = self.max_lr * 0.99 ** epoch
+            print('learning rate: ', lr)
+            K.set_value(self.model.optimizer.lr, lr)
             
-    def on_train_end(self, logs={}):
-        '''Set weights to the values from the end of the most recent cycle for best performance.'''
-        try: 
-            self.model.set_weights(self.best_weights)
-        except: 
-            print('Set best weights skipped')
