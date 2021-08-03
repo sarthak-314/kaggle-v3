@@ -12,6 +12,6 @@ from covid.lightning.aug_timm import *
 
 # Model Imports 
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from covid.lightning.model import init_weights, load_backbone
+from covid.lightning.model import init_weights, load_timm_backbone
 from timm.optim.optim_factory import create_optimizer_v2
 from torch.optim import AdamW
