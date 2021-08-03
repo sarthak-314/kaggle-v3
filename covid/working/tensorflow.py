@@ -17,7 +17,7 @@ STRATEGY = auto_select_accelerator()
 # WEIGHTS_PATH = KAGGLE_INPUT_DIR/'tensorflow-models'/'effnetv2_cxr100.h5'
 def build_model(dropout=0.5, num_dense=4): 
     model = tf.keras.Sequential([
-        hub.KerasLayer(HUBHUBN_URL, trainable=True), 
+        
         tf.keras.layers.Dropout(dropout), 
         tf.keras.layers.Dense(num_dense, kernel_regularizer=tf.keras.regularizers.l2(1e-4)),
     ])
