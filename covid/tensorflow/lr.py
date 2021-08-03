@@ -162,7 +162,6 @@ class SGDRScheduler(Callback):
             K.set_value(self.model.optimizer.lr, 1e-5)
         if epoch == 2:
             K.set_value(self.model.optimizer.lr, 1e-4)
-        
         if epoch + 1 == self.next_restart:
             self.batch_since_restart = 0
             self.cycle_length = np.ceil(self.cycle_length * self.mult_factor)
@@ -172,6 +171,8 @@ class SGDRScheduler(Callback):
                 self.best_weights = self.model.get_weights()
             except: 
                 print('Could not set best weights')
+        if epoch % 4 == 0: 
+            print('learning rate: ', self.model.optimizer.learning_rate.numpy())
             
     def on_train_end(self, logs={}):
         '''Set weights to the values from the end of the most recent cycle for best performance.'''
