@@ -129,10 +129,8 @@ class LRScheduler(Callback):
 
     def on_epoch_end(self, epoch, logs={}):
         '''Check for end of current cycle, apply restarts when necessary.'''
-        if epoch == 0: 
+        if epoch == 1: 
             K.set_value(self.model.optimizer.lr, 1e-6)
-        elif epoch == 1: 
-            K.set_value(self.model.optimizer.lr, 1e-5)
         if epoch < 5: 
             # Warmup to min lr in 5 epochs
             lr = epoch/5*self.min_lr
