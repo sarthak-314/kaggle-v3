@@ -132,6 +132,7 @@ class SGDRScheduler(Callback):
         self.mult_factor = mult_factor
 
         self.history = {}
+        self.epochs = 0
 
     def clr(self):
         '''Calculate the learning rate.'''
@@ -146,11 +147,6 @@ class SGDRScheduler(Callback):
 
     def on_batch_end(self, batch, logs={}):
         '''Record previous batch statistics and update the learning rate.'''
-        logs = logs or {}
-        self.history.setdefault('lr', []).append(K.get_value(self.model.optimizer.lr))
-        for k, v in logs.items():
-            self.history.setdefault(k, []).append(v)
-
         self.batch_since_restart += 1
         lr = self.clr()
         print(f'\nbatch #{batch} lr: {lr}')
@@ -158,6 +154,14 @@ class SGDRScheduler(Callback):
 
     def on_epoch_end(self, epoch, logs={}):
         '''Check for end of current cycle, apply restarts when necessary.'''
+        self.epochs = epoch
+        if epoch == 0: 
+            K.set_value(self.model.optimizer.lr, 1e-8)
+        if epoch == 1: 
+            K.set_value(self.model.optimizer.lr, 1e-6)
+        if epoch == 2:
+            K.set_value(self.model.optimizer.lr, 1e-4)
+        
         if epoch + 1 == self.next_restart:
             self.batch_since_restart = 0
             self.cycle_length = np.ceil(self.cycle_length * self.mult_factor)
