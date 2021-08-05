@@ -140,3 +140,5 @@ class LRScheduler(Callback):
             # Keep the lr after 5 epochs
             print('learning rate: ', self.lr)
             K.set_value(self.model.optimizer.lr, self.lr)
+            
+            
