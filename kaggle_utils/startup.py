@@ -6,8 +6,8 @@ from distutils.dir_util import copy_tree
 from collections import defaultdict
 import matplotlib.pyplot as plt
 from termcolor import colored
+from tqdm.auto import tqdm
 from pathlib import Path 
-from tqdm import tqdm
 from PIL import Image
 from time import time
 import pandas as pd
@@ -53,7 +53,7 @@ def get_all_filepaths(data_dir):
 
 # Solve Environment, Hardware & Online Status
 def solve_env(): 
-    if Path('/kaggle/').exists():
+    if 'KAGGLE_CONTAINER_NAME' in os.environ: 
         return 'Kaggle'
     elif Path('/content/').exists(): 
         return 'Colab'
@@ -172,3 +172,28 @@ def oversample(train, class_to_oversample_ratio):
     print('Class weights: ', compute_class_weight('balanced', list(range(train.label.nunique())), train.label.values))
     return df
 
+
+def get_all_filepaths(data_dir):
+    filepaths = glob.glob(str(data_dir / '**' / '*'), recursive=True) 
+    print(f'{len(filepaths)} files found in {data_dir}')    
+    return filepaths
+
+def get_img_path_fn(filepaths): 
+    def get_img_path(img_id): 
+        for fp in filepaths: 
+            if img_id in fp: 
+                return fp
+        print(f'img id {img_id} not found in filepaths')
+    return get_img_path
+
+
+# Check if repo is loaded correctly
+if ENV == 'Kaggle': 
+    assert Path('/kaggle/working/temp').exists() 
+elif ENV == 'Colab': 
+    assert Path('/content/temp').exists()
+    
+# Mount Drive
+def mount_drive(): 
+    from google.colab import drive
+    drive.mount('/content/drive')
