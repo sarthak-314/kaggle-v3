@@ -7,12 +7,12 @@ import os
 
 
 
-args={}
-args['input'] = '../input/rsna-miccai-brain-tumor-radiogenomic-classification'
-args['output'] = './'
-args['dataset'] = 'train'
-args['n_jobs'] = 20
-args['debug'] = 0
+# args={}
+# args['input'] = '../input/rsna-miccai-brain-tumor-radiogenomic-classification'
+# args['output'] = './'
+# args['dataset'] = 'train'
+# args['n_jobs'] = 20
+# args['debug'] = 0
 
 
 DICOM_FIELDS = [
