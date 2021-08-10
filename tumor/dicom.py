@@ -4,6 +4,8 @@ import pandas as pd
 
 from tqdm import tqdm
 from multiprocessing import Pool
+
+
 args={}
 args['input'] = '../input/rsna-miccai-brain-tumor-radiogenomic-classification'
 args['output'] = './'
@@ -12,22 +14,22 @@ args['n_jobs'] = 20
 args['debug'] = 0
 
 
-FIELDS = [
+DICOM_FIELDS = [
     'AccessionNumber',
     'AcquisitionMatrix',
-#    'B1rms',  # Empty
-#    'BitsAllocated',  # = 16
-#    'BitsStored',  # = 16
+    # 'B1rms',  # Empty
+    # 'BitsAllocated',  # = 16
+    # 'BitsStored',  # = 16
     'Columns',
     'ConversionType',
-#    'DiffusionBValue',  # 0 or empty
-#    'DiffusionGradientOrientation',  # [0.0, 0.0, 0.0] or empty
+    # 'DiffusionBValue',  # 0 or empty
+    # 'DiffusionGradientOrientation',  # [0.0, 0.0, 0.0] or empty
     'EchoNumbers',
-#    'EchoTime',  # empty
+    # 'EchoTime',  # empty
     'EchoTrainLength',
     'FlipAngle',
-#    'HighBit',  # = 15
-#    'HighRRValue',  #  0 or empty
+    # 'HighBit',  # = 15
+    # 'HighRRValue',  #  0 or empty
     'ImageDimensions',  # 2 or epty
     'ImageFormat',
     'ImageGeometryType',
@@ -36,42 +38,42 @@ FIELDS = [
     'ImageOrientationPatient',
     'ImagePosition',
     'ImagePositionPatient',
-#    'ImageType',  # ['DERIVED', 'SECONDARY']
+    # 'ImageType',  # ['DERIVED', 'SECONDARY']
     'ImagedNucleus',
     'ImagingFrequency',
     'InPlanePhaseEncodingDirection',
     'InStackPositionNumber',
     'InstanceNumber',
-#    'InversionTime',   # empty
-#    'Laterality',  # empty
-#    'LowRRValue',  # empty
+    # 'InversionTime',   # empty
+    # 'Laterality',  # empty
+    # 'LowRRValue',  # empty
     'MRAcquisitionType',
     'MagneticFieldStrength',
-#    'Modality',  # MR
+    # 'Modality',  # MR
     'NumberOfAverages',
     'NumberOfPhaseEncodingSteps',
     'PatientID',
     'PatientName',
-#    'PatientPosition',  # HFS
+    # 'PatientPosition',  # HFS
     'PercentPhaseFieldOfView',
     'PercentSampling',
-#    'PhotometricInterpretation',  # MONOCHROME2
+    # 'PhotometricInterpretation',  # MONOCHROME2
     'PixelBandwidth',
-#    'PixelPaddingValue',  # empty or 0
+    # 'PixelPaddingValue',  # empty or 0
     'PixelRepresentation',
     'PixelSpacing',
-#    'PlanarConfiguration',  # 0 or empty
-#    'PositionReferenceIndicator',  # 'NA' or empty
+    # 'PlanarConfiguration',  # 0 or empty
+    # 'PositionReferenceIndicator',  # 'NA' or empty
     'PresentationLUTShape',
     'ReconstructionDiameter',
-#    'RescaleIntercept',  # = 0
-#    'RescaleSlope',  # = 1
-#    'RescaleType',  # = US
+    # 'RescaleIntercept',  # = 0
+    # 'RescaleSlope',  # = 1
+    # 'RescaleType',  # = US
     'Rows',
     'SAR',
     'SOPClassUID',
     'SOPInstanceUID',
-#    'SamplesPerPixel',  # = 1
+    # 'SamplesPerPixel',  # = 1
     'SeriesDescription',
     'SeriesInstanceUID',
     'SeriesNumber',
@@ -81,9 +83,9 @@ FIELDS = [
     'SpatialResolution',
     'SpecificCharacterSet',
     'StudyInstanceUID',
-#    'TemporalResolution',  # 0 or empty
-#    'TransferSyntaxUID',  # = 1.2.840.10008.1.2
-#    'TriggerWindow',  # = 0
+    # 'TemporalResolution',  # 0 or empty
+    # 'TransferSyntaxUID',  # = 1.2.840.10008.1.2
+    # 'TriggerWindow',  # = 0
     'WindowCenter',
     'WindowWidth'
 ]
@@ -104,12 +106,12 @@ final = []
 
 
 def get_meta_info(dicom):
-    row = {f: dicom.get(f) for f in FIELDS}
+    row = {f: dicom.get(f) for f in DICOM_FIELDS}
     row_fm = {f: dicom.file_meta.get(f) for f in FM_FIELDS}
     row_other = {
-#        'is_original_encoding': dicom.is_original_encoding,  # = True
-#        'is_implicit_VR': dicom.is_implicit_VR,  # = True
-#        'is_little_endian': dicom.is_little_endian, # = True
+    #  'is_original_encoding': dicom.is_original_encoding,  # = True
+    #  'is_implicit_VR': dicom.is_implicit_VR,  # = True
+    #  'is_little_endian': dicom.is_little_endian, # = True
         'timestamp': dicom.timestamp,
     }
     return {**row,

@@ -73,7 +73,6 @@ def solve_internet_status():
     online = True
     try:  
         # Install Libraries
-        os.system('pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib')
         os.system('pip install wandb')
         subprocess.run(['wandb', 'login', '00dfbb85e215726cccc6f6f9ed40e618a7cf6539'])
         import wandb
