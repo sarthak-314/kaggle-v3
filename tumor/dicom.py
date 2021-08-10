@@ -159,6 +159,7 @@ if __name__ == "__main__":
 
     if args["debug"]:
         dicom_files = dicom_files[:1000]
+    print(f'Taking {len(dicom_files)} dicom files')
 
     pool = Pool(processes=args["n_jobs"])
     pbar = tqdm(total=len(dicom_files))
