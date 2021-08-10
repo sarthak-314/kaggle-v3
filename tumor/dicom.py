@@ -1,9 +1,10 @@
-import os
-import pydicom
-import pandas as pd
-
-from tqdm import tqdm
 from multiprocessing import Pool
+from tqdm import tqdm
+import pandas as pd
+import argparse
+import pydicom
+import os
+
 
 
 args={}
@@ -154,13 +155,21 @@ def error(e):
     print(e)
 
 
+
 if __name__ == "__main__":
-    print('Args: ', args)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--input", type=str, default="./input")
+    ap.add_argument("--output", type=str, default="./")
+    ap.add_argument("--dataset", type=str, default="train")
+    ap.add_argument("--n_jobs", type=int, default=20)
+    ap.add_argument("--debug", type=int, default=0)
+
+    args = vars(ap.parse_args())
+
     dicom_files = get_dicom_files(args["input"], args["dataset"])
 
     if args["debug"]:
         dicom_files = dicom_files[:1000]
-    print(f'Taking {len(dicom_files)} dicom files')
 
     pool = Pool(processes=args["n_jobs"])
     pbar = tqdm(total=len(dicom_files))
