@@ -155,6 +155,7 @@ def error(e):
 
 
 if __name__ == "__main__":
+    print('Args: ', args)
     dicom_files = get_dicom_files(args["input"], args["dataset"])
 
     if args["debug"]:
