@@ -1,0 +1,60 @@
+from albumentations import (
+    Compose, OneOf, RandomResizedCrop, Resize, HorizontalFlip, IAAPerspective, ShiftScaleRotate, 
+    CLAHE, RandomRotate90, Transpose, ShiftScaleRotate, Blur, OpticalDistortion, GridDistortion, 
+    HueSaturationValue, IAAAdditiveGaussianNoise, GaussNoise, MotionBlur, MedianBlur, Cutout, 
+    IAAPiecewiseAffine, IAASharpen, IAAEmboss, RandomContrast, RandomBrightness, Flip, 
+    RandomGamma, ElasticTransform, ChannelShuffle, RGBShift,Rotate, Normalize, 
+    RandomSizedCrop, VerticalFlip, RandomBrightnessContrast
+)
+from albumentations.augmentations.transforms import PadIfNeeded
+from albumentations.pytorch.transforms import ToTensorV2
+import albumentations
+
+
+def cutouts(img_size):
+    return [
+        Cutout(num_holes=4, max_h_size=img_size//16, max_w_size=img_size//32, fill_value=0, p=0.25), 
+        Cutout(num_holes=4, max_h_size=img_size//32, max_w_size=img_size//16, fill_value=0, p=0.25), 
+        Cutout(num_holes=8, max_h_size=img_size//32, max_w_size=img_size//32, fill_value=1, p=0.25), 
+    ]
+
+def soft_augmentations():
+    limit = (-0.2, 0.2) # Brightness and contrast limit
+    rotation_angle = 120
+    return [
+        RandomRotate90(), Flip(), Rotate(limit=rotation_angle, p=0.5),
+        RandomBrightnessContrast(brightness_limit=limit, contrast_limit=limit, p=0.5), 
+    ]
+    
+def hard_augmentations(): 
+    return [
+        RandomRotate90(), Flip(), Transpose(),
+        OneOf([
+            IAAAdditiveGaussianNoise(), 
+            GaussNoise()
+        ], p=0.2),
+        OneOf([ 
+            MotionBlur(p=.2), 
+            MedianBlur(blur_limit=3, p=.1), 
+            Blur(blur_limit=3, p=.1) 
+        ], p=0.2),
+        ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.2, rotate_limit=45, p=.2),
+        OneOf([ 
+            OpticalDistortion(p=0.3), 
+            GridDistortion(p=.1), 
+            IAAPiecewiseAffine(p=0.3) 
+        ], p=0.2),
+        OneOf([ 
+            CLAHE(clip_limit=2),
+            IAASharpen(),
+            IAAEmboss(),
+            RandomContrast(),
+            RandomBrightness()
+        ], p=0.3),
+    ]
+
+"""
+ALBU = [
+    RandomBrightnessContrast(p=0.25),  
+] + hard_augmentations() + cutouts(IMG_SIZE) + [Normalize(), ToTensorV2()]
+"""
