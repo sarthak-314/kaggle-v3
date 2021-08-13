@@ -8,7 +8,7 @@ from covid.lightning.dataset import KaggleDatasetTrain, KaggleDatasetTest
 from covid.lightning.datamodule import KaggleDataModule
 from covid.lightning.callbacks import *
 from covid.lightning.aug_timm import *
-
+from covid.lightning.loader import *
 
 # Model Imports 
 from torch.optim.lr_scheduler import CosineAnnealingLR
