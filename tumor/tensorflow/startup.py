@@ -13,6 +13,8 @@ from covid.tensorflow.lr import *
 # Function / Classes Imports
 from covid.tensorflow.model import save_model
 
+AUTO = { 'num_parallel_calls': tf.data.AUTOTUNE }
+
 def auto_select_accelerator():
     try:
         tpu = tf.distribute.cluster_resolver.TPUClusterResolver()
