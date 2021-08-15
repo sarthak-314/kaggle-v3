@@ -12,6 +12,6 @@ def create_loader(dataset, batch_size=32, is_training=False):
         drop_last=is_training, 
         num_workers=num_workers, 
         pin_memory=torch.cuda.is_available(), 
-        persistent_workers=True,
+        persistent_workers=False,
     )
     return data_loader

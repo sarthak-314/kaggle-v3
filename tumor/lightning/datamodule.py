@@ -21,3 +21,22 @@ class KaggleDataModule(pl.LightningDataModule):
         valid_ds = KaggleDatasetTrain(self.valid_df, self.eval_transforms)
         val_loader = create_loader(valid_ds, self.batch_size, is_training=False)
         return val_loader
+
+def get_data_module_class(dataset_class):
+    class DataModule(pl.LightningDataModule): 
+        def __init__(self, dataframes, transforms, batch_size=32):
+            super().__init__()
+            self.train_df, self.valid_df = dataframes
+            self.train_transforms, self.eval_transforms = transforms
+            self.batch_size = batch_size
+
+        def train_dataloader(self):
+            train_ds = dataset_class(self.train_df, self.train_transforms)
+            train_loader = create_loader(train_ds, self.batch_size, is_training=True)
+            return train_loader
+
+        def val_dataloader(self):
+            valid_ds = dataset_class(self.valid_df, self.eval_transforms)
+            val_loader = create_loader(valid_ds, self.batch_size, is_training=False)
+            return val_loader
+    return DataModule
