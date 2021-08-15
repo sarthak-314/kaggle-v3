@@ -6,7 +6,7 @@ def read_img(img_path):
     return img
 
 
-class KaggleDatasetBase(torch.utils.Dataset): 
+class KaggleDatasetBase(torch.utils.data.Dataset): 
     """
     Base class to build a torch Dataset for train/valid
     Args:
