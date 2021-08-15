@@ -37,7 +37,7 @@ def get_effnetv2_from_github_repo(backbone_size):
     import effnetv2_model
     model = f'efficientnetv2-{backbone_size}'
     return effnetv2_model.get_model(
-        f'efficientnetv2-{BACKBONE_SIZE}', 
+        f'efficientnetv2-{backbone_size}', 
         include_top=INCLUDE_TOP, 
         weights=None,  
         training=True, 
