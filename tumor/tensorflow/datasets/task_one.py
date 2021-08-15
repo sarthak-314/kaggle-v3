@@ -5,7 +5,7 @@ from termcolor import colored
 import tensorflow as tf
 import random 
 
-def load_task1_tfrecords(task1_gcs_paths, fold):
+def load_tfrecords(task1_gcs_paths, fold):
     train_tfrecs, valid_tfrecs = [], []
     for fold_, fold_gcs_path in enumerate(task1_gcs_paths): 
         if fold_ == fold: 
