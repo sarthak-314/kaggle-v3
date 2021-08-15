@@ -12,7 +12,7 @@ from tumor.tensorflow.lr import *
 
 # Working Models & Datasets Imports
 from tumor.tensorflow.models.backbone_effnetv2 import download_effnetv2
-
+from tumor.tensorflow.datasets.task_one import *
 
 # Function / Classes Imports
 from tumor.tensorflow.model import save_model

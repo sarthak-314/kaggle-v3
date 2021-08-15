@@ -44,6 +44,10 @@ def get_effnetv2_from_github_repo(backbone_size):
         with_endpoints=WITH_ENDPOINTS, 
     )
 
+def get_effnetv2_from_kaggle_repo(): 
+    pass
+
+
 def download_effnetv2(backbone_size, backbone_source):
     if backbone_source == 'TFHub': 
         print(f'Downloading effnetv2-{backbone_size} from TFHub')
