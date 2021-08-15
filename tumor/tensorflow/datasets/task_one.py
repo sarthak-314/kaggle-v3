@@ -53,10 +53,10 @@ def build_datasets_from_tfrecs(tfrecs):
     
     img_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['img'], **AUTO).cache()
     seg_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['segmentation'], **AUTO).cache()
-    depth_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['depth'], **AUTO).cache(),
-    patient_id_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['patient_id'], **AUTO).cache(),
-    mri_type_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['mri_type'], **AUTO).cache(),
-    label_int_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['label_int'], **AUTO).cache(),
+    depth_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['depth'], **AUTO).cache()
+    patient_id_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['patient_id'], **AUTO).cache()
+    mri_type_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['mri_type'], **AUTO).cache()
+    label_int_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['label_int'], **AUTO).cache()
     
     return {
         'img': img_ds,
