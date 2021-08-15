@@ -5,18 +5,30 @@ def read_img(img_path):
     img = Image.open(img_path).convert('RGB')
     return img
 
-class KaggleDatasetTrain(torch.utils.data.Dataset): 
+
+class KaggleDatasetBase(torch.utils.Dataset): 
     """
-    Build torch Dataset for the train/valid dataframe 
-    
+    Base class to build a torch Dataset for train/valid
     Args:
         df (DataFrame): train or valid dataframe
         df should contain a 'label' column and an 'img_path' column
         transform (function): function to apply to image to augment it
 
     Returns:
-        output_dict (dict): output dictionary for each input containing features and target
+        feature_dict (dict): dictionary of all the features required by the net
+        output_dict (dict): outputs for the net to learn from
     """ 
+    def __init__(self, df, transform): 
+        self.df = df
+        self.transform = transform
+        print(f'Received a dataframe of length {len(df)} for dataset')
+    
+    def __len__(self): 
+        return len(self.df)
+
+
+class KaggleDatasetTrain(torch.utils.data.Dataset): 
+
     def __init__(self, df, transform): 
         self.df = df
         self.transform = transform
