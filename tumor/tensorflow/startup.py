@@ -4,14 +4,18 @@ import tensorflow_hub as hub
 import tensorflow as tf
 
 # Full Module Imports 
-from covid.tensorflow.callbacks import * 
-from covid.tensorflow.tfrecord import * 
-from covid.tensorflow.model import *
-from covid.tensorflow.data import * 
-from covid.tensorflow.lr import *
+from tumor.tensorflow.callbacks import * 
+from tumor.tensorflow.tfrecord import * 
+from tumor.tensorflow.model import *
+from tumor.tensorflow.data import * 
+from tumor.tensorflow.lr import *
+
+# Working Models & Datasets Imports
+from tumor.tensorflow.models.backbone_effnetv2 import download_effnetv2
+
 
 # Function / Classes Imports
-from covid.tensorflow.model import save_model
+from tumor.tensorflow.model import save_model
 
 AUTO = { 'num_parallel_calls': tf.data.AUTOTUNE }
 
