@@ -5,7 +5,7 @@ import torch
 import timm
 
 from tumor.lightning.dataset import KaggleDatasetBase
-from tumor.lightning.datamodule import KaggleDataModule
+from tumor.lightning.datamodule import KaggleDataModule, get_data_module_class
 from tumor.lightning.callbacks import *
 from tumor.lightning.aug_timm import *
 from tumor.lightning.loader import *
