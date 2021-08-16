@@ -46,13 +46,13 @@ def read_tfrecord(example):
     }
 
 
-# Build & Cache the Datasets
+# Build & Cache the Datasets 
 def build_datasets_from_tfrecs(tfrecs):
     tfrec_ds = tf.data.TFRecordDataset(tfrecs, num_parallel_reads=tf.data.AUTOTUNE)
     tfrec_ds = tfrec_ds.map(read_tfrecord, **AUTO).with_options(get_ignore_order()) 
     
-    img_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['img'], **AUTO).cache()
-    seg_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['segmentation'], **AUTO).cache()
+    img_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['img'], **AUTO)
+    seg_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['segmentation'], **AUTO)
     depth_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['depth'], **AUTO).cache()
     patient_id_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['patient_id'], **AUTO).cache()
     mri_type_ds = tfrec_ds.map(lambda tfrec_out: tfrec_out['mri_type'], **AUTO).cache()
