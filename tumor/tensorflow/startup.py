@@ -6,6 +6,7 @@ import tensorflow as tf
 # Full Module Imports 
 from tumor.tensorflow.callbacks import * 
 from tumor.tensorflow.tfrecord import * 
+from tumor.tensorflow.layers import *
 from tumor.tensorflow.model import *
 from tumor.tensorflow.data import * 
 from tumor.tensorflow.lr import *
