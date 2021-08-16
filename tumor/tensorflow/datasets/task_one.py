@@ -21,6 +21,7 @@ def load_tfrecords(task1_gcs_paths, fold):
     
 def _process_img(img, dim0, dim1, depth): 
     img = tf.cast(tf.io.decode_raw(img, tf.int16), tf.float32)
+    img.set_shape([dim0*dim1*depth])
     img = tf.reshape(img, [dim0, dim1, depth]) # Reshape to an actual image
     return img
 
@@ -34,7 +35,8 @@ def read_tfrecord(example):
     
     # Process Image & Segmentation
     dim0, dim1, depth = example['dim0'], example['dim1'], example['depth']
-    img, seg = _process_img(example['img'], dim0, dim1, depth), _process_img(example['segmentation'], dim0, dim1, depth)
+    img = _process_img(example['img'], dim0, dim1, depth)
+    seg = _process_img(example['segmentation'], dim0, dim1, depth)
     
     return {
         'img': img,

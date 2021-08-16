@@ -3,7 +3,6 @@ from tumor.tensorflow.datasets.utils import *
 
 def process_df(df, png_gcs_path):
     dataset_name =  'rsna-miccai-png'
-    gcs_path = get_gcs_path(dataset_name)
     gcs_filepaths = tf.io.gfile.glob(f'{png_gcs_path}/*/*/*/*png')
     gcs_filepaths_set = set(gcs_filepaths)
 
