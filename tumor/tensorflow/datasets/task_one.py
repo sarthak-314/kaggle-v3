@@ -21,7 +21,7 @@ def load_tfrecords(task1_gcs_paths, fold):
     
 def _process_img(img, dim0, dim1, depth): 
     img = tf.cast(tf.io.decode_raw(img, tf.int16), tf.float32)
-    img.set_shape([dim0*dim1*depth])
+    # img.set_shape([dim0*dim1*depth])
     img = tf.reshape(img, [dim0, dim1, depth]) # Reshape to an actual image
     return img
 
