@@ -17,7 +17,7 @@ MRI_TYPES = ['FLAIR','T1w','T1wCE','T2w']
 def read_fold(fold, dataframes_dir): 
     fold_dfs = []
     for fold_ in range(NUM_FOLDS): 
-        fold_df = pd.read_pickle(dataframes_dir / f'fold_{fold_}.pkl')
+        fold_df = pd.read_pickle(dataframes_dir / f'fold{fold_}.pkl')
         fold_dfs.append(fold_df)
     train = pd.concat(fold_dfs[:fold]+fold_dfs[fold+1:])
     valid = fold_dfs[fold]
