@@ -125,12 +125,12 @@ class LRScheduler(Callback):
     def on_train_begin(self, logs={}):
         '''Initialize the learning rate to the minimum value at the start of training.'''
         logs = logs or {}
-        K.set_value(self.model.optimizer.lr, 1e-6)
+        K.set_value(self.model.optimizer.lr, 1e-7)
 
     def on_epoch_end(self, epoch, logs={}):
         '''Check for end of current cycle, apply restarts when necessary.'''
         if epoch == 1: 
-            K.set_value(self.model.optimizer.lr, 1e-5)
+            K.set_value(self.model.optimizer.lr, 1e-6)
         elif epoch < 5: 
             # Warmup to min lr in 5 epochs
             lr = epoch/5*self.min_lr
