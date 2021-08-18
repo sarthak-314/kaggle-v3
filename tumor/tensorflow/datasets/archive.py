@@ -1,116 +1,102 @@
-################################ 3D NII DATASET ##############################
+################################ TASK 1 PNG #######################
 """
-- 3m 30s + 45s to Visualize Images (TPU)
-BUG: Divide by 5885. for normalization
-
-IDEAS 
-- Taking random slice from a 3D array 
-- Filtering images with low information by taking black pixel count
-- Taking 3 consecutive slices to make 3 channels
+- 3m 16s  to visualize images
 
 IDEAS TO TRY
-- Try 16 channel input (easy to do if backbone supports it)
-- In a TFRecord, make it 'FLAIR', 'T1w', 'T1wce', 'T2', 'seg' and make multi channel image with overlapping flair, t1w, etc. 
-- Better than taking 3 consecutive slices
+- Scale the data 3x by including all the axis
 """
-sync()
-import tumor.tensorflow.datasets.task_one as task_one
+# Dataset Config
+MAX_BLACK_PER = 0.25
+IMGS_PER_EPOCH = 2000
 
-# Dataset Builder Config
-IMGS_PER_EPOCH = 4000
-SLICES_PER_NII = 64
-MAX_BLACK_RATIO = 0.25
-MIN_DEPTH = 16
+# Build Dataframes
+GCS_PATH = 'gs://kds-49fd7c0dfe8cbb3ac5d1a4ad43a056b1b32d4e642283a0013f180376'
+to_train, to_valid = read_dataframes(FOLD)
+# to_train, to_valid = to_train[to_train.black_per < MAX_BLACK_PER], to_valid[to_valid.black_per < MAX_BLACK_PER]
+to_train.img_path = to_train.img_path.replace('/kaggle/input/tumor-data-task-1-png', GCS_PATH)
+to_valid.img_path = to_valid.img_path.replace('/kaggle/input/tumor-data-task-1-png', GCS_PATH)
 
-# TFRecords Source (tumor-task1-foldx-tfrecs)
-TASK1_GCS_PATHS = [ 
-    'gs://kds-d893ba40b104bc98fafde3615607654a0da18a0738e8ce2fbe4993c1',
-    'gs://kds-36e2bc1ed9cc2721bd42544b7be16b2f1c59ef6cbdb0559f25526084',
-    'gs://kds-e7dc052159590b3723d12efb3215e9cc4458e49e034661c6c55b4767',
-    'gs://kds-130e0e32262624592b6f504fdd47eb2be2f06855a047aa9bf9ddf493',
+# Utility Functions for building datasets
+decode_fn = get_decode_fn('png', channels=3)
+
+def get_one_hot_label(img_path, int_label):
+    one_hot_length = 2
+    one_hot_label = tf.one_hot(int_label, one_hot_length)
+    return img_path, tf.cast(one_hot_label, tf.float32)
+
+def resize_fn(img, label): 
+    img = tf.image.resize(img, size=[IMG_SIZE, IMG_SIZE])
+    return img, label
+
+
+def get_train_ds(img_paths, labels, batch_size): 
+    ds = tf.data.Dataset.from_tensor_slices((img_paths, labels))
+    ds = ds.map(get_one_hot_label, **AUTO)
+    ds = ds.map(decode_fn, **AUTO).map(resize_fn, **AUTO)
+
+    # Image Augmentations
+    for img_transform in get_img_transforms(IMG_TRANSFORMS, IMG_SIZE, AUG_PARAMS): 
+        ds = ds.map(img_transform, **AUTO).map(lambda img, label: (tf.squeeze(img), label), **AUTO)
+    ds = ds.map(lambda img, label: (tf.reshape(img, [IMG_SIZE, IMG_SIZE, CHANNELS]), label), **AUTO)
+    ds = ds.repeat().shuffle(4096).batch(batch_size)
+    for batch_transform in get_batch_transforms(BATCH_TRANSFORMS, IMG_SIZE, AUG_PARAMS, 2, batch_size): 
+        ds = ds.map(batch_transform, **AUTO)
+
+    # Dummy Masks
+    if ADD_DUMMY_MASK: 
+        dummy_mask_ds = tf.data.Dataset.from_tensors(tf.zeros((batch_size, IMG_SIZE, IMG_SIZE))).repeat()
+        img_ds, label_ds = ds.map(lambda img, label: img, **AUTO), ds.map(lambda img, label: label, **AUTO)
+        output_ds = tf.data.Dataset.zip((label_ds, dummy_mask_ds))
+        ds = tf.data.Dataset.zip((img_ds, output_ds))
+    
+    return ds.prefetch(tf.data.AUTOTUNE)
+
+def get_valid_ds(img_paths, labels, batch_size): 
+    ds = tf.data.Dataset.from_tensor_slices((img_paths, labels))
+    ds = ds.map(get_one_hot_label, **AUTO)
+    ds = ds.map(decode_fn, **AUTO).map(resize_fn, **AUTO)
+    ds = ds.repeat().shuffle(512).batch(batch_size)
+    if ADD_DUMMY_MASK: 
+        dummy_mask_ds = tf.data.Dataset.from_tensors(tf.zeros((batch_size, IMG_SIZE, IMG_SIZE))).repeat()
+        img_ds, label_ds = ds.map(lambda img, label: img, **AUTO), ds.map(lambda img, label: label, **AUTO)
+        output_ds = tf.data.Dataset.zip((label_ds, dummy_mask_ds))
+        ds = tf.data.Dataset.zip((img_ds, output_ds))
+    return ds.prefetch(tf.data.AUTOTUNE)
+
+# ------------------------- AUGMENTATIONS & DEBUGGING --------------------------
+# ------------------------------------------------------------------------------
+VISUALIZE = False
+
+# Very Light Augmentation Params
+AUG_PARAMS = {
+    'scale': { 'zoom_in': 0.75, 'zoom_out': 0.95, 'prob': 0.5 }, 
+    'rot_prob': 0.75, 'blur': { 'ksize': 2, 'prob': 0.05 }, 
+    'gridmask': { 'd1': 20,  'd2': 120,  'rotate': 90,  'ratio': 0.5,  'prob': 0.1 },
+    'cutout': { 'sl': 0.01, 'sh': 0.1,  'rl': 0.5, 'prob': 0.1 }, 
+    'cutmix_prob': 0.05, 'mixup_prob': 0.1, 
+    'augmix': { 'severity': 1, 'width': 2, 'prob': 0 },  
+}
+
+IMG_TRANSFORMS = [ 
+    # 'basic_augmentations', 
+    'random_scale', 'resize', 'random_rotate'
+    # 'random_cutout', , 'gridmask'
 ]
-print(TASK1_GCS_PATHS)
+# BATCH_TRANSFORMS = ['cutmix', 'mixup']
+BATCH_TRANSFORMS = ['mixup']
 
-def get_random_slice(img_3d, seg_3d, depth): 
-    # Cut Random Slice
-    MINVAL, MAXVAL = 50, 200
-    # if tf.random.uniform([], 0, 1.0, dtype=tf.float32) < 0.25:
-    #     if tf.random.uniform([], 0, 1.0, dtype=tf.float32) < 0.5:
-    #         random_slice = tf.random.uniform(shape=[], minval=MINVAL, maxval=MAXVAL, dtype=tf.int64)
-    #         img, seg = img[random_slice:random_slice+3, :, :], seg[random_slice:random_slice+3, :, :]
-    #         img, seg = tf.transpose(img, [1, 2, 0]), tf.transpose(seg, [1, 2, 0])
-    #     else: 
-    #         random_slice = tf.random.uniform(shape=[], minval=MINVAL, maxval=MAXVAL, dtype=tf.int64)
-    #         img, seg = img[:, random_slice:random_slice+3, :], seg[:, random_slice:random_slice+3, :]
-    #         img, seg = tf.transpose(img, [0, 2, 1]), tf.transpose(seg, [0, 2, 1])
-    # else: 
-    minval = depth//10
-    random_slice = tf.random.uniform(shape=[], minval=minval, maxval=depth-3, dtype=tf.int64)
-    img = img_3d[:, :, random_slice:random_slice+3]
-    seg = seg_3d[:, :, random_slice:random_slice+3]
-    seg = seg[:, :, 1]
-    return img, seg
-
-def crop_center(img, seg):
-    seg = tf.expand_dims(seg, axis=-1)
-    img = tf.image.resize_with_crop_or_pad(img, IMG_SIZE, IMG_SIZE)
-    seg = tf.image.resize_with_crop_or_pad(seg, IMG_SIZE, IMG_SIZE)
-    img = tf.reshape(img, (IMG_SIZE, IMG_SIZE, 3))
-    seg = tf.reshape(seg, (IMG_SIZE, IMG_SIZE))
-    return img, seg
-
-def get_random_slices(img_3d, seg_3d, depth): 
-    imgs, segs = [], []
-    for _ in range(SLICES_PER_NII): 
-        img, seg = get_random_slice(img_3d, seg_3d, depth)
-        img, seg = crop_center(img, seg)
-        imgs.append(img); segs.append(seg)
-    return tf.stack(imgs), tf.stack(segs)
-
-def filter_empty_imgs(img, seg): 
-    take_img = (tf.math.count_nonzero(img[:, :, 0]) / IMG_SIZE**2) > MAX_BLACK_RATIO
-    # print('take_img: ', take_img)
-    return take_img
-
-def normalize(img, seg): 
-    'Normalize and make boolean masks'
-    img = img / tf.reduce_max(img) # Self normalize each image
-    seg = seg / tf.reduce_max(seg)
-    return img, seg
+# Visualize Augmentations
+ROWS, COLS = 4, 8
+train_ds = get_datasets(COLS)[0]
+print(train_ds.take(1))
+visualize_augmentations(VISUALIZE, train_ds, rows=ROWS, cols=COLS)
 
 
-# Load the TFRecords
-task1_train_tfrecs, task1_valid_tfrecs = task_one.load_tfrecords(TASK1_GCS_PATHS, FOLD)
-tfrecs = task1_train_tfrecs # Skip patients which are in validation for task 2
 
-tfrec_datasets = task_one.build_datasets_from_tfrecs(tfrecs)
-img_seg_depth_ds = tf.data.Dataset.zip((tfrec_datasets['img'], tfrec_datasets['segmentation'], tfrec_datasets['depth']))
-img_seg_ds = img_seg_depth_ds.map(get_random_slices, **AUTO).unbatch()
-img_seg_ds = img_seg_ds.map(normalize, **AUTO)
-img_seg_ds = img_seg_ds.filter(filter_empty_imgs)
-img_ds = img_seg_ds.map(lambda img, seg: img, **AUTO)
-seg_ds = img_seg_ds.map(lambda img, seg: seg, **AUTO)
 
-label_ds = tfrec_datasets['label_int'].map(lambda int_label: tf.one_hot(int_label, 2), **AUTO)
 
-inputs = (img_ds)
-input_ds = tf.data.Dataset.zip(inputs)
-outputs = (label_ds, seg_ds)
-output_ds = tf.data.Dataset.zip(outputs)
 
-ds = tf.data.Dataset.zip((input_ds, output_ds))
 
-def get_task1_dataset(batch_size): 
-    task1_train_ds = ds.repeat().shuffle(2048).batch(batch_size)
-    return task1_train_ds.prefetch(tf.data.AUTOTUNE)
 
-# Visualize Images
-rows, cols = 4, 8
-task1_train_ds = get_task1_dataset(cols)
-fig = plt.figure(figsize=(32, 12))
-num_imgs = rows * cols
-xs = []
-for i, x in tqdm(enumerate(task1_train_ds.unbatch().take(num_imgs)), total=num_imgs): 
-    _ = fig.add_subplot(rows, cols, i+1)
-    _ = plt.imshow(tf.expand_dims(x[1][1], axis=-1) + x[0])
-    xs.append(x)
+
+################################ 3D NII DATASET ##############################
