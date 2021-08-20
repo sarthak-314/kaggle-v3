@@ -1,5 +1,8 @@
 import tensorflow as tf
-import tensorflow_addons as tfa
+try: 
+    import tensorflow_addons as tfa
+except: 
+    pass
 
 def auto_select_accelerator():
     """
