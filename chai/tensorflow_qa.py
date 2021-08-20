@@ -15,7 +15,7 @@ WIKI_ANN_NER_LANGS = [
 ]
 MLQA_LANGS = ['hi', 'en']
 
-def convert_dataset_for_tensorflow(dataset, batch_size):
+def convert_dataset_for_tensorflow(dataset, batch_size, cache=False):
     """
     Converts a Hugging Face dataset to a Tensorflow Dataset. The dataset_mode controls whether we pad all batches
     to the maximum sequence length, or whether we only pad to the maximum length within that batch. The former
@@ -46,6 +46,10 @@ def convert_dataset_for_tensorflow(dataset, batch_size):
         tf_dataset = tf.data.Dataset.from_tensor_slices((data, dummy_labels))
     else:
         tf_dataset = tf.data.Dataset.from_tensor_slices(data)
+    
+    # Added by ME
+    if cache: 
+        tf_dataset = tf_dataset.cache()
     tf_dataset = tf_dataset.shuffle(buffer_size=len(dataset))
     tf_dataset = tf_dataset.batch(batch_size=batch_size).map(densify_ragged_batch)
     return tf_dataset.prefetch(tf.data.AUTOTUNE)
