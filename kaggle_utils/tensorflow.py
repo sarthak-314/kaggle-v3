@@ -1,6 +1,5 @@
-from tensorflow.keras.mixed_precision import experimental as mixed_precision
-import tensorflow_addons as tfa
 import tensorflow as tf
+import tensorflow_addons as tfa
 
 def auto_select_accelerator():
     """
