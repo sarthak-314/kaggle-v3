@@ -1,23 +1,3 @@
-# CONFIG 
-WIKI_LANGS = [
-    'hi', 'gu', 'mr', 'pa', 'ur', 
-    'ta', 'ml', 'te', 'kn', 
-    'en',  
-]
-TYDIQA_LANGS = ['en', 'te']
-MC4_LANGS = [
-    'hi', 'gu', 'mr', 'pa', 'ur', 
-    'ta', 'ml', 'te', 'kn', 
-    'en',  
-]
-WIKI_ANN_NER_LANGS = [
-    'hi', 'mr', 'ur', 
-    'ta', 'te', 
-    'en', 
-]
-MLQA_LANGS = ['hi', 'en']
-
-
 """Add Tasks to registry."""
 import functools
 
@@ -46,14 +26,24 @@ DEFAULT_OUTPUT_FEATURES = {
         vocabulary=DEFAULT_VOCAB, add_eos=True)
 }
 
-
+MC4_LANGS = tfds.text.c4.MC4_LANGUAGES
 
 # Multilingual BERT was trained on 104 languages. We include 103 of these
 # languages, as tfds.wikipedia doesn't distinguish between simplified and
 # traditional Chinese, and only contains "zh" (which is a mix of simplified
 # and traditional).
 # https://github.com/google-research/bert/blob/master/multilingual.md
-
+WIKI_LANGS = [
+    "af", "an", "ar", "ast", "az", "azb", "ba", "bar", "be", "bg", "bn", "bpy",
+    "br", "bs", "ca", "ce", "ceb", "cs", "cv", "cy", "da", "de", "el", "en",
+    "es", "et", "eu", "fa", "fi", "fr", "fy", "ga", "gl", "gu", "he", "hi",
+    "hr", "ht", "hu", "hy", "id", "io", "is", "it", "ja", "jv", "ka", "kk",
+    "kn", "ko", "ky", "la", "lb", "lmo", "lt", "lv", "mg", "min", "mk", "ml",
+    "mn", "mr", "ms", "my", "nds-nl", "ne", "new", "nl", "nn", "no", "oc",
+    "pa", "pl", "pms", "pnb", "pt", "ro", "ru", "scn", "sco", "sh", "sk", "sl",
+    "sq", "sr", "su", "sv", "sw", "ta", "te", "tg", "th", "tl", "tr", "tt",
+    "uk", "ur", "uz", "vi", "vo", "war", "yo", "zh"
+]
 
 # =========================== Pretraining Tasks/Mixtures =======================
 # mC4
@@ -302,7 +292,7 @@ seqio.MixtureRegistry.add(
 # ----- TyDiQA GoldP-----
 # The "validation" split contains all the validation examples for all the
 # individual languages together.
-
+TYDIQA_LANGS = ["ar", "bn", "en", "fi", "id", "ko", "ru", "sw", "te"]
 
 seqio.TaskRegistry.add(
     "mt5_tydiqa_train_dev",
@@ -480,6 +470,9 @@ seqio.MixtureRegistry.add(
 
 
 # ----- MLQA -----
+
+MLQA_LANGS = ["ar", "de", "en", "es", "hi", "vi", "zh"]
+
 for lang in MLQA_LANGS:
     seqio.TaskRegistry.add(
         "mt5_mlqa_dev_test.{}".format(lang),
@@ -514,7 +507,14 @@ seqio.MixtureRegistry.add(
 
 # ----- WikiAnn NER -----
 
-for lang in WIKI_ANN_NER_LANGS:
+NER_LANGS = [
+    "af", "ar", "bg", "bn", "de", "el", "en", "es", "et", "eu", "fa", "fi",
+    "fr", "he", "hi", "hu", "id", "it", "ja", "jv", "ka", "kk", "ko", "ml",
+    "mr", "ms", "my", "nl", "pt", "ru", "sw", "ta", "te", "th", "tl", "tr",
+    "ur", "vi", "yo", "zh"
+]
+
+for lang in NER_LANGS:
     seqio.TaskRegistry.add(
         "mt5_ner_train.{}".format(lang),
         source=seqio.TfdsDataSource(
@@ -545,14 +545,14 @@ for lang in WIKI_ANN_NER_LANGS:
 # NER zero-shot
 seqio.MixtureRegistry.add(
     "mt5_ner_zeroshot", ["mt5_ner_train.{}".format("en")] +
-    ["mt5_ner_eval.{}".format(lang) for lang in WIKI_ANN_NER_LANGS],
+    ["mt5_ner_eval.{}".format(lang) for lang in NER_LANGS],
     default_rate=1.0)
 
 # NER multilingual
 seqio.MixtureRegistry.add(
     "mt5_ner_multilingual",
-    ["mt5_ner_train.{}".format(lang) for lang in WIKI_ANN_NER_LANGS] +
-    ["mt5_ner_eval.{}".format(lang) for lang in WIKI_ANN_NER_LANGS],
+    ["mt5_ner_train.{}".format(lang) for lang in NER_LANGS] +
+    ["mt5_ner_eval.{}".format(lang) for lang in NER_LANGS],
     default_rate=1.0)
 
 
