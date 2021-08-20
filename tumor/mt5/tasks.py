@@ -2,6 +2,8 @@ import functools
 import seqio
 import t5
 
+from multilingual_t5.evaluation import metrics as mt5_metrics
+from multilingual_t5 import preprocessors
 import preprocessors
 import mt5_metrics
 import metrics
