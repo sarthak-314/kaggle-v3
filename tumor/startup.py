@@ -5,6 +5,7 @@ sys.path.append('/content/temp')
 
 from kaggle_utils.startup import * 
 from kaggle_utils.utils import solve_environment
+from tumor.tensorflow_qa import *
 
 # Competition Specific Constants
 COMP_NAME = 'rsna-miccai-brain-tumor-radiogenomic-classification'
