@@ -1,3 +1,4 @@
+import tensorflow as tf
 try: 
     import tensorflow_addons as tfa
 except Exception as e:
@@ -6,7 +7,6 @@ try:
     import tensorflow_hub as hub
 except Exception as e: 
     print(e)
-import tensorflow as tf
 
 # Full Module Imports 
 from tumor.tensorflow.callbacks import * 
