@@ -1,4 +1,3 @@
-from tensorflow.keras.mixed_precision import experimental as mixed_precision
 import tensorflow_addons as tfa
 import tensorflow_hub as hub
 import tensorflow as tf
@@ -73,7 +72,7 @@ def augment_fn(img):
 
 def enable_mixed_precision(): 
     policy = tf.keras.mixed_precision.experimental.Policy('mixed_bfloat16')
-    mixed_precision.set_policy(policy)
+    tf.keras.mixed_precision.experimental.set_policy(policy)
     print('Mixed precision enabled')
 
 def enable_jit(): 
