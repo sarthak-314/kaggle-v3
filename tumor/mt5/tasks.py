@@ -1,10 +1,10 @@
 import functools
 import seqio
 import t5
+import metrics
 
 from multilingual_t5.evaluation import metrics as mt5_metrics
 from multilingual_t5 import preprocessors
-import metrics
 
 DEFAULT_SPM_PATH = "gs://t5-data/vocabs/mc4.250000.100extra/sentencepiece.model"
 
