@@ -34,7 +34,6 @@ from IPython.display import clear_output
 from IPython import get_ipython
 
 InteractiveShell.ast_node_interactivity = "all"
-warnings.filterwarnings('ignore')
 ipython = get_ipython()
 try: 
     ipython.magic('matplotlib inline')
@@ -199,3 +198,9 @@ def mount_drive():
     
 if ENV == 'Colab': 
     mount_drive()
+    
+def ignore_warnings(should_ignore): 
+    if should_ignore: 
+        warnings.filterwarnings('ignore')
+    else: 
+        warnings.filterwarnings('always')
