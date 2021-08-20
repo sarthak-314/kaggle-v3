@@ -2,7 +2,10 @@ try:
     import tensorflow_addons as tfa
 except Exception as e:
     print(e) 
-import tensorflow_hub as hub
+try: 
+    import tensorflow_hub as hub
+except Exception as e: 
+    print(e)
 import tensorflow as tf
 
 # Full Module Imports 
