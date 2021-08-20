@@ -1,8 +1,19 @@
+# https://github.com/huggingface/transformers/blob/master/examples/tensorflow/question-answering/run_qa.py
 import tensorflow as tf
 
-def huggingface_dataset_to_ds(dataset): 
-    print()
-    
+
+WIKI_LANGS = [
+    'hi', 'gu', 'mr', 'pa', 'ur', 
+    'ta', 'ml', 'te', 'kn', 
+    'en',  
+]
+TYDIQA_LANGS = ['en', 'te']
+WIKI_ANN_NER_LANGS = [
+    'hi', 'mr', 'ur', 
+    'ta', 'te', 
+    'en', 
+]
+MLQA_LANGS = ['hi', 'en']
 
 def convert_dataset_for_tensorflow(dataset, batch_size):
     """
