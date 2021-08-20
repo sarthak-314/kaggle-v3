@@ -5,6 +5,7 @@ from dataclasses import dataclass, asdict
 from distutils.dir_util import copy_tree
 from collections import defaultdict
 import matplotlib.pyplot as plt
+from functools import partial
 from termcolor import colored
 from tqdm.auto import tqdm
 from pathlib import Path 
