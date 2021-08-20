@@ -1,5 +1,8 @@
 from tensorflow.keras import backend as K  
-import tensorflow_addons as tfa
+try: 
+    import tensorflow_addons as tfa
+except Exception as e:
+    print(e) 
 import tensorflow as tf 
 import math 
 

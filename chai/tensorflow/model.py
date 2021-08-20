@@ -1,4 +1,7 @@
-import tensorflow_addons as tfa
+try: 
+    import tensorflow_addons as tfa
+except Exception as e:
+    print(e) 
 from termcolor import colored
 import tensorflow_hub as hub
 import tensorflow as tf

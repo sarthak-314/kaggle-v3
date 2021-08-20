@@ -1,6 +1,10 @@
 from kaggle_utils.tensorflow import get_load_locally
 from wandb.keras import WandbCallback
-import tensorflow_addons as tfa
+try: 
+    import tensorflow_addons as tfa
+except Exception as e:
+    print(e) 
+
 import tensorflow as tf 
 import os
 
