@@ -84,3 +84,6 @@ def enable_mixed_precision():
 def enable_jit(): 
     tf.config.optimizer.set_jit(True)
     print('Accelerated Linear Algebra enabled')
+    
+WORKING_DIR = Path('/content/')
+TB_DIR = WORKING_DIR / 'tb-logs'
