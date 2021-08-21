@@ -4,7 +4,7 @@ try:
     import tensorflow_addons as tfa
 except Exception as e:
     print(e) 
-
+from pathlib import Path
 import tensorflow as tf 
 import datetime
 import os
@@ -22,11 +22,13 @@ common_kwargs = {
 }
 
 # TODO: Move somewhere else
-def tb_callback(log_dir, train_steps): 
+def tb_callback(train_steps): 
+    WORKING_DIR = Path('/content/')
+    TB_DIR = WORKING_DIR / 'tb-logs'
     start_profile_batch = train_steps+10
     stop_profile_batch = start_profile_batch + 100
     profile_range = f"{start_profile_batch},{stop_profile_batch}"
-    log_path = log_dir / datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    log_path = TB_DIR / datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     tensorboard_callback = tf.keras.callbacks.TensorBoard(
         log_dir=log_path, histogram_freq=1, update_freq=20,
         profile_batch=profile_range, 
