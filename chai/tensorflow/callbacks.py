@@ -6,13 +6,13 @@ except Exception as e:
     print(e) 
 
 import tensorflow as tf 
+import datetime
 import os
 
 from kaggle_utils.tensorflow import get_save_locally
 
-# Config for the Competition
-MONITOR = 'val_accuracy'
-MODE = 'max'
+MONITOR = 'val_loss'
+MODE = 'min'
 VERBOSE = 2
 
 common_kwargs = {
@@ -21,22 +21,34 @@ common_kwargs = {
     'verbose': VERBOSE, 
 }
 
-def get_model_checkpoint(checkpoint_path): 
-    os.makedirs(checkpoint_path, exist_ok=True)
+# TODO: Move somewhere else
+def tb_callback(log_dir, train_steps): 
+    start_profile_batch = train_steps+10
+    stop_profile_batch = start_profile_batch + 100
+    profile_range = f"{start_profile_batch},{stop_profile_batch}"
+    log_path = log_dir / datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(
+        log_dir=log_path, histogram_freq=1, update_freq=20,
+        profile_batch=profile_range, 
+    )
+    return tensorboard_callback
+
+def model_checkpoint(): 
+    checkpoint_filepath = 'checkpoint-{epoch:02d}-{val_loss:.4f}.h5'
     return tf.keras.callbacks.ModelCheckpoint(
-        checkpoint_path, 
+        filepath=checkpoint_filepath,
+        save_weights_only=True,
         save_best_only=True, 
-        options=get_save_locally(), 
         **common_kwargs, 
     )
-    
+
 def get_early_stopping(patience=3):
     return tf.keras.callbacks.EarlyStopping(
         patience=patience, 
         restore_best_weights=True, 
         **common_kwargs,
     )
-    
+
 def get_reduce_lr_on_plateau(patience): 
     return tf.keras.callbacks.ReduceLROnPlateau(
         factor=0.2,
