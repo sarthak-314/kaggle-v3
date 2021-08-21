@@ -9,18 +9,18 @@ except Exception as e:
     print(e)
 
 # Full Module Imports 
-from tumor.tensorflow.callbacks import * 
-from tumor.tensorflow.tfrecord import * 
-from tumor.tensorflow.layers import *
-from tumor.tensorflow.model import *
-from tumor.tensorflow.data import * 
-from tumor.tensorflow.lr import *
+from chai.tensorflow.callbacks import * 
+from chai.tensorflow.tfrecord import * 
+from chai.tensorflow.layers import *
+from chai.tensorflow.model import *
+from chai.tensorflow.data import * 
+from chai.tensorflow.lr import *
 
 # Working Models & Datasets Imports
-from tumor.tensorflow.models.backbone_effnetv2 import download_effnetv2
+from chai.tensorflow.models.backbone_effnetv2 import download_effnetv2
 
 # Function / Classes Imports
-from tumor.tensorflow.model import save_model
+from chai.tensorflow.model import save_model
 
 AUTO = { 'num_parallel_calls': tf.data.AUTOTUNE }
 
