@@ -51,7 +51,8 @@ def convert_dataset_for_tensorflow(dataset, batch_size, cache=False):
     if cache: 
         tf_dataset = tf_dataset.cache()
     tf_dataset = tf_dataset.shuffle(buffer_size=len(dataset))
-    tf_dataset = tf_dataset.batch(batch_size=batch_size).map(densify_ragged_batch)
+    AUTO = { 'num_parallel_calls': tf.data.AUTOTUNE }
+    tf_dataset = tf_dataset.batch(batch_size=batch_size).map(densify_ragged_batch, **AUTO)
     return tf_dataset.prefetch(tf.data.AUTOTUNE)
 
 # Training preprocessing
