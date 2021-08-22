@@ -98,6 +98,7 @@ def prepare_train_features(examples, tokenizer, max_seq_length, doc_stride, pad_
     # Let's label those examples!
     tokenized_examples["start_positions"] = []
     tokenized_examples["end_positions"] = []
+    tokenized_examples["example_id"] = [] # For predictions
     for i, offsets in enumerate(offset_mapping):
         # We will label impossible answers with the index of the CLS token.
         input_ids = tokenized_examples["input_ids"][i]
@@ -111,6 +112,7 @@ def prepare_train_features(examples, tokenizer, max_seq_length, doc_stride, pad_
 
         # One example can give several spans, this is the index of the example containing this span of text.
         sample_index = sample_mapping[i]
+        tokenized_examples["example_id"].append(examples["id"][sample_index])
         answers = examples['answers'][sample_index]
         # If no answers are given, set the cls_index as answer.
         if len(answers["answer_start"]) == 0:
