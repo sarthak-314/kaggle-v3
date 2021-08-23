@@ -104,9 +104,9 @@ def tf_optimizer_factory(optimizer_kwargs, lr_scheduler):
             learning_rate=lr_scheduler,  
             amsgrad=optimizer_kwargs['use_amsgrad'], 
         )
-    if optimizer_kwargs['use_ranger']: 
+    if optimizer_kwargs['use_lookahead']: 
         print(colored('Using Lookahead', 'red'))
-        optimizer = tfa.optimizers.LookAhead(optimizer)
+        optimizer = tfa.optimizers.Lookahead(optimizer)
     if optimizer_kwargs['use_swa']: 
         print(colored('Using SWA', 'red'))
         optimizer = tfa.optimizers.SWA(optimizer)
