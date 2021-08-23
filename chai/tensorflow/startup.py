@@ -99,7 +99,7 @@ def tf_lr_scheduler_factory(lr_scheduler_kwargs):
 def tf_optimizer_factory(optimizer_kwargs, lr_scheduler): 
     optimizer_name = optimizer_kwargs.pop('name')
     if optimizer_name == 'AdamW': 
-        optimizer = tfa.optimizer.AdamW(
+        optimizer = tfa.optimizers.AdamW(
             weight_decay=optimizer_kwargs['weight_decay'],
             learning_rate=lr_scheduler,  
             amsgrad=optimizer_kwargs['use_amsgrad'], 
