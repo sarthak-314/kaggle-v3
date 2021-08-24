@@ -87,6 +87,7 @@ def enable_jit():
 def tf_lr_scheduler_factory(lr_scheduler_kwargs): 
     if isinstance(lr_scheduler_kwargs, int): 
         print(colored('Using constant learning rate', 'yellow'))
+        return lr_scheduler_kwargs
     lr_scheduler = tfa.optimizers.ExponentialCyclicalLearningRate(
         initial_learning_rate=1e-8, 
         maximal_learning_rate=lr_scheduler_kwargs['lr'], 
