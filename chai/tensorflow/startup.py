@@ -106,11 +106,11 @@ def tf_optimizer_factory(optimizer_kwargs, lr_scheduler):
             amsgrad=optimizer_kwargs['use_amsgrad'], 
         )
     elif optimizer_name == 'Adagrad': 
+        optimizer = tfa.optimizers.extend_with_decoupled_weight_decay(
+            base_optimizer=tf.keras.optimizers.Adagrad, 
+        )
         optimizer = tf.keras.optimizers.Adagrad(
             learning_rate=lr_scheduler, 
-        )
-        optimizer = tfa.optimizers.extend_with_decoupled_weight_decay(
-            base_optimizer=optimizer, 
             weight_decay=optimizer_kwargs['weight_decay']
         )
         print('Adding weight decay through tfa.extend_with_decoupled_weight_decay')
