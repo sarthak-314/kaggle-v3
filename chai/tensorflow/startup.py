@@ -16,7 +16,7 @@ from chai.tensorflow.callbacks import *
 AUTO = { 'num_parallel_calls': tf.data.AUTOTUNE }
 
 ##### Startup Functions #####
-def auto_select_accelerator():
+def select_accelerator():
     try:
         tpu = tf.distribute.cluster_resolver.TPUClusterResolver()
         tf.config.experimental_connect_to_cluster(tpu)
@@ -28,11 +28,11 @@ def auto_select_accelerator():
     print(f"Running on {strategy.num_replicas_in_sync} replicas")
     return strategy
 
-def enable_mixed_precision(): 
+def mixed_precision(): 
     policy = tf.keras.mixed_precision.experimental.Policy('mixed_bfloat16')
     tf.keras.mixed_precision.experimental.set_policy(policy)
 
-def enable_jit(): 
+def jit(): 
     tf.config.optimizer.set_jit(True)
 
 
