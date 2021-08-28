@@ -1,15 +1,8 @@
-from kaggle_utils.tensorflow import get_load_locally
-from wandb.keras import WandbCallback
-try: 
-    import tensorflow_addons as tfa
-except Exception as e:
-    print(e) 
+from kaggle_utils.tensorflow import get_save_locally, get_load_locally
 from pathlib import Path
 import tensorflow as tf 
 import datetime
 import os
-
-from kaggle_utils.tensorflow import get_save_locally
 
 MONITOR = 'val_loss'
 MODE = 'min'
@@ -20,11 +13,9 @@ common_kwargs = {
     'mode': MODE, 
     'verbose': VERBOSE, 
 }
+TB_DIR = Path('/content/') / 'tb-logs'
 
-# TODO: Move somewhere else
 def tb_callback(train_steps): 
-    WORKING_DIR = Path('/content/')
-    TB_DIR = WORKING_DIR / 'tb-logs'
     start_profile_batch = train_steps+10
     stop_profile_batch = start_profile_batch + 100
     profile_range = f"{start_profile_batch},{stop_profile_batch}"
@@ -47,14 +38,14 @@ def model_checkpoint(checkpoint_dir=None):
         **common_kwargs, 
     )
 
-def get_early_stopping(patience=3):
+def early_stopping(patience=3):
     return tf.keras.callbacks.EarlyStopping(
         patience=patience, 
         restore_best_weights=True, 
         **common_kwargs,
     )
 
-def get_reduce_lr_on_plateau(patience): 
+def reduce_lr_on_plateau(patience): 
     return tf.keras.callbacks.ReduceLROnPlateau(
         factor=0.2,
         patience=patience,
@@ -63,12 +54,14 @@ def get_reduce_lr_on_plateau(patience):
         **common_kwargs, 
     )
 
-def time_stopping(max_train_hours): 
+def time_stopping(max_train_hours):
+    import tensorflow_addons as tfa 
     return tfa.callbacks.TimeStopping(
         seconds=max_train_hours*3600
     )
     
 def tqdm_bar(): 
+    import tensorflow_addons as tfa
     return tfa.callbacks.TQDMProgressBar()
 
 def terminate_on_nan(): 
@@ -81,6 +74,7 @@ def tensorboard_callback(log_dir):
     )
 
 def wandb_callback():
+    from wandb.keras import WandbCallback
     return WandbCallback()
 
 def make_callbacks_list(model, callbacks): 
@@ -90,15 +84,3 @@ def make_callbacks_list(model, callbacks):
         model = model,
         add_history=True, 
     )
-    
-
-def get_lr_callback(lr_warmup_epochs=10, lr_max=1e-3, lr_min=1e-8):
-    def lrfn(epoch): 
-        EXP_DECAY = 0.9
-        if epoch < lr_warmup_epochs: 
-            lr = (lr_max-lr_min) / lr_warmup_epochs * epoch + lr_min
-        else: 
-            lr = (lr_max-lr_min) * EXP_DECAY ** (epoch-lr_warmup_epochs) + lr_min
-        return lr
-    lr_callback = tf.keras.callbacks.LearningRateScheduler(lrfn, verbose = True)
-    return lr_callback
