@@ -16,7 +16,7 @@ from chai.tensorflow.callbacks import *
 AUTO = { 'num_parallel_calls': tf.data.AUTOTUNE }
 
 ##### Startup Functions #####
-def select_accelerator():
+def tf_accelerator():
     try:
         tpu = tf.distribute.cluster_resolver.TPUClusterResolver()
         tf.config.experimental_connect_to_cluster(tpu)
