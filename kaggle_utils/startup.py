@@ -115,62 +115,12 @@ def clone_repo(repo_url):
     print(f'Repo {repo_url} cloned')    
 
     
-# Log Remotely to 
-from urllib.parse import urlencode
-import urllib.request as request
-import threading 
-class Logger(object):
-    CHANNEL_NAME = 'my-channel'
-    def __init__(self):
-        self.terminal = sys.stdout
-    def write(self, message):
-        if message != '\n':
-            self.terminal.write(message + '\n')
-            payload = {'msg': message}
-            quoted = urlencode(payload)
-            thr = threading.Thread(target=self.send, args=(quoted,), kwargs={})
-            thr.start()
-    def flush(self):
-        pass
-    @staticmethod
-    def send(msg):
-        msg = 'https://dweet.io/dweet/for/' + Logger.CHANNEL_NAME + '?' + msg
-        try:
-            request.urlopen(msg).read()
-        except Exception as e:
-            sys.stdout.terminal.write(e)
-
-def log_remotely(channel_name): 
-    print(f'Logging output to https://shantanum91.github.io/kagglewatch/ on channel {channel_name}')
-    Logger.CHANNEL_NAME = channel_name
-    sys.stdout = Logger()
-    
-    
 def get_gcs_path_fn(gcs_path, dataset_dir): 
     def fn(org_path, dataset_dir=dataset_dir ,gcs_path=gcs_path):
         org_path, dataset_dir = str(org_path), str(dataset_dir)
         gcs_path = org_path.replace(dataset_dir, gcs_path)
         return gcs_path
     return fn
-
-def oversample(train, class_to_oversample_ratio): 
-    print(train.label.value_counts())
-    org=len(train)
-    print('Original Training Samples: ', org)
-    print('Class weights: ', compute_class_weight('balanced', list(range(train.label.nunique())), train.label.values))
-    oversampled_labels = []
-    for label, times in class_to_oversample_ratio.items():
-        label_df = train[train.label==label]
-        oversampled_label = pd.concat([label_df]*times)
-        oversampled_labels.append(oversampled_label)
-    df = pd.concat(oversampled_labels).sample(frac=1)
-    new=len(train); new; new/org
-    print('New train samples: ', new)
-    print('new/original: ', new/org)
-    print(train.label.value_counts())
-    print('Class weights: ', compute_class_weight('balanced', list(range(train.label.nunique())), train.label.values))
-    return df
-
 
 def get_all_filepaths(data_dir):
     filepaths = glob.glob(str(data_dir / '**' / '*'), recursive=True) 
@@ -204,4 +154,4 @@ def ignore_warnings(should_ignore):
     if should_ignore: 
         warnings.filterwarnings('ignore')
     else: 
-        warnings.filterwarnings('always')
+        warnings.filterwarnings("ignore", category=DeprecationWarning) 
