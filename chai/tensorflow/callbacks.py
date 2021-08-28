@@ -1,4 +1,3 @@
-from kaggle_utils.tensorflow import get_save_locally, get_load_locally
 from pathlib import Path
 import tensorflow as tf 
 import datetime
@@ -14,6 +13,12 @@ common_kwargs = {
     'verbose': VERBOSE, 
 }
 TB_DIR = Path('/content/') / 'tb-logs'
+
+def get_save_locally(): 
+    return tf.saved_model.SaveOptions(experimental_io_device='/job:localhost')
+
+def get_load_locally(): 
+    return tf.saved_model.LoadOptions(experimental_io_device='/job:localhost')
 
 def tb_callback(train_steps): 
     start_profile_batch = train_steps+10
