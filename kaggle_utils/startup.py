@@ -18,10 +18,6 @@ import warnings
 import random
 import shutil
 import pickle
-try: 
-    import torch
-except: 
-    print('Could not import torch')
 import json
 import math
 import glob
@@ -29,6 +25,10 @@ import cv2
 import sys
 import gc
 import os
+
+import tensorflow as tf
+import torch
+
 
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.display import clear_output 
