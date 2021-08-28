@@ -12,7 +12,7 @@ from termcolor import colored
 
 
 # Full Module Imports 
-from chai.tensorflow.callbacks import * 
+from chai.tflow.callbacks import * 
 AUTO = { 'num_parallel_calls': tf.data.AUTOTUNE }
 
 ##### Startup Functions #####
