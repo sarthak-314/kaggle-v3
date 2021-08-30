@@ -12,7 +12,6 @@ common_kwargs = {
     'mode': MODE, 
     'verbose': VERBOSE, 
 }
-TB_DIR = Path('/content/') / 'tb-logs'
 
 def get_save_locally(): 
     return tf.saved_model.SaveOptions(experimental_io_device='/job:localhost')
@@ -20,11 +19,11 @@ def get_save_locally():
 def get_load_locally(): 
     return tf.saved_model.LoadOptions(experimental_io_device='/job:localhost')
 
-def tb_callback(train_steps): 
+def tb_callback(tb_dir, train_steps): 
     start_profile_batch = train_steps+10
     stop_profile_batch = start_profile_batch + 100
     profile_range = f"{start_profile_batch},{stop_profile_batch}"
-    log_path = TB_DIR / datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    log_path = tb_dir / datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     tensorboard_callback = tf.keras.callbacks.TensorBoard(
         log_dir=log_path, histogram_freq=1, update_freq=20,
         profile_batch=profile_range, 
