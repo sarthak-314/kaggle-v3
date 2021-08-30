@@ -2,15 +2,16 @@ import tensorflow as tf
 
 import transformers 
 import datasets 
-
 from transformers import (
-    AutoTokenizer, TFAutoModel, TFAutoModel, TFAutoModelForQuestionAnswering
+    AutoTokenizer, TFAutoModel, TFAutoModel, TFAutoModelForQuestionAnswering, 
+    EvalPrediction, 
 )
 from datasets import (
     concatenate_datasets, list_datasets, 
 )
-NUM_WORKERS = 4
+from qa_utils import *
 
+NUM_WORKERS = 4
 def prepare_features(examples, tokenizer, max_seq_len, doc_stride): 
     examples['question'] = [q.lstrip() for q in examples['question']]
     tokenized_examples = tokenizer(
