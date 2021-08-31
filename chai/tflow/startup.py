@@ -73,6 +73,7 @@ def tf_optimizer_factory(optimizer_kwargs, lr_scheduler):
             weight_decay=optimizer_kwargs['weight_decay'],
             learning_rate=lr_scheduler,  
             amsgrad=False, 
+            clipnorm=optimizer_kwargs['max_grad_norm'], 
         )
     elif optimizer_name == 'Adagrad': 
         optimizer = tf.keras.optimizers.Adagrad(

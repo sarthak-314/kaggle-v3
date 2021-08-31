@@ -414,7 +414,7 @@ def postprocess_qa_predictions_with_beam_search(
     return all_predictions, scores_diff_json
 
 
-def convert_dataset_for_tensorflow(
+def huggingface_dataset_to_tfds(
     dataset, batch_size, dataset_mode="constant_batch", shuffle=True, drop_remainder=True
 ):
     """Converts a Hugging Face dataset to a Tensorflow Dataset. The dataset_mode controls whether we pad all batches
