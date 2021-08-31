@@ -414,9 +414,7 @@ def postprocess_qa_predictions_with_beam_search(
     return all_predictions, scores_diff_json
 
 
-def huggingface_dataset_to_tfds(
-    dataset, batch_size, dataset_mode="constant_batch", shuffle=True, drop_remainder=True
-):
+def huggingface_dataset_to_tfds(dataset, batch_size, dataset_mode="constant_batch"):
     """Converts a Hugging Face dataset to a Tensorflow Dataset. The dataset_mode controls whether we pad all batches
     to the maximum sequence length, or whether we only pad to the maximum length within that batch. The former
     is most useful when training on TPU, as a new graph compilation is required for each sequence length.
@@ -453,8 +451,8 @@ def huggingface_dataset_to_tfds(
         tf_dataset = tf.data.Dataset.from_tensor_slices((data, dummy_labels))
     else:
         tf_dataset = tf.data.Dataset.from_tensor_slices(data)
-    if shuffle:
-        tf_dataset = tf_dataset.shuffle(buffer_size=4096)
-    tf_dataset = tf_dataset.batch(batch_size=batch_size, drop_remainder=drop_remainder)
+        
+    tf_dataset = tf_dataset.repeat().shuffle(4096).batch(batch_size)
+    
     tf_dataset = tf_dataset.map(densify_ragged_batch, num_parallel_calls=tf.data.AUTOTUNE)
     return tf_dataset.prefetch(tf.data.AUTOTUNE)
