@@ -415,7 +415,7 @@ def postprocess_qa_predictions_with_beam_search(
 
 
 def convert_dataset_for_tensorflow(
-    dataset, batch_size, dataset_mode="variable_batch", shuffle=True, drop_remainder=True
+    dataset, batch_size, dataset_mode="constant_batch", shuffle=True, drop_remainder=True
 ):
     """Converts a Hugging Face dataset to a Tensorflow Dataset. The dataset_mode controls whether we pad all batches
     to the maximum sequence length, or whether we only pad to the maximum length within that batch. The former
@@ -455,5 +455,6 @@ def convert_dataset_for_tensorflow(
         tf_dataset = tf.data.Dataset.from_tensor_slices(data)
     if shuffle:
         tf_dataset = tf_dataset.shuffle(buffer_size=len(dataset))
-    tf_dataset = tf_dataset.batch(batch_size=batch_size, drop_remainder=drop_remainder).map(densify_ragged_batch)
-    return tf_dataset
+    tf_dataset = tf_dataset.batch(batch_size=batch_size, drop_remainder=drop_remainder)
+    tf_dataset = tf_dataset.map(densify_ragged_batch, num_parallel_calls=tf.data.AUTOTUNE)
+    return tf_dataset.prefetch(tf.data.AUTOTUNE)
