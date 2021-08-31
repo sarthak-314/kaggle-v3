@@ -80,10 +80,10 @@ def tf_optimizer_factory(optimizer_kwargs, lr_scheduler):
             learning_rate=lr_scheduler, 
         )
         print('Skipping weight decay for Adagrad')
-    if 'use_lookahead' in optimizer_kwargs and optimizer_kwargs['use_lookahead']: 
+    if optimizer_kwargs['use_lookahead']: 
         print(colored('Using Lookahead', 'red'))
         optimizer = tfa.optimizers.Lookahead(optimizer)
-    if 'use_swa' in optimizer_kwargs and optimizer_kwargs['use_swa']: 
+    if optimizer_kwargs['use_swa']: 
         print(colored('Using SWA', 'red'))
         optimizer = tfa.optimizers.SWA(optimizer)
     return optimizer
