@@ -454,7 +454,7 @@ def convert_dataset_for_tensorflow(
     else:
         tf_dataset = tf.data.Dataset.from_tensor_slices(data)
     if shuffle:
-        tf_dataset = tf_dataset.shuffle(buffer_size=len(dataset))
+        tf_dataset = tf_dataset.shuffle(buffer_size=4096)
     tf_dataset = tf_dataset.batch(batch_size=batch_size, drop_remainder=drop_remainder)
     tf_dataset = tf_dataset.map(densify_ragged_batch, num_parallel_calls=tf.data.AUTOTUNE)
     return tf_dataset.prefetch(tf.data.AUTOTUNE)
