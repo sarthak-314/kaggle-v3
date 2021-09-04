@@ -21,6 +21,10 @@ class ChaiQAModelA(TFAutoModelForQuestionAnswering):
             from_logits=True, reduction=tf.keras.losses.Reduction.NONE
         )
         start_logits, end_logits = logits
+        
+        # Concat start embedding to end embedding for better performance ?
+        # end_logits = tf.concat([start_logits, end_logits], axis=-1)
+
         start_loss = loss_fn(labels['start_position'], start_logits)
         end_loss = loss_fn(labels['end_position'], end_logits)
 
