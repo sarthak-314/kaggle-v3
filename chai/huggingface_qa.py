@@ -64,7 +64,7 @@ def load_splits(name, config=None, verbose=True):
     for split in ['train', 'validation', 'test']: 
         if split in dataset.keys():
             split_dataset = dataset[split]
-            split_dataset = split_dataset.filter(filter_long_answers)
+            # split_dataset = split_dataset.filter(filter_long_answers)
             split_dataset = standardize_dataset(split_dataset)
             ds_list.append(split_dataset)
     dataset = concatenate_datasets(ds_list).shuffle()
