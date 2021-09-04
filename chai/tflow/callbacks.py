@@ -31,7 +31,8 @@ def tb_callback(tb_dir, train_steps):
     return tensorboard_callback
 
 def model_checkpoint(checkpoint_dir=None):
-    checkpoint_filepath = 'checkpoint-{epoch:02d}-{val_loss:.4f}.h5'
+    # checkpoint_filepath = 'checkpoint-{epoch:02d}-{val_loss:.4f}.h5'
+    checkpoint_filepath = 'checkpoint.h5'
     if checkpoint_dir is not None: 
         os.makedirs(checkpoint_dir, exist_ok=True)
         checkpoint_filepath = checkpoint_dir / checkpoint_filepath
