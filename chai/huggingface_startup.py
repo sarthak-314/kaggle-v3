@@ -15,15 +15,7 @@ from huggingface_qa import *
 
 from termcolor import colored
 
-class ChaiQAModel(TFAutoModelForQuestionAnswering): 
-    def __init__(self, *args, loss_weights, negative_weight, **kwargs): 
-        super().__init__(*args, **kwargs)
-        self.loss_weights = loss_weights
-        self.negative_weight = negative_weight
-        print(colored('Negative Weight:', 'red'), negative_weight)
-        print('Start weight:', loss_weights['start'], 'End weight:', loss_weights['end'])
-        
-    
+class ChaiQAModelA(TFAutoModelForQuestionAnswering): 
     def compute_loss(self, labels, logits):
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(
             from_logits=True, reduction=tf.keras.losses.Reduction.NONE
@@ -44,7 +36,6 @@ class ChaiQAModel(TFAutoModelForQuestionAnswering):
         # print('loss: ', loss)
 
         return loss
-
 
 
 

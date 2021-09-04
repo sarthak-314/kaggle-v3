@@ -18,23 +18,12 @@ try:
     import wandb
 except: 
     INTERNET_AVAILIBLE = False
-    
-    
-# Termcolor Colors
-red = lambda str: colored(str, 'red')
-blue = lambda str: colored(str, 'blue')
-green = lambda str: colored(str, 'green')
-yellow = lambda str: colored(str, 'yellow')
-
-
-WORD_LENS = [0, 10, 25, 50, 100, 200, 400, 600, 1000, 2000, 4000, 10000, 250000]
-SPLIT_ON = '\n' # \n, ।, .
 
 
 def get_word_len_tokens(word_lens): 
     return [f'[WORD={word_len}]' for word_len in word_lens]
 
-def add_word_len_tokens(df, word_lens=WORD_LENS, split_on=SPLIT_ON): 
+def add_word_len_tokens(df, word_lens, split_on): 
     df_dict = {'context_with_token': [], 'id': [], 'answer_start_temp': []}
     for i, row in df.iterrows(): 
         lines = []
@@ -63,5 +52,11 @@ def add_word_len_tokens(df, word_lens=WORD_LENS, split_on=SPLIT_ON):
         df_dict['context_with_token'].append(context)
         df_dict['id'].append(row.id)
         df_dict['answer_start_temp'].append(answer_start)
+    
     df = df.merge(pd.DataFrame(df_dict))
+    df['org_context'] = df['context']
+    df['context'] = df['context_with_token']
+    df['org_answer_start'] = df['answer_start']
+    df['answer_start'] = df['answer_start_temp']
+    
     return df

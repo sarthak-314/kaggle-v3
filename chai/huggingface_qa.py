@@ -4,7 +4,7 @@ import datasets
 import random
 from colors import *
 
-def _standardize_answers(answers): 
+def _standardize_answers(answers):
     answers = dict(answers)
     return {
         'text': list(answers['text']), 
