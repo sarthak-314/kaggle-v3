@@ -9,7 +9,10 @@ from transformers import (
 from datasets import (
     concatenate_datasets, list_datasets, 
 )
+
 from qa_utils import *
+from huggingface_qa import *
+
 from termcolor import colored
 
 class ChaiQAModel(TFAutoModelForQuestionAnswering): 

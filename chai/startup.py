@@ -31,10 +31,6 @@ WORD_LENS = [0, 10, 25, 50, 100, 200, 400, 600, 1000, 2000, 4000, 10000, 250000]
 SPLIT_ON = '\n' # \n, ।, .
 
 
-
-
-
-
 def get_word_len_tokens(word_lens): 
     return [f'[WORD={word_len}]' for word_len in word_lens]
 

@@ -1,89 +1,72 @@
-def prepare_train_features(examples): 
-    """
-    Training Preprocessing
-    """
-    
-    examples['question'] = [q.lstrip() for q in examples['questions']]
-    
-    # Tokenize with truncation and padding, keep the overflows using a stride. 
-    # One example can give many features when context is long with overlapping contexts
-    
-    
+from datasets import concatenate_datasets 
+import pandas as pd
+import datasets
+import random
+from colors import *
 
-    # Training preprocessing
-    def prepare_train_features(examples):
-        # Some of the questions have lots of whitespace on the left, which is not useful and will make the
-        # truncation of the context fail (the tokenized question will take a lots of space). So we remove that
-        # left whitespace
-        examples[question_column_name] = [q.lstrip() for q in examples[question_column_name]]
+def _standardize_answers(answers): 
+    answers = dict(answers)
+    return {
+        'text': list(answers['text']), 
+        'answer_start': list(int(ans) for ans in answers['answer_start']), 
+    }
 
-        # Tokenize our examples with truncation and maybe padding, but keep the overflows using a stride. This results
-        # in one example possible giving several features when a context is long, each of those features having a
-        # context that overlaps a bit the context of the previous feature.
-        tokenized_examples = tokenizer(
-            examples[question_column_name if pad_on_right else context_column_name],
-            examples[context_column_name if pad_on_right else question_column_name],
-            truncation="only_second" if pad_on_right else "only_first",
-            max_length=max_seq_length,
-            stride=data_args.doc_stride,
-            return_overflowing_tokens=True,
-            return_offsets_mapping=True,
-            padding="max_length" if data_args.pad_to_max_length else False,
-        )
+def standardize_dataset(dataset): 
+    'Hacky way to convert all datasets to similar format'
+    FEATURES = ['id', 'context', 'question', 'answers']
+    df = pd.DataFrame.from_dict(dataset.to_dict())
+    df = df[FEATURES]
+    df.answers = df.answers.apply(_standardize_answers)
+    dataset = datasets.Dataset.from_pandas(df)
+    return dataset
 
-        # Since one example might give us several features if it has a long context, we need a map from a feature to
-        # its corresponding example. This key gives us just that.
-        sample_mapping = tokenized_examples.pop("overflow_to_sample_mapping")
-        # The offset mappings will give us a map from token to character position in the original context. This will
-        # help us compute the start_positions and end_positions.
-        offset_mapping = tokenized_examples.pop("offset_mapping")
+def random_example(dataset): 
+    i = random.randint(0, len(dataset))
+    ex = dataset[i]
+    q, c, a = ex['question'], ex['context'], ex['answers']['text']
+    print(f'question ({len(q)} chars): {q}')
+    print(f'answer ({len(a)} chars): {a}')
+    print(f'context ({len(c)} chars): {c}')
+    print()
 
-        # Let's label those examples!
-        tokenized_examples["start_positions"] = []
-        tokenized_examples["end_positions"] = []
+def get_ans_len(example): 
+    answers = example['answers']
+    if isinstance(answers, str): return len(answers)
+    if len(answers['text']) == 0: return 0
+    return len(answers['text'][0])
 
-        for i, offsets in enumerate(offset_mapping):
-            # We will label impossible answers with the index of the CLS token.
-            input_ids = tokenized_examples["input_ids"][i]
-            cls_index = input_ids.index(tokenizer.cls_token_id)
+def avg_len(dataset, col_name): 
+    return sum([len(ex) for ex in dataset[col_name]]) / len(dataset)    
 
-            # Grab the sequence corresponding to that example (to know what is the context and what is the question).
-            sequence_ids = tokenized_examples.sequence_ids(i)
+def print_dataset_info(dataset, name): 
+    print()
+    print(f'----------------------- {red(name)} Dataset -----------------------')
+    print(f'Total {name} examples: ', green(len(dataset)))
+    print(f'Average answer length: ', blue(sum(get_ans_len(ex) for ex in dataset)/len(dataset)))
+    print(f'Average context length: ', blue(avg_len(dataset, 'context')))
+    print(f'Average question length: ', blue(avg_len(dataset, 'question')))
+    print('--------------------------------------------------------------------')
+    random_example(dataset)
 
-            # One example can give several spans, this is the index of the example containing this span of text.
-            sample_index = sample_mapping[i]
-            answers = examples[answer_column_name][sample_index]
-            # If no answers are given, set the cls_index as answer.
-            if len(answers["answer_start"]) == 0:
-                tokenized_examples["start_positions"].append(cls_index)
-                tokenized_examples["end_positions"].append(cls_index)
-            else:
-                # Start/end character index of the answer in the text.
-                start_char = answers["answer_start"][0]
-                end_char = start_char + len(answers["text"][0])
+def filter_long_answers(example): 
+    ans_len = get_ans_len(example)
+    if ans_len < 16: return True
+    if ans_len < 32: random.uniform(0, 1) < 0.9
+    if ans_len < 64: return random.uniform(0, 1) < 0.75
+    if ans_len < 128: return random.uniform(0, 1) < 0.5
+    if ans_len < 256: return random.uniform(0, 1) < 0.25
+    return False
 
-                # Start token index of the current span in the text.
-                token_start_index = 0
-                while sequence_ids[token_start_index] != (1 if pad_on_right else 0):
-                    token_start_index += 1
-
-                # End token index of the current span in the text.
-                token_end_index = len(input_ids) - 1
-                while sequence_ids[token_end_index] != (1 if pad_on_right else 0):
-                    token_end_index -= 1
-
-                # Detect if the answer is out of the span (in which case this feature is labeled with the CLS index).
-                if not (offsets[token_start_index][0] <= start_char and offsets[token_end_index][1] >= end_char):
-                    tokenized_examples["start_positions"].append(cls_index)
-                    tokenized_examples["end_positions"].append(cls_index)
-                else:
-                    # Otherwise move the token_start_index and token_end_index to the two ends of the answer.
-                    # Note: we could go after the last offset if the answer is the last word (edge case).
-                    while token_start_index < len(offsets) and offsets[token_start_index][0] <= start_char:
-                        token_start_index += 1
-                    tokenized_examples["start_positions"].append(token_start_index - 1)
-                    while offsets[token_end_index][1] >= end_char:
-                        token_end_index -= 1
-                    tokenized_examples["end_positions"].append(token_end_index + 1)
-
-        return tokenized_examples
+def load_splits(name, config=None, verbose=True): 
+    if config is not None: dataset = datasets.load_dataset(name, config)
+    else: dataset = datasets.load_dataset(name)
+    ds_list = []
+    for split in ['train', 'validation', 'test']: 
+        if split in dataset.keys():
+            split_dataset = dataset[split]
+            split_dataset = split_dataset.filter(filter_long_answers)
+            split_dataset = standardize_dataset(split_dataset)
+            ds_list.append(split_dataset)
+    dataset = concatenate_datasets(ds_list).shuffle()
+    if verbose: print_dataset_info(dataset, name)
+    return dataset
