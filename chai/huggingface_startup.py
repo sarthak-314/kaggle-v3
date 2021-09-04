@@ -10,6 +10,40 @@ from datasets import (
     concatenate_datasets, list_datasets, 
 )
 from qa_utils import *
+from termcolor import colored
+
+class ChaiQAModel(TFAutoModelForQuestionAnswering): 
+    def __init__(self, *args, loss_weights, negative_weight, **kwargs): 
+        super().__init__(*args, **kwargs)
+        self.loss_weights = loss_weights
+        self.negative_weight = negative_weight
+        print(colored('Negative Weight:', 'red'), negative_weight)
+        print('Start weight:', loss_weights['start'], 'End weight:', loss_weights['end'])
+        
+    
+    def compute_loss(self, labels, logits):
+        loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(
+            from_logits=True, reduction=tf.keras.losses.Reduction.NONE
+        )
+        start_logits, end_logits = logits
+        start_loss = loss_fn(labels['start_position'], start_logits)
+        end_loss = loss_fn(labels['end_position'], end_logits)
+
+        start_weight, end_weight = self.loss_weights['start'], self.loss_weights['end']
+        loss = (start_weight * start_loss + end_weight * end_loss) / (start_weight + end_weight)
+
+        # Multiply loss by negative weight where end position is 0
+        loss = tf.where(tf.squeeze(labels['end_position']) == 0, loss*self.negative_weight, loss)
+
+        # Debugging when eager execution
+        # print('labels: ', labels)
+        # print('logits: ', logits)
+        # print('loss: ', loss)
+
+        return loss
+
+
+
 
 NUM_WORKERS = 4
 def prepare_features(examples, tokenizer, max_seq_len, doc_stride): 
