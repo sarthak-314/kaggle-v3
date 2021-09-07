@@ -7,6 +7,7 @@ sys.path.append('/content/temp')
 from kaggle_utils.startup import * 
 from kaggle_utils.utils import solve_environment
 from chai.tensorflow_qa import *
+from chai.base import *
 
 # Competition Specific Constants
 COMP_NAME = 'chaii-hindi-and-tamil-question-answering'
