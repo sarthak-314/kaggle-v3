@@ -23,7 +23,8 @@ except:
 def get_word_len_tokens(word_lens): 
     return [f'[WORD={word_len}]' for word_len in word_lens]
 
-def add_word_len_tokens(df, word_lens, split_on): 
+WORD_LENS =[0, 10, 20, 50, 100, 200, 400, 1000, 2000, 4000, 10000, 25000]
+def add_word_len_tokens(df, word_lens=WORD_LENS, split_on='\n'): 
     df_dict = {'context_with_token': [], 'id': [], 'answer_start_temp': []}
     for i, row in df.iterrows(): 
         lines = []
